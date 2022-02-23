@@ -15,8 +15,12 @@ return new class extends Migration
     {
         Schema::create('films', function (Blueprint $table) {
             $table->id();
-            $table->string('kodik_id')->unique();
+            $table->string('kinopoisk_id')->nullable()->unique();
+            $table->string('worldart_id')->nullable()->unique();
+            $table->string('imdb_id')->nullable()->unique();
+            $table->string('player_link');
             $table->string('title')->unique();
+            $table->string('title_orig')->unique();
             $table->text('description')->nullable();
             $table->year('year')->nullable();
             $table->string('poster');

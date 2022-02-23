@@ -31,4 +31,9 @@ class FilmGenre extends Model
         'film_id',
         'genre_id',
     ];
+
+    public function genre()
+    {
+        return $this->hasOne(Genre::class, 'id', 'genre_id');
+    }
 }

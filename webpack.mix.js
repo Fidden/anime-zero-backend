@@ -15,8 +15,6 @@ mix.alias({
     ziggy: path.resolve('vendor/tightenco/ziggy/dist/vue'), // or 'vendor/tightenco/ziggy/dist/vue' if you're using the Vue plugin
 });
 
-mix.options({legacyNodePolyfills: true})
-
 mix.disableNotifications();
 
 mix.js('resources/js/app.js', 'public/js')

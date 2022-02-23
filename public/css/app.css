@@ -1,4 +1,5 @@
 @import url(https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap);
+@import url(https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap);
 /* Box sizing rules */
 *,
 *::before,
@@ -79,6 +80,7 @@ select {
 :root {
     --main-color: #643FFE;
     --content: 1280px;
+    --background: #040404;
 }
 
 * {
@@ -87,10 +89,11 @@ select {
 }
 
 body {
-    background: #040404;
+    background: var(--background);
+    overflow-x: hidden;
 }
 
-body, #app, .template {
+body, #app, .template, main {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -100,8 +103,143 @@ body, #app, .template {
 
 .template {
     max-width: var(--content);
+    min-height: 100%;
 }
 
+button {
+    outline: none;
+    border: none;
+}
 
+.ti-btn {
+    color: white;
+    font-family: 'Raleway', sans-serif;
+    background-color: var(--main-color);
+    border: none;
+    border-radius: 0.2em;
+    outline: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+    transition: box-shadow 0.7s ease-out;
+    -webkit-appearance: none;
+    width: auto;
+    justify-content: center;
+    z-index: 500;
+    padding: 2px 28px 0 28px;
+    height: 37px;
+    font-size: 14px;
+}
 
+.ti-btn i {
+    margin-right: 5px;
+}
+
+.ripple {
+    background-color: rgba(113, 79, 255, 0.7);
+    width: 1rem;
+    height: 1rem;
+    position: absolute;
+    border-radius: 50%;
+    transform: translateX(-100%) translateY(-100%);
+    mix-blend-mode: screen;
+    -webkit-animation: ripple 1550ms ease-out forwards, fade 1750ms ease-out forwards;
+            animation: ripple 1550ms ease-out forwards, fade 1750ms ease-out forwards;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+}
+
+@-webkit-keyframes ripple {
+    0% {
+        transform: translate(-100%, -100%);
+    }
+    80% {
+        transform: translate(-100%, -100%) scale(50);
+    }
+    100% {
+        transform: translate(-100%, -100%) scale(50);
+        opacity: 0;
+    }
+}
+
+@keyframes ripple {
+    0% {
+        transform: translate(-100%, -100%);
+    }
+    80% {
+        transform: translate(-100%, -100%) scale(50);
+    }
+    100% {
+        transform: translate(-100%, -100%) scale(50);
+        opacity: 0;
+    }
+}
+
+@-webkit-keyframes fade {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes fade {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--main-color);
+    border: 0 none #ffffff;
+    border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--main-color);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--main-color);
+}
+
+::-webkit-scrollbar-track {
+    background: none;
+    border-radius: 50px;
+}
+
+::-webkit-scrollbar-track:hover {
+    background: none;
+}
+
+::-webkit-scrollbar-track:active {
+    background: none;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
 

@@ -42,8 +42,12 @@ class Film extends Model
     use HasFactory;
 
     protected $fillable = [
-        'kodik_id',
+        'kinopoisk_id',
+        'worldart_id',
+        'imdb_id',
+        'player_link',
         'title',
+        'title_orig',
         'description',
         'year',
         'poster',
@@ -52,4 +56,9 @@ class Film extends Model
         'status_id',
         'content_type_id',
     ];
+
+    public function genres()
+    {
+        return $this->hasMany(FilmGenre::class, 'film_id', 'id');
+    }
 }

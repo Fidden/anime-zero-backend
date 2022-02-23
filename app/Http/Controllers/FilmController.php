@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\FilmResource;
 use App\Models\Film;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,9 +14,11 @@ class FilmController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function index()
+    public function index(Film $flilm): \Inertia\Response
     {
-        return Inertia::render('FilmPage');
+        return Inertia::render('FilmPage', [
+            'item' => FilmResource::make($flilm)
+        ]);
     }
 
     /**
