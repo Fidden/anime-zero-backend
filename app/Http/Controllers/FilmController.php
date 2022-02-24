@@ -12,12 +12,13 @@ class FilmController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Film $flilm
      * @return \Inertia\Response
      */
-    public function index(Film $flilm): \Inertia\Response
+    public function index(Film $film): \Inertia\Response
     {
         return Inertia::render('FilmPage', [
-            'item' => FilmResource::make($flilm)
+            'item' => FilmResource::make($film),
         ]);
     }
 

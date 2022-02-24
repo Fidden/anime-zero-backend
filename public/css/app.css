@@ -81,6 +81,7 @@ select {
     --main-color: #643FFE;
     --content: 1280px;
     --background: #040404;
+    --gray: #AFAFAF;
 }
 
 * {

@@ -3,6 +3,7 @@
 use App\Http\Controllers\FilmController;
 use App\Http\Controllers\FilmParserController;
 use App\Http\Controllers\HomePageController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,3 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomePageController::class)->name('home');
 Route::get('/film/{film}', [FilmController::class, 'index'])->name('film');
 Route::get('/parse', [FilmParserController::class, 'store']);
+
+Route::prefix('/user')->group(function () {
+    Route::get('/', [UserController::class, 'index']);
+});

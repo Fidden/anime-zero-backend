@@ -55,6 +55,7 @@ class Film extends Model
         'minimal_age',
         'status_id',
         'content_type_id',
+        'duration',
     ];
 
     public function genres()

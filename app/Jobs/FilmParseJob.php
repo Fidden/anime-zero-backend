@@ -61,6 +61,7 @@ class FilmParseJob implements ShouldQueue
                     'title' => $this->getProperty($result, 'ru_title'),
                     'title_orig' => $this->getProperty($result, 'orig_title'),
 
+                    'duration' => $this->getProperty($kodik_data['material_data'], 'duration'),
                     'description' => $this->getProperty($kodik_data['material_data'], 'description'),
                     'year' => $this->getProperty($kodik_data, 'year'),
                     'poster' => $this->getProperty($kodik_data['material_data'], 'poster_url'),

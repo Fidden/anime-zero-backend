@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('poster');
             $table->float('rating')->default(0);
             $table->integer('minimal_age')->nullable();
+            $table->integer('duration')->nullable();
             $table->foreignId('status_id')->constrained('statuses');
             $table->foreignId('content_type_id')->constrained('content_types');
             $table->timestamps();
