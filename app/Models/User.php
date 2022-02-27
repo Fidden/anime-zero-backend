@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Notifications\EmailVerifyNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -36,6 +38,10 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $login
+ * @property string|null $avatar
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereAvatar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereLogin($value)
  */
 class User extends Authenticatable
 {
@@ -47,9 +53,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'login',
         'email',
         'password',
+        'avatar',
     ];
 
     /**
@@ -59,7 +66,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
     /**
@@ -70,4 +76,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = Hash::make($value);
+    }
 }

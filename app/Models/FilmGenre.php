@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|FilmGenre whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|FilmGenre whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Genre|null $genre
  */
 class FilmGenre extends Model
 {

@@ -46,7 +46,7 @@ footer {
     flex-direction: row;
     width: 100%;
     position: relative;
-    margin-top: 64px;
+    margin-top: auto;
     padding: 40px 0;
     justify-content: space-around;
 }
@@ -75,13 +75,17 @@ footer {
 .footer-block ul {
     display: flex;
     flex-direction: column;
-    transform: translateX(-25px);
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.footer-block li {
+    margin: 0 0 5px 0;
 }
 
 .footer-block a {
     font-weight: 500;
     font-size: 14px;
-    line-height: 16px;
     text-decoration: none;
     color: #C4C4C4;
 }

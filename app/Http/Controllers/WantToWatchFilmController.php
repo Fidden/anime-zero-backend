@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\WantToWatchFilmStoreRequest;
 use App\Models\WantToWatchFilm;
 use Illuminate\Http\Request;
 
@@ -20,18 +21,19 @@ class WantToWatchFilmController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(WantToWatchFilmStoreRequest $request): \Illuminate\Http\RedirectResponse
     {
-        //
+        WantToWatchFilm::firstOrCreate($request->validated());
+        return redirect()->back();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\WantToWatchFilm  $wantToWatchFilm
+     * @param \App\Models\WantToWatchFilm $wantToWatchFilm
      * @return \Illuminate\Http\Response
      */
     public function show(WantToWatchFilm $wantToWatchFilm)
@@ -42,8 +44,8 @@ class WantToWatchFilmController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\WantToWatchFilm  $wantToWatchFilm
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\WantToWatchFilm $wantToWatchFilm
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, WantToWatchFilm $wantToWatchFilm)
@@ -54,11 +56,12 @@ class WantToWatchFilmController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\WantToWatchFilm  $wantToWatchFilm
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\WantToWatchFilm $wantToWatchFilm
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(WantToWatchFilm $wantToWatchFilm)
+    public function destroy(int $film_id): \Illuminate\Http\RedirectResponse
     {
-        //
+        WantToWatchFilm::where([['user_id', auth()->id()], ['film_id', $film_id]])->delete();
+        return redirect()->back();
     }
 }

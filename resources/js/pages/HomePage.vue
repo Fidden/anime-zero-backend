@@ -116,7 +116,7 @@ export default {
             if (this.selected_poster === -1)
                 return;
 
-            this.$inertia.get(route('film', this.best_films[this.selected_poster].id))
+            this.$inertia.get(route('film.show', this.best_films[this.selected_poster].id))
         }
     }
 }
@@ -189,6 +189,7 @@ export default {
     border-radius: 10px;
     overflow: hidden;
     transition: 0.5s;
+    cursor: pointer;
 }
 
 .image-block:nth-child(2), .image-block:nth-child(5), .image-block:nth-child(8) {

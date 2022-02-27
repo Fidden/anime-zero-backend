@@ -5,9 +5,13 @@
             <div class="film-page-container">
                 <div class="film-page-poster-block">
                     <img :src="item.poster" :alt="item.title">
-                    <div class="film-actions">
-                        <button><i class="fal fa-plus"></i>Буду смотреть</button>
-                        <i class="fas fa-eye"></i>
+                    <div class="film-actions" v-if="$page.props.user">
+                        <button v-if="is_wanted_watch" @click="removeWantWatch"><i class="fal fa-minus"></i>Не буду
+                            смотреть
+                        </button>
+                        <button v-else @click="addWantWatch"><i class="fal fa-plus"></i>Буду смотреть</button>
+                        <i v-if="is_watched" @click="removeWatched" class="fal fa-check"></i>
+                        <i v-else @click="addWatched" class="fas fa-eye"></i>
                     </div>
                 </div>
                 <div class="film-page-main-block">
@@ -39,6 +43,8 @@ export default {
     name: "FilmPage",
     props: {
         item: Object,
+        is_wanted_watch: Boolean,
+        is_watched: Boolean,
     },
     computed: {
         getGenres() {
@@ -47,6 +53,24 @@ export default {
                 out += index + 1 === this.item.genres.length ?
                     item.name : `${item.name}, `);
             return out;
+        }
+    },
+    methods: {
+        addWantWatch() {
+            this.$inertia.post(route('want-to-watch-film.store'), {
+                film_id: this.item.id,
+            });
+        },
+        removeWantWatch() {
+            this.$inertia.delete(route('want-to-watch-film.destroy', this.item.id))
+        },
+        removeWatched() {
+            this.$inertia.delete(route('watched-film.destroy', this.item.id));
+        },
+        addWatched() {
+            this.$inertia.post(route('watched-film.store'), {
+                film_id: this.item.id,
+            });
         }
     }
 }
@@ -65,6 +89,7 @@ export default {
     width: 100%;
     max-width: 250px;
     margin-right: 30px;
+    flex-shrink: 0;
 }
 
 .film-page-poster-block img {
@@ -98,6 +123,7 @@ export default {
     align-items: center;
     padding: 13px 15px;
     margin-right: 7px;
+    cursor: pointer;
 }
 
 .film-actions button i {
@@ -106,6 +132,7 @@ export default {
 }
 
 .film-actions i {
+    cursor: pointer;
     height: 33px;
     width: 100%;
     max-width: 33px;

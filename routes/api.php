@@ -11,3 +11,6 @@
 |
 */
 
+use App\Http\Controllers\FilmController;
+
+Route::post('/film', [FilmController::class, 'search'])->name('film.search');

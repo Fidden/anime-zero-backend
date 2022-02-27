@@ -36,6 +36,20 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Film whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Film whereYear($value)
  * @mixin \Eloquent
+ * @property string|null $kinopoisk_id
+ * @property string|null $worldart_id
+ * @property string|null $imdb_id
+ * @property string $player_link
+ * @property string $title_orig
+ * @property int|null $duration
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FilmGenre[] $genres
+ * @property-read int|null $genres_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Film whereDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Film whereImdbId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Film whereKinopoiskId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Film wherePlayerLink($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Film whereTitleOrig($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Film whereWorldartId($value)
  */
 class Film extends Model
 {

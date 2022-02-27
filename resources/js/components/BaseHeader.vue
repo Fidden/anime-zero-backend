@@ -5,16 +5,86 @@
         <InertiaLink as="button" class="section">Фильмы</InertiaLink>
         <InertiaLink as="button" class="section">Сериалы</InertiaLink>
         <div class="search-bar">
-            <input type="text" placeholder="Популярные новинки">
-            <button><i class="fas fa-search"></i></button>
+            <div class="search-bar-background" v-if="search.open" @click.self="closeSearchBar"></div>
+
+            <input type="text" placeholder="Популярные новинки"
+                   v-model="search.query"
+                   @change="searchFilmDebounce"
+                   @keypress.enter="searchFilm">
+
+            <button @click="searchFilm"><i class="fas fa-search"></i></button>
+
+            <div class="search-bar-body" v-if="search.open">
+                <InertiaLink :href="route('film.show', film.id)" as="div" class="search-bar-item"
+                             v-for="film in search.response">
+
+                    <img :src="film.poster" :alt="film.title">
+                    <p>{{ film.title }} <span v-if="film.year">({{ film.year }})</span><br>
+                        <span class="orig-title">{{ film.title_orig }}</span>
+                    </p>
+                </InertiaLink>
+            </div>
         </div>
-        <BaseButton><i class="fal fa-sign-out"></i>Выход</BaseButton>
+        <BaseButton v-if="user && $page.url == '/user'" @click="$inertia.visit(route('user.logout'))">
+            <i class="fal fa-sign-out"></i>Выход
+        </BaseButton>
+        <BaseButton v-else-if="user" @click="$inertia.visit(route('user.account'))">
+            <i class="fal fa-user"></i> Личный кабинет
+        </BaseButton>
+        <BaseButton v-else @click="$root.openModal"><i class="fal fa-sign-out"></i>Вход</BaseButton>
+        <AuthModal/>
     </header>
 </template>
 
 <script>
+import AuthModal from "./AuthModal";
+import {computed} from "vue";
+import {usePage} from '@inertiajs/inertia-vue3';
+
 export default {
     name: "BaseHeader",
+    components: {AuthModal},
+    setup() {
+        const user = computed(() => usePage().props.value.user);
+        return {user};
+    },
+    data() {
+        return {
+            search: {
+                open: false,
+                query: '',
+                response: [],
+                debounce_timer: null,
+            }
+        }
+    },
+    methods: {
+        searchFilmDebounce() {
+            if (this.search.debounce_timer)
+                clearTimeout(this.search.debounce_timer);
+
+            this.search.debounce_timer = setTimeout(() => {
+                this.$axois.post(route('film.search'), {
+                    query: this.search.query
+                })
+                    .then(res => res.data)
+                    .then(data => this.search.response = data)
+                    .then(() => this.search.open = true);
+            }, 1500);
+        },
+        searchFilm() {
+            this.$axois.post(route('film.search'), {
+                query: this.search.query
+            })
+                .then(res => res.data)
+                .then(data => this.search.response = data)
+                .then(() => this.search.open = true);
+        },
+        closeSearchBar() {
+            this.search.open = false;
+            this.search.response = [];
+        }
+    }
 }
 </script>
 
@@ -49,19 +119,23 @@ h1 span {
 }
 
 .search-bar {
-    width: 100%;
+    flex: 1;
     display: flex;
     flex-direction: row;
     height: 38px;
     margin: 0 16px 0 30px;
+    position: relative;
+    z-index: 500;
 }
 
 .search-bar input {
     width: 100%;
-    border-radius: 5px 0px 0px 5px;
-    padding: 0 15px;
+    border-radius: 5px 0 0 5px;
+    padding: 2px 15px 0 15px;
     outline: none;
     border: none;
+    font-size: 14px;
+    color: black;
 }
 
 .search-bar button {
@@ -73,6 +147,55 @@ h1 span {
 .ti-btn {
     height: 38px;
     font-size: 14px;
+}
+
+.search-bar-body {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    top: 50px;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    padding: 10px;
+}
+
+.search-bar-item {
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.search-bar-item * {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.search-bar-item:hover p, .search-bar-item:hover span {
+    color: var(--main-color);
+    transition: 0.5s;
+}
+
+.search-bar-item img {
+    height: 100%;
+    width: auto;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.orig-title {
+    font-size: 12px;
+}
+
+.search-bar-background {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
 }
 
 </style>

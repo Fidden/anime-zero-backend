@@ -5,7 +5,7 @@
             <p class="title">{{ item.title }} ({{ item.year }})</p>
             <p class="genre">Жанры: {{ getGenres }}</p>
             <p class="rating">Возрастной рейтинг: <span>{{ item.rating }}</span></p>
-            <BaseButton>Отслеживать</BaseButton>
+            <BaseButton v-if="$page.props.user" @click="trackFilm">Отслеживать</BaseButton>
         </div>
     </div>
 </template>
@@ -27,6 +27,13 @@ export default {
             })
             return out;
         }
+    },
+    methods: {
+        trackFilm() {
+            this.$inertia.post(route('tracked-film.store'), {
+                film_id: this.item.id,
+            })
+        }
     }
 }
 </script>
@@ -43,7 +50,8 @@ export default {
 }
 
 .ongoing-card img {
-    width: 180px;
+    width: 100%;
+    max-width: 180px;
     margin-right: 15px;
 }
 

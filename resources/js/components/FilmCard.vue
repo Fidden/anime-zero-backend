@@ -1,7 +1,8 @@
 <template>
-    <InertiaLink :href="route('film', item.id)" class="film-card" as="div">
+    <InertiaLink :href="route('film.show', item.id)" class="film-card" as="div">
         <div class="film-card-image-block">
             <img :src="item.poster" :alt="item.title">
+            <BaseButton><i class="fal fa-play"></i>Смотреть</BaseButton>
         </div>
         <p class="film-card-title">{{ item.title }}</p>
         <p class="film-card-info">{{ item.year }} {{ item.genres[0].name }}</p>
@@ -24,6 +25,7 @@ export default {
 .film-card {
     position: relative;
     font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
 }
 
 .film-card-title {
@@ -47,5 +49,29 @@ export default {
     font-size: 12px;
     font-family: 'Montserrat', sans-serif;
     border-radius: 3px;
+}
+
+.film-card-image-block {
+    position: relative;
+    overflow: hidden;
+    height: 240px;
+}
+
+.ti-btn {
+    position: absolute;
+    left: 50%;
+    bottom: -100px;
+    transform: translate(-50%, -30%);
+    transition: 0.5s;
+}
+
+.ti-btn i {
+    transform: translateY(-2px);
+    font-size: 10px;
+}
+
+.film-card:hover .ti-btn {
+    bottom: 5px;
+    transition: 0.5s;
 }
 </style>
