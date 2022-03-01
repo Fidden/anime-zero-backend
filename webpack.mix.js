@@ -1,5 +1,8 @@
+require('laravel-mix-webp-watched');
+
 const mix = require('laravel-mix');
 const path = require('path');
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -16,6 +19,9 @@ mix.alias({
 });
 
 mix.disableNotifications();
+
+mix.copy('resources/img/*.svg', 'public/img');
+mix.webpWatched('resources/img', 'public/img');
 
 mix.js('resources/js/app.js', 'public/js')
     .vue()

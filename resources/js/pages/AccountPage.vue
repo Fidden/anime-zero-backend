@@ -47,7 +47,7 @@
             </div>
             <div class="profile-container" v-else-if="state === 1">
                 <div class="films-empty" v-if="!films.watched.data.length">
-                    <img src="/img/hmm_emoji.png" alt="hmm">
+                    <img src="/img/hmm_emoji.webp" alt="hmm">
                     <h3>Хм, похоже тут ничего нет...</h3>
                 </div>
                 <div class="films-container" v-else>
@@ -59,7 +59,7 @@
             </div>
             <div class="profile-container" v-else-if="state === 2">
                 <div class="films-empty" v-if="!films.want_to_watch.data.length">
-                    <img src="/img/hmm_emoji.png" alt="hmm">
+                    <img src="/img/hmm_emoji.webp" alt="hmm">
                     <h3>Хм, похоже тут ничего нет...</h3>
                 </div>
                 <div class="films-container" v-else>
@@ -71,7 +71,7 @@
             </div>
             <div class="profile-container" v-else-if="state === 3">
                 <div class="films-empty" v-if="!films.tracked.data.length">
-                    <img src="/img/hmm_emoji.png" alt="hmm">
+                    <img src="/img/hmm_emoji.webp" alt="hmm">
                     <h3>Хм, похоже тут ничего нет...</h3>
                 </div>
                 <div class="films-container" v-else>
@@ -82,22 +82,27 @@
 
                 <Pagination :meta="films.tracked.meta"/>
             </div>
-            <div class="image-cropper-container" v-if="cropper.open">
-                <vueCropper
-                    ref="cropper"
-                    :img="cropper.image"
-                    outputType="webp"
-                    :autoCrop="true"
-                    :canMove="true"
-                    :canMoveBox="true"
-                    :autoCropWidth="250"
-                    :autoCropHeight="250"
-                    :fixedBox="true"
-                    :centerBox="true"
-                ></vueCropper>
-                <input ref="uploadImg" type="file" accept="image/png, image/jpeg, image/gif, image/jpg"
-                       @change="uploadImg($event, 1)">
-                <BaseButton @click="uploadUserAvatar"/>
+            <div class="image-cropper-container" v-show="cropper.open" @click.self="closeCropper">
+                <div class="image-cropper-block">
+                    <vueCropper
+                        ref="cropper"
+                        :img="cropper.image"
+                        outputType="webp"
+                        :autoCrop="true"
+                        :canMove="true"
+                        :canMoveBox="false"
+                        :autoCropWidth="250"
+                        :autoCropHeight="250"
+                        :fixedBox="true"
+                        :centerBox="true"
+                    ></vueCropper>
+
+                    <input ref="uploadImg" type="file" accept="image/png, image/jpeg, image/gif, image/jpg"
+                           @change="uploadImg($event)">
+
+                    <BaseButton @click="uploadUserAvatar">Сохранить</BaseButton>
+                </div>
+
             </div>
         </main>
         <BaseFooter/>
@@ -150,10 +155,44 @@ export default {
         },
         openCropper() {
             this.cropper.open = true;
+            this.$refs.uploadImg.click();
+        },
+        closeCropper() {
+            this.cropper.open = false;
+            this.cropper.image = null;
         },
         uploadUserAvatar() {
+            this.$refs.cropper.getCropData(data => {
+                this.$inertia.put(route('user-avatar.update'), {
+                        image: data,
+                    },
+                    {
+                        onSuccess: this.closeCropper,
+                    }
+                )
+            });
+        },
+        uploadImg(e) {
+            let file = e.target.files[0];
+            if (!/\.(jpg|jpeg|png|JPG|PNG)$/.test(e.target.value)) {
+                alert("Поддерживаются только jpeg,jpg,png");
+                return false;
+            }
+            let reader = new FileReader();
+            reader.onload = e => {
+                let data;
+                if (typeof e.target.result === "object") {
+                    data = window.URL.createObjectURL(new Blob([e.target.result]));
+                } else {
+                    data = e.target.result;
+                }
 
-        }
+                this.cropper.image = data;
+
+                this.$refs.uploadImg.value = ''
+            };
+            reader.readAsArrayBuffer(file);
+        },
     }
 }
 </script>
@@ -339,5 +378,41 @@ main {
     grid-template-columns: repeat(5, 166px);
     gap: 20px;
 }
+
+.image-cropper-container {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+}
+
+.image-cropper-block {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+}
+
+.image-cropper-block .ti-btn {
+    margin-left: auto;
+}
+
+.vue-cropper {
+    height: 450px !important;
+    width: 450px !important;
+    overflow: hidden !important;
+    border-radius: 15px !important;
+    margin-bottom: 20px;
+}
+
+input[type='file'] {
+    display: none;
+}
+
 
 </style>

@@ -11,8 +11,8 @@ import {InertiaLink} from "@inertiajs/inertia-vue3/src";
 import {ZiggyVue} from '../../vendor/tightenco/ziggy/dist/vue';
 import {Ziggy} from 'ziggy';
 import axios from "axios";
-import 'vue-cropper/dist/index.css'
-import { VueCropper }  from "vue-cropper";
+import 'vue-cropper/dist/index.css';
+import VueCropper from "vue-cropper";
 
 //Mixins
 import modalWindowMixin from "./mixins/modalWindowMixin";

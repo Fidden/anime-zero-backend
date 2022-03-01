@@ -4,9 +4,11 @@ use App\Http\Controllers\FilmController;
 use App\Http\Controllers\FilmParserController;
 use App\Http\Controllers\HomePageController;
 use App\Http\Controllers\TrackedFilmController;
+use App\Http\Controllers\UserAvatarController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WantToWatchFilmController;
 use App\Http\Controllers\WatchedFilmController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,7 +34,7 @@ Route::prefix('/user')->group(function () {
     Route::post('/login', [UserController::class, 'login'])->name('user.login');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'signed'])->group(function () {
 
     Route::prefix('/track-film')->group(function () {
         Route::post('/', [TrackedFilmController::class, 'store'])->name('tracked-film.store');
@@ -53,4 +55,25 @@ Route::middleware('auth')->group(function () {
         Route::put('/', [UserController::class, 'update'])->name('user.update');
         Route::get('/logout', [UserController::class, 'logout'])->name('user.logout');
     });
+
+    Route::prefix('/user-avatar')->group(function () {
+        Route::put('/', [UserAvatarController::class, 'update'])->name('user-avatar.update');
+    });
+});
+
+Route::group(['prefix' => '/email', 'middleware' => 'auth'], function () {
+
+    Route::get('/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->route('user.account');
+    })
+        ->middleware('signed')
+        ->name('verification.verify');
+
+    Route::post('/verification-notification', function (\Illuminate\Http\Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with(['message' => 'Ссылка для подтверждения отправлена вам на почту']);
+    })
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
 });

@@ -353,7 +353,6 @@ button {
     -webkit-appearance: none;
     width: auto;
     justify-content: center;
-    z-index: 500;
     padding: 2px 28px 0 28px;
     height: 37px;
     font-size: 14px;

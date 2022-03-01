@@ -14,8 +14,15 @@ class UserAvatarController extends Controller
     public function update(UserAvatarUpdateRequest $request): \Illuminate\Http\RedirectResponse
     {
         $user = auth()->user();
-        $user->avatar = Storage::disk('local')->put("avatar/{$user->login}_{$user->id}.png",
-            base64_decode($request->image));
+        {
+            $image = $request->image;
+            $image = preg_replace('/data:image\/(.*?);base64,/', '', $image);
+            $image = str_replace(' ', '+', $image);
+
+            $file_name = "avatars/{$user->login}_{$user->id}.webp";
+            Storage::disk('public')->put($file_name, base64_decode($image));
+            $user->avatar = Storage::url($file_name);
+        }
         $user->save();
 
         return redirect()->back();

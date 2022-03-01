@@ -87,9 +87,7 @@ export default {
         },
         registerUser() {
             this.register_form.post(route('user.store'), {
-                onSuccess: () => {
-                    this.$root.modal_open = false;
-                }
+                preserveState: true,
             });
         },
         setState(state) {

@@ -47,7 +47,7 @@
                 </div>
                 <div class="films-block-body films-block-body-big">
                     <div class="first">
-                        <img src="/img/plaseholder-big-1.png" alt="placeholder">
+                        <img src="/img/plaseholder-big-1.webp" alt="placeholder">
                         <div class="first-text-box">
                             <h3>Вайолет Эвергарден</h3>
                             <p>Сотрудница почты Вайолет получает новое задание — отправиться в пансион благородных девиц и
@@ -58,7 +58,7 @@
                         <BaseButton>Смотреть</BaseButton>
                     </div>
                     <div class="second">
-                        <img src="/img/plaseholder-big-2.png" alt="placeholder">
+                        <img src="/img/plaseholder-big-2.webp" alt="placeholder">
                         <div class="second-info">
                             <p class="second-info-title">Унесенные призраками</p>
                             <p class="second-info-description">Тихиро должна придумать, как избавить своих родителей от чар коварной старухи.</p>
@@ -66,7 +66,7 @@
 
                     </div>
                     <div class="third">
-                        <img src="/img/plaseholder-big-2.png" alt="placeholder">
+                        <img src="/img/plaseholder-big-2.webp" alt="placeholder">
                         <div class="third-info">
                             <p class="third-info-title">Унесенные призраками</p>
                             <p class="third-info-description">Тихиро должна придумать, как избавить своих родителей от чар коварной старухи.</p>

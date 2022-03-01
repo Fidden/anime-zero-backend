@@ -11,6 +11,7 @@ use App\Models\TrackedFilm;
 use App\Models\User;
 use App\Models\WantToWatchFilm;
 use App\Models\WatchedFilm;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -38,9 +39,14 @@ class UserController extends Controller
     public function store(UserStoreRequest $request): \Illuminate\Http\RedirectResponse
     {
         $user = User::create($request->validated());
-        auth()->login($user, $request->remember);
+        if ($user) {
+            event(new Registered($user));
+            auth('web')->login($user);
 
-        return redirect()->route('user.account');
+            return redirect()->back();
+        }
+
+        return redirect()->route('user.account')->with(['email_verify' => 'send']);
     }
 
     /**
