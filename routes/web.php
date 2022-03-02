@@ -34,7 +34,7 @@ Route::prefix('/user')->group(function () {
     Route::post('/login', [UserController::class, 'login'])->name('user.login');
 });
 
-Route::middleware(['auth', 'signed'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('/track-film')->group(function () {
         Route::post('/', [TrackedFilmController::class, 'store'])->name('tracked-film.store');
@@ -61,19 +61,13 @@ Route::middleware(['auth', 'signed'])->group(function () {
     });
 });
 
-Route::group(['prefix' => '/email', 'middleware' => 'auth'], function () {
 
-    Route::get('/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-        return redirect()->route('user.account');
-    })
-        ->middleware('signed')
-        ->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect()->route('home');
+})->middleware(['auth', 'signed'])->name('verification.verify');
 
-    Route::post('/verification-notification', function (\Illuminate\Http\Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-        return back()->with(['message' => 'Ссылка для подтверждения отправлена вам на почту']);
-    })
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
-});
+Route::post('/email/verification-notification', function () {
+    auth()->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');

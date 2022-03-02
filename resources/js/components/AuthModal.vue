@@ -1,11 +1,11 @@
 <template>
-    <div class="black-out" v-if="$root.modal_open" @mousedown.self="$root.closeModal">
+    <div class="black-out" v-if="modal.open" @mousedown.self="$root.closeModal">
         <transition name="shadow">
             <div class="modal-window">
                 <i class="fal fa-times fa-lg" @click="$root.closeModal"></i>
                 <img src="/img/modal.svg" alt="modal">
                 <h2>Hola!</h2>
-                <div class="modal-window-body" v-if="state === 0">
+                <div class="modal-window-body" v-if="modal.state === modal.enum.LOGIN">
                     <h3>Войдите, что бы получить доступ к дополнительным возможностям</h3>
                     <ul class="validation-errors">
                         <li v-for="error in $page.props.errors">{{ error }}</li>
@@ -20,12 +20,12 @@
                         <BaseButton>Войти</BaseButton>
                     </form>
                     <div class="modal-window-additional">
-                        <p @click="setState(1)">Регистрация</p>
-                        <p @click="setState(2)">Забыли пароль</p>
+                        <p @click="$root.setModalState(modal.enum.REGISTER)">Регистрация</p>
+                        <p @click="$root.setModalState(modal.enum.PASSWORD_RESET)">Забыли пароль</p>
                     </div>
                 </div>
-                <div class="modal-window-body" v-if="state === 1">
-                    <h3>Войдите, что бы получить доступ к дополнительным возможностям</h3>
+                <div class="modal-window-body" v-if="modal.state === modal.enum.REGISTER">
+                    <h3>Зарегистрируйтесь, что бы получить доступ к дополнительным возможностям</h3>
                     <ul class="validation-errors">
                         <li v-for="error in $page.props.errors">{{ error }}</li>
                     </ul>
@@ -35,16 +35,19 @@
                         <input type="password" placeholder="Пароль" v-model="register_form.password">
                         <input type="password" placeholder="Повтор пароля" v-model="register_form.password_repeat"
                                class="last-input">
-                        <label class="checkbox-label">
-                            <input type="checkbox" v-model="register_form.remember">
-                            Запомнить меня
-                        </label>
-                        <BaseButton>Войти</BaseButton>
+                        <BaseButton>Зарегистрироваться</BaseButton>
                     </form>
                     <div class="modal-window-additional">
-                        <p @click="setState(0)">Авторизация</p>
-                        <p @click="setState(2)">Забыли пароль</p>
+                        <p @click="$root.setModalState(modal.enum.LOGIN)">Авторизация</p>
+                        <p @click="$root.setModalState(modal.enum.PASSWORD_RESET)">Забыли пароль</p>
                     </div>
+                </div>
+                <div class="modal-window-body" v-if="modal.state === modal.enum.EMAIL_VERIFY">
+                    <ul class="validation-errors">
+                        <li v-for="error in $page.props.errors">{{ error }}</li>
+                    </ul>
+                    <h3>Письмо для подверждения email отправлено на {{ $page.props.user.email }}</h3>
+                    <BaseButton class="ok-btn" @click="resendEmail">Отправить повторно</BaseButton>
                 </div>
             </div>
         </transition>
@@ -59,7 +62,6 @@ import modalWindowMixin from "../mixins/modalWindowMixin";
 export default {
     name: "AuthModal",
     components: {BaseButton},
-    mixins: [modalWindowMixin],
     setup() {
         const auth_form = useForm({
             login: null,
@@ -71,29 +73,32 @@ export default {
             email: null,
             password: null,
             password_repeat: null,
-            remember: false,
         });
 
         return {auth_form, register_form};
-    },
-    data() {
-        return {
-            state: 0,
-        }
     },
     methods: {
         loginUser() {
             this.auth_form.post(route('user.login'));
         },
         registerUser() {
-            this.register_form.post(route('user.store'), {
-                preserveState: true,
-            });
+            this.register_form.post(route('user.store'),
+                {
+                    onSuccess: () => {
+                        this.$root.openModal();
+                        this.$root.setModalState(this.modal.enum.EMAIL_VERIFY);
+                    }
+                });
         },
-        setState(state) {
-            this.state = state;
+        resendEmail() {
+            this.$inertia.post(route('verification.send'));
         }
     },
+    computed: {
+        modal() {
+            return this.$root.modal;
+        }
+    }
 }
 </script>
 
@@ -241,6 +246,11 @@ input[type='checkbox'] {
     padding: 0;
     color: red;
     text-align: center;
+}
+
+.ok-btn {
+    width: 100%;
+    margin-top: 20px;
 }
 
 </style>

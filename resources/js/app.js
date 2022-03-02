@@ -1,3 +1,5 @@
+import notificationMixin from "./mixins/notificationMixin";
+
 require('./bootstrap');
 // Components
 import BaseHeader from "./components/BaseHeader";
@@ -22,7 +24,7 @@ createInertiaApp({
     setup({el, App, props, plugin}) {
         const app = createApp({
             render: () => h(App, props),
-            mixins: [modalWindowMixin],
+            mixins: [modalWindowMixin, notificationMixin],
         });
 
         app.component('BaseHeader', BaseHeader)

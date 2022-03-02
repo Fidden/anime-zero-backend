@@ -41,12 +41,12 @@ class UserController extends Controller
         $user = User::create($request->validated());
         if ($user) {
             event(new Registered($user));
-            auth('web')->login($user);
+            auth()->login($user);
 
-            return redirect()->back();
+            return redirect()->back()->with('message', 'email-verify-send');
         }
 
-        return redirect()->route('user.account')->with(['email_verify' => 'send']);
+        return redirect()->route('home')->with('message', 'Упс! Что то пошло не так');
     }
 
     /**

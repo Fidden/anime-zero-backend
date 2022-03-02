@@ -50,7 +50,8 @@
                         <img src="/img/plaseholder-big-1.webp" alt="placeholder">
                         <div class="first-text-box">
                             <h3>Вайолет Эвергарден</h3>
-                            <p>Сотрудница почты Вайолет получает новое задание — отправиться в пансион благородных девиц и
+                            <p>Сотрудница почты Вайолет получает новое задание — отправиться в пансион благородных девиц
+                                и
                                 научить манерам богатую наследницу Изабеллу. Сначала та не горит желанием становиться
                                 настоящей леди, но постепенно сближается с Вайолет и даже просит помочь написать письмо
                                 младшей сестре Тейлор, с которой её недавно разлучили.</p>
@@ -61,7 +62,8 @@
                         <img src="/img/plaseholder-big-2.webp" alt="placeholder">
                         <div class="second-info">
                             <p class="second-info-title">Унесенные призраками</p>
-                            <p class="second-info-description">Тихиро должна придумать, как избавить своих родителей от чар коварной старухи.</p>
+                            <p class="second-info-description">Тихиро должна придумать, как избавить своих родителей от
+                                чар коварной старухи.</p>
                         </div>
 
                     </div>
@@ -69,7 +71,8 @@
                         <img src="/img/plaseholder-big-2.webp" alt="placeholder">
                         <div class="third-info">
                             <p class="third-info-title">Унесенные призраками</p>
-                            <p class="third-info-description">Тихиро должна придумать, как избавить своих родителей от чар коварной старухи.</p>
+                            <p class="third-info-description">Тихиро должна придумать, как избавить своих родителей от
+                                чар коварной старухи.</p>
                         </div>
                     </div>
                 </div>
@@ -117,6 +120,17 @@ export default {
                 return;
 
             this.$inertia.get(route('film.show', this.best_films[this.selected_poster].id))
+        }
+    },
+    mounted() {
+        if (this.$page.props.flash.message === 'email-verification-required') {
+            this.$root.setModalState(this.$root.modal.enum.EMAIL_VERIFY);
+            this.$root.openModal();
+        }
+
+        if (this.$page.props.flash.message === 'auth-required') {
+            this.$root.setModalState(this.$root.modal.enum.LOGIN);
+            this.$root.openModal();
         }
     }
 }
@@ -293,12 +307,12 @@ export default {
     flex-direction: row;
 }
 
-.second img, .third img{
+.second img, .third img {
     width: 160px;
     margin-right: 20px;
 }
 
-.second-info, .third-info{
+.second-info, .third-info {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -325,7 +339,7 @@ export default {
     padding-right: 0;
 }
 
-.main-films-block-big .films-block-head{
+.main-films-block-big .films-block-head {
     margin: 0 53px 0 53px;
 }
 

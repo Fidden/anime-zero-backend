@@ -37,7 +37,6 @@ class UserStoreRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|max:32',
             'password_repeat' => 'required|string|same:password',
-            'remember' => 'boolean',
         ];
     }
 }

@@ -18,18 +18,18 @@
                     <h3>{{ item.title }}</h3>
                     <h4>{{ item.title_orig }}</h4>
                     <iframe class="film-iframe" :src="item.player_link" frameborder="0" allowfullscreen></iframe>
-                    <h2>Описание</h2>
-                    <p class="film-description">
+                    <h2 v-if="item.description">Описание</h2>
+                    <p class="film-description" v-if="item.description">
                         {{ item.description }}
                     </p>
                     <h2>О фильме</h2>
                     <div class="film-page-description-grid">
                         <h5>Год выпуска</h5>
-                        <p>{{ item.year }}</p>
+                        <h4>{{ item.year }}</h4>
                         <h5>Жанры</h5>
-                        <p>{{ getGenres }}</p>
+                        <h4>{{ getGenres }}</h4>
                         <h5>Длительность</h5>
-                        <p>{{ item.duration }} мин</p>
+                        <h4>{{ item.duration }} мин</h4>
                     </div>
                 </div>
             </div>
@@ -146,18 +146,18 @@ export default {
 }
 
 .film-page-main-block h3 {
-    font-size: 24px;
+    font-size: 36px;
 }
 
 .film-page-main-block h4 {
     font-size: 18px;
     color: var(--gray);
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .film-page-main-block h2 {
     font-weight: bold;
-    font-size: 36px;
+    font-size: 24px;
     margin-top: 30px;
 }
 

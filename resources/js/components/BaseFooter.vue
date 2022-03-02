@@ -34,6 +34,7 @@
 
 <script>
 import BaseButton from "./BaseButton";
+
 export default {
     name: "BaseFooter",
     components: {BaseButton}
@@ -92,9 +93,10 @@ footer {
 
 .footer-social-block {
     display: grid;
-    grid-template-columns: repeat(2,34px);
+    grid-template-columns: repeat(2, 34px);
     grid-template-rows: 34px;
     gap: 5px;
+    margin-top: 10px;
 }
 
 .footer-social-block i {
@@ -111,6 +113,10 @@ footer {
 .footer-social-block i:hover {
     background: var(--main-color);
     transition: 0.5s;
+}
+
+.footer-block .ti-btn {
+    margin-top: 10px;
 }
 
 </style>
