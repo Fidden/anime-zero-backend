@@ -1,5 +1,3 @@
-import notificationMixin from "./mixins/notificationMixin";
-
 require('./bootstrap');
 // Components
 import BaseHeader from "./components/BaseHeader";
@@ -18,6 +16,7 @@ import VueCropper from "vue-cropper";
 
 //Mixins
 import modalWindowMixin from "./mixins/modalWindowMixin";
+import notificationMixin from "./mixins/notificationMixin";
 
 createInertiaApp({
     resolve: name => require(`./pages/${name}`),

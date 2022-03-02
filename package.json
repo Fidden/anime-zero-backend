@@ -26,6 +26,7 @@
         "axois": "^0.0.1-security",
         "process": "^0.11.10",
         "vue": "^3.2.29",
-        "vue-cropper": "^1.0.2"
+        "vue-cropper": "^1.0.2",
+        "vue-flickity": "^1.2.1"
     }
 }

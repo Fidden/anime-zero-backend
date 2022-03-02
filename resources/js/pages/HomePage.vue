@@ -3,6 +3,15 @@
         <BaseHeader/>
         <main>
             <div class="main-poster-block">
+                <Flickity ref="flickity" :options="flickity.bestFilmSlider" class="flickity" v-if="best_films.length">
+                    <div class="carousel-cell" v-for="best in best_films" :key="best.id">
+                        <InertiaLink :href="route('film.show', best.id)"
+                                     as="img"
+                                     class="gallery-cell-img"
+                                     :src="best.poster"
+                                     :alt="best.title"/>
+                    </div>
+                </Flickity>
                 <div class="main-poster-info">
                     <div class="main-poster-section-title">
                         <h3>Anime Zero</h3>
@@ -35,6 +44,14 @@
                 </div>
                 <div class="films-block-body">
                     <FilmCard v-for="film in newest_films" :key="film.id" :item="film"/>
+                </div>
+                <div class="films-block-body mobile">
+                    <Flickity ref="flickity" :options="flickity.filmsSlider" class="flickity flickity-films"
+                              v-if="best_films.length">
+                        <div class="carousel-cell" v-for="film in newest_films" :key="film.id">
+                            <FilmCard :item="film"/>
+                        </div>
+                    </Flickity>
                 </div>
             </div>
             <div class="main-films-block main-films-block-big">
@@ -97,10 +114,11 @@
 <script>
 import FilmCard from "../components/FilmCard";
 import OngoingCard from "../components/OngoingCard";
+import Flickity from "vue-flickity";
 
 export default {
     name: "HomePage",
-    components: {OngoingCard, FilmCard},
+    components: {OngoingCard, FilmCard, Flickity},
     props: {
         best_films: Array,
         newest_films: Array,
@@ -109,6 +127,20 @@ export default {
     data() {
         return {
             selected_poster: -1,
+            flickity: {
+                bestFilmSlider: {
+                    initialIndex: 3,
+                    prevNextButtons: false,
+                    pageDots: false,
+                    wrapAround: true
+                },
+                filmsSlider: {
+                    initialIndex: 1,
+                    prevNextButtons: true,
+                    pageDots: false,
+                    wrapAround: true
+                }
+            }
         }
     },
     methods: {
@@ -354,6 +386,81 @@ export default {
 .selected-poster {
     border: 6px solid var(--main-color);
     transition: 0.5s;
+}
+
+@media (max-width: 550px) {
+    .main-poster-block {
+        flex-direction: column;
+    }
+
+    .main-poster-grid {
+        display: none;
+    }
+
+    .main-poster-info {
+        padding: 0 20px;
+    }
+
+    .flickity {
+        display: block;
+        width: 100%;
+        height: 150px;
+        margin: 10px 0 20px 0;
+    }
+
+    .flickity-films {
+        height: 290px;
+    }
+
+    .gallery-cell-img {
+        height: 150px;
+        width: 100px;
+    }
+
+    .carousel-cell {
+        margin-right: 18px;
+    }
+
+    .main-poster-info {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .main-films-block {
+        padding: 40px 20px;
+    }
+
+    .films-block-body {
+        display: none;
+    }
+
+    .films-block-body.mobile {
+        display: block;
+    }
+
+    .films-block-body.films-block-body-big {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(3, 1fr);
+        grid-template-areas:
+                            "first"
+                            "second"
+                            "third";
+    }
+
+
+    .films-block-head {
+        margin: 0 !important;
+        width: 100%;
+    }
+
+    .first-text-box p {
+        display: none;
+    }
+
+    .second-info, .third-info {
+        padding-right: 20px;
+    }
 }
 
 </style>

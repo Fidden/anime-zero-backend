@@ -1,5 +1,6 @@
 <template>
     <header>
+        <i class="far fa-bars fa-lg modal"></i>
         <InertiaLink as="h1" :href="route('home')">Anime<span>Zero</span></InertiaLink>
         <InertiaLink as="button" class="section">Каталог</InertiaLink>
         <InertiaLink as="button" class="section">Фильмы</InertiaLink>
@@ -32,6 +33,7 @@
             <i class="fal fa-user"></i> Личный кабинет
         </BaseButton>
         <BaseButton v-else @click="$root.openModal"><i class="fal fa-sign-out"></i>Вход</BaseButton>
+        <i class="far fa-lg fa-search"></i>
         <AuthModal/>
     </header>
 </template>
@@ -197,6 +199,20 @@ h1 span {
     top: 0;
     width: 100vw;
     height: 100vh;
+}
+
+@media (max-width: 550px) {
+    header {
+        padding: 10px 20px;
+    }
+
+    .section, .search-bar, header .ti-btn {
+        display: none;
+    }
+
+    h1 {
+        margin: 0 auto;
+    }
 }
 
 </style>

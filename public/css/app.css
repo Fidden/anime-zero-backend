@@ -380,6 +380,16 @@ img {
     height: 100%;
 }
 
+.modal {
+    display: none;
+}
+
+@media (max-width: 550px) {
+    .modal {
+        display: block;
+    }
+}
+
 @-webkit-keyframes ripple {
     0% {
         transform: translate(-100%, -100%);
