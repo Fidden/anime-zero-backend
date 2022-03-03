@@ -1,6 +1,6 @@
 <template>
     <header>
-        <i class="far fa-bars fa-lg modal"></i>
+        <MobileBurger/>
         <InertiaLink as="h1" :href="route('home')">Anime<span>Zero</span></InertiaLink>
         <InertiaLink as="button" class="section">Каталог</InertiaLink>
         <InertiaLink as="button" class="section">Фильмы</InertiaLink>
@@ -33,7 +33,7 @@
             <i class="fal fa-user"></i> Личный кабинет
         </BaseButton>
         <BaseButton v-else @click="$root.openModal"><i class="fal fa-sign-out"></i>Вход</BaseButton>
-        <i class="far fa-lg fa-search"></i>
+        <i class="far fa-lg fa-search mobile"></i>
         <AuthModal/>
     </header>
 </template>
@@ -42,11 +42,12 @@
 import AuthModal from "./AuthModal";
 import {computed} from "vue";
 import {usePage} from '@inertiajs/inertia-vue3';
+import MobileBurger from "./MobileBurger";
 
 
 export default {
     name: "BaseHeader",
-    components: {Notification, AuthModal},
+    components: {MobileBurger, Notification, AuthModal},
     setup() {
         const user = computed(() => usePage().props.value.user);
         return {user};
@@ -58,7 +59,7 @@ export default {
                 query: '',
                 response: [],
                 debounce_timer: null,
-            }
+            },
         }
     },
     methods: {

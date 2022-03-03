@@ -23,13 +23,19 @@
                         {{ item.description }}
                     </p>
                     <h2>О фильме</h2>
-                    <div class="film-page-description-grid">
-                        <h5>Год выпуска</h5>
-                        <h4>{{ item.year }}</h4>
-                        <h5>Жанры</h5>
-                        <h4>{{ getGenres }}</h4>
-                        <h5>Длительность</h5>
-                        <h4>{{ item.duration }} мин</h4>
+                    <div class="film-page-info-container">
+                        <div class="film-page-info-block" v-if="item.year">
+                            <h5>Год выпуска</h5>
+                            <h4>{{ item.year }}</h4>
+                        </div>
+                        <div class="film-page-info-block" v-if="item.duration">
+                            <h5>Длительность</h5>
+                            <h4>{{ item.duration }} мин</h4>
+                        </div>
+                        <div class="film-page-info-block" v-if="getGenres">
+                            <h5>Жанры</h5>
+                            <h4>{{ getGenres }}</h4>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -157,8 +163,9 @@ export default {
 
 .film-page-main-block h2 {
     font-weight: bold;
-    font-size: 24px;
+    font-size: 32px;
     margin-top: 30px;
+    margin-bottom: 10px;
 }
 
 .film-description {
@@ -167,22 +174,69 @@ export default {
     color: var(--gray);
 }
 
-.film-page-description-grid {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    grid-template-rows: repeat(2, 1fr);
+.film-page-info-container {
+    display: flex;
+    flex-direction: column;
 }
 
-.film-page-description-grid h5 {
+.film-page-info-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.film-page-info-block h5 {
+    width: 100%;
+    max-width: 170px;
+    font-size: 18px;
     margin: 0;
-    font-weight: 600;
-    font-size: 24px;
+    padding: 0;
 }
 
-.film-page-description-grid p {
-    font-weight: 500;
-    font-size: 24px;
-    color: #AFAFAF;
+.film-page-info-block h4 {
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    font-weight: 400;
+}
+
+@media (max-width: 550px) {
+    .film-page-container {
+        flex-direction: column;
+    }
+
+    .film-page-poster-block {
+        margin: 0 auto;
+    }
+
+    .film-page-main-block {
+        padding: 0 20px;
+    }
+
+    iframe {
+        max-height: 250px;
+    }
+
+    .film-page-main-block h3, .film-page-main-block h4 {
+        text-align: center;
+    }
+
+    .film-description {
+        font-size: 16px;
+    }
+
+    .film-page-info-block h5 {
+        font-size: 16px;
+        max-width: 145px;
+    }
+
+    .film-page-info-block h4 {
+        text-align: left;
+        font-size: 14px;
+    }
+
 }
 
 </style>

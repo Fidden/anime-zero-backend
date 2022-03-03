@@ -103,12 +103,12 @@ img {
     height: 100%;
 }
 
-.modal {
+.mobile {
     display: none;
 }
 
 @media (max-width: 550px) {
-    .modal {
+    .mobile {
         display: block;
     }
 }

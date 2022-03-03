@@ -414,5 +414,30 @@ input[type='file'] {
     display: none;
 }
 
+@media (max-width: 550px) {
+    main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-bar {
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .films-empty {
+        height: 40vh;
+    }
+
+    .films-container {
+        grid-template-rows: 190px;
+        grid-template-columns: repeat(2, 135px);
+    }
+
+    .profile-container {
+        padding: 0 20px;
+    }
+}
+
 
 </style>

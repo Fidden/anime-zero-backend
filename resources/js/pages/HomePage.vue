@@ -3,15 +3,6 @@
         <BaseHeader/>
         <main>
             <div class="main-poster-block">
-                <Flickity ref="flickity" :options="flickity.bestFilmSlider" class="flickity" v-if="best_films.length">
-                    <div class="carousel-cell" v-for="best in best_films" :key="best.id">
-                        <InertiaLink :href="route('film.show', best.id)"
-                                     as="img"
-                                     class="gallery-cell-img"
-                                     :src="best.poster"
-                                     :alt="best.title"/>
-                    </div>
-                </Flickity>
                 <div class="main-poster-info">
                     <div class="main-poster-section-title">
                         <h3>Anime Zero</h3>
@@ -23,6 +14,15 @@
                         <BaseButton @click="watchFilm"><i class="fal fa-play"></i>Перейти к просмотру</BaseButton>
                     </div>
                 </div>
+                <Flickity ref="flickity" :options="flickity.bestFilmSlider" class="flickity" v-if="best_films.length">
+                    <div class="carousel-cell" v-for="best in best_films" :key="best.id">
+                        <InertiaLink :href="route('film.show', best.id)"
+                                     as="img"
+                                     class="gallery-cell-img"
+                                     :src="best.poster"
+                                     :alt="best.title"/>
+                    </div>
+                </Flickity>
                 <div class="main-poster-grid">
                     <div class="image-block"
                          v-for="(best, index) in best_films"
@@ -48,7 +48,7 @@
                 <div class="films-block-body mobile">
                     <Flickity ref="flickity" :options="flickity.filmsSlider" class="flickity flickity-films"
                               v-if="best_films.length">
-                        <div class="carousel-cell" v-for="film in newest_films" :key="film.id">
+                        <div class="carousel-cell carousel-cell-films" v-for="film in newest_films" :key="film.id">
                             <FilmCard :item="film"/>
                         </div>
                     </Flickity>
@@ -97,14 +97,20 @@
             <div class="main-films-block">
                 <div class="films-block-head">
                     <div class="films-block-title">
-                        <i><img src="/img/ongoing.svg" alt="ongoing"></i>
+                        <i><img src="/img/ongoing-icon.svg" alt="ongoing"></i>
                         <h4>Скоро выйдет</h4>
                     </div>
                     <BaseButton>Показать все</BaseButton>
                 </div>
-                <div class="films-block-body ongoing-block">
+                <div class="films-block-body ongoing-block mobile">
                     <OngoingCard v-for="ongoing in ongoing_films" :key="ongoing.id" :item="ongoing"/>
                 </div>
+                <Flickity ref="flickity" :options="flickity.filmsSlider" class="flickity flickity-films"
+                          v-if="ongoing_films.length">
+                    <div class="carousel-cell carousel-cell-films" v-for="ongoing in ongoing_films" :key="ongoing.id">
+                        <FilmCard :item="ongoing"/>
+                    </div>
+                </Flickity>
             </div>
         </main>
         <BaseFooter/>
@@ -136,7 +142,7 @@ export default {
                 },
                 filmsSlider: {
                     initialIndex: 1,
-                    prevNextButtons: true,
+                    prevNextButtons: false,
                     pageDots: false,
                     wrapAround: true
                 }
@@ -412,13 +418,13 @@ export default {
         height: 290px;
     }
 
-    .gallery-cell-img {
-        height: 150px;
-        width: 100px;
+    .carousel-cell {
+        width: 120px;
+        margin-right: 18px;
     }
 
-    .carousel-cell {
-        margin-right: 18px;
+    .carousel-cell-films{
+        width: 180px;
     }
 
     .main-poster-info {
@@ -461,6 +467,23 @@ export default {
     .second-info, .third-info {
         padding-right: 20px;
     }
+
+    .first h3 {
+        font-size: 14px;
+    }
+
+    .ti-btn {
+        font-size: 12px;
+    }
+
+    .main-poster-section-title, .main-poster-buttons, .films-block-head .ti-btn {
+        display: none;
+    }
+
+    .ongoing-block {
+        display: none !important;
+    }
+
 }
 
 </style>

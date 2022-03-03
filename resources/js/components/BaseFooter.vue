@@ -1,7 +1,7 @@
 <template>
     <footer>
         <div class="footer-background"></div>
-        <div class="footer-block">
+        <div class="footer-block" id="sections">
             <h3>Разделы</h3>
             <ul>
                 <li><a href="#">Каталог</a></li>
@@ -117,6 +117,33 @@ footer {
 
 .footer-block .ti-btn {
     margin-top: 10px;
+}
+
+@media (max-width: 550px) {
+    footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px 0;
+    }
+
+    .footer-block {
+        margin-bottom: 30px;
+    }
+
+    .footer-block ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    #sections {
+        display: none;
+    }
+
+    .footer-social-block {
+        justify-content: center;
+    }
 }
 
 </style>
