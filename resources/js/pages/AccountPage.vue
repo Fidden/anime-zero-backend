@@ -432,6 +432,9 @@ input[type='file'] {
     .films-container {
         grid-template-rows: 190px;
         grid-template-columns: repeat(2, 135px);
+        grid-auto-flow: row;
+        justify-content: center;
+        margin-top: 40px;
     }
 
     .profile-container {

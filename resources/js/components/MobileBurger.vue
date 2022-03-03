@@ -5,10 +5,10 @@
             <InertiaLink as="button" class="section">Каталог</InertiaLink>
             <InertiaLink as="button" class="section">Фильмы</InertiaLink>
             <InertiaLink as="button" class="section">Сериалы</InertiaLink>
-            <BaseButton v-if="$page.user && $page.url == '/user'" @click="$inertia.visit(route('user.logout'))">
+            <BaseButton v-if="$page.props.user && $page.url == '/user'" @click="$inertia.visit(route('user.logout'))">
                 <i class="fal fa-sign-out"></i>Выход
             </BaseButton>
-            <BaseButton v-else-if="$page.user" @click="$inertia.visit(route('user.account'))">
+            <BaseButton v-else-if="$page.props.user" @click="$inertia.visit(route('user.account'))">
                 <i class="fal fa-user"></i> Личный кабинет
             </BaseButton>
             <BaseButton v-else @click="$root.openModal"><i class="fal fa-sign-out"></i>Вход</BaseButton>
