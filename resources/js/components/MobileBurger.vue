@@ -17,8 +17,11 @@
 </template>
 
 <script>
+import disableBodyScrollMixin from "../mixins/disableBodyScrollMixin";
+
 export default {
     name: "MobileBurger",
+    mixins: [disableBodyScrollMixin],
     data() {
         return {
             burger: {
@@ -27,36 +30,41 @@ export default {
         }
     },
     methods: {
-        openBurger() {
-            this.burger.open = true;
-        },
         closeBurger() {
             this.burger.open = false;
         },
         changeBurgerOpenState() {
             this.burger.open = !this.burger.open;
         }
+    },
+    watch: {
+        burger: {
+            deep: true,
+            handler(value) {
+                this.disableBodyScroll(value.open);
+            }
+        }
     }
 }
 </script>
 
 <style scoped>
-    .mobile-burger-container {
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        left: 0;
-        top: 50px;
-        background: var(--background);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-top: 50px;
-    }
+.mobile-burger-container {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 50px;
+    background: var(--background);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 50px;
+}
 
-    .section {
-        font-size: 20px;
-        margin-bottom: 10px;
-        background: none;
-    }
+.section {
+    font-size: 20px;
+    margin-bottom: 10px;
+    background: none;
+}
 </style>

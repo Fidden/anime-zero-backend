@@ -1,6 +1,7 @@
 <template>
     <header>
         <MobileBurger/>
+        <MobileSearch/>
         <InertiaLink as="h1" :href="route('home')">Anime<span>Zero</span></InertiaLink>
         <InertiaLink as="button" class="section">Каталог</InertiaLink>
         <InertiaLink as="button" class="section">Фильмы</InertiaLink>
@@ -33,7 +34,6 @@
             <i class="fal fa-user"></i> Личный кабинет
         </BaseButton>
         <BaseButton v-else @click="$root.openModal"><i class="fal fa-sign-out"></i>Вход</BaseButton>
-        <i class="far fa-lg fa-search mobile"></i>
         <AuthModal/>
     </header>
 </template>
@@ -43,52 +43,18 @@ import AuthModal from "./AuthModal";
 import {computed} from "vue";
 import {usePage} from '@inertiajs/inertia-vue3';
 import MobileBurger from "./MobileBurger";
+import MobileSearch from "./MobileSearch";
+import searchFilmMixin from "../mixins/searchFilmMixin";
 
 
 export default {
     name: "BaseHeader",
-    components: {MobileBurger, Notification, AuthModal},
+    mixins: [searchFilmMixin],
+    components: {MobileSearch, MobileBurger, Notification, AuthModal},
     setup() {
         const user = computed(() => usePage().props.value.user);
         return {user};
     },
-    data() {
-        return {
-            search: {
-                open: false,
-                query: '',
-                response: [],
-                debounce_timer: null,
-            },
-        }
-    },
-    methods: {
-        searchFilmDebounce() {
-            if (this.search.debounce_timer)
-                clearTimeout(this.search.debounce_timer);
-
-            this.search.debounce_timer = setTimeout(() => {
-                this.$axois.post(route('film.search'), {
-                    query: this.search.query
-                })
-                    .then(res => res.data)
-                    .then(data => this.search.response = data)
-                    .then(() => this.search.open = true);
-            }, 1500);
-        },
-        searchFilm() {
-            this.$axois.post(route('film.search'), {
-                query: this.search.query
-            })
-                .then(res => res.data)
-                .then(data => this.search.response = data)
-                .then(() => this.search.open = true);
-        },
-        closeSearchBar() {
-            this.search.open = false;
-            this.search.response = [];
-        }
-    }
 }
 </script>
 

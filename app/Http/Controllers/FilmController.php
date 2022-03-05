@@ -61,7 +61,7 @@ class FilmController extends Controller
     {
         $query = $request->input('query');
         return FilmResource::collection(Film::where('title', 'like', "%{$query}%")
-            ->orWhere('title_orig', 'like', "%{$query}%")->get());
+            ->orWhere('title_orig', 'like', "%{$query}%")->limit(6)->get());
     }
 
     /**

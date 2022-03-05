@@ -394,6 +394,10 @@ export default {
     transition: 0.5s;
 }
 
+.flickity {
+    display: none;
+}
+
 @media (max-width: 550px) {
     .main-poster-block {
         flex-direction: column;

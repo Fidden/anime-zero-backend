@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FilmController;
 use App\Http\Controllers\FilmParserController;
+use App\Http\Controllers\FilmSearchPageController;
 use App\Http\Controllers\HomePageController;
 use App\Http\Controllers\TrackedFilmController;
 use App\Http\Controllers\UserAvatarController;
@@ -27,6 +28,7 @@ Route::get('/parse', [FilmParserController::class, 'store']);
 
 Route::prefix('/film')->group(function () {
     Route::get('/{film}', [FilmController::class, 'show'])->name('film.show');
+    Route::get('/search/{query}', FilmSearchPageController::class)->name('film-page.search');
 });
 
 Route::prefix('/user')->group(function () {
