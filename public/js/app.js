@@ -28303,16 +28303,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
       return _ctx.search.query = $event;
     }),
-    onChange: _cache[2] || (_cache[2] = function () {
+    onInput: _cache[2] || (_cache[2] = function () {
       return _ctx.searchFilmDebounce && _ctx.searchFilmDebounce.apply(_ctx, arguments);
-    }),
-    onKeypress: _cache[3] || (_cache[3] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withKeys)(function () {
-      return _ctx.searchFilm && _ctx.searchFilm.apply(_ctx, arguments);
-    }, ["enter"]))
+    })
   }, null, 544
   /* HYDRATE_EVENTS, NEED_PATCH */
   ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, _ctx.search.query]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    onClick: _cache[4] || (_cache[4] = function () {
+    onClick: _cache[3] || (_cache[3] = function () {
       return _ctx.searchFilm && _ctx.searchFilm.apply(_ctx, arguments);
     })
   }, _hoisted_8), _ctx.search.open ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_9, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.search.response, function (film) {
@@ -28345,7 +28342,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* UNKEYED_FRAGMENT */
   ))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), $setup.user && _ctx.$page.url == '/user' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_BaseButton, {
     key: 0,
-    onClick: _cache[5] || (_cache[5] = function ($event) {
+    onClick: _cache[4] || (_cache[4] = function ($event) {
       return _ctx.$inertia.visit(_ctx.route('user.logout'));
     })
   }, {
@@ -28357,7 +28354,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   })) : $setup.user ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_BaseButton, {
     key: 1,
-    onClick: _cache[6] || (_cache[6] = function ($event) {
+    onClick: _cache[5] || (_cache[5] = function ($event) {
       return _ctx.$inertia.visit(_ctx.route('user.account'));
     })
   }, {
@@ -31216,7 +31213,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.film-search-container[data-v-29f63ed6] {\n    display: grid;\n    grid-template-rows: 1fr;\n    grid-template-columns: 1fr 1fr;\n    gap: 20px;\n    margin-top: 10px;\n}\nmain[data-v-29f63ed6] {\n    padding: 0 20px;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.film-search-container[data-v-29f63ed6] {\n    display: grid;\n    grid-template-rows: 1fr;\n    grid-template-columns: repeat(6, 1fr);\n    gap: 20px;\n    margin-top: 10px;\n}\nmain h2[data-v-29f63ed6] {\n    margin-top: 40px;\n}\n@media (max-width: 550px) {\nmain[data-v-29f63ed6] {\n        padding: 0 20px;\n}\n.film-search-container[data-v-29f63ed6] {\n        grid-template-columns: 1fr 1fr;\n}\n}\n\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

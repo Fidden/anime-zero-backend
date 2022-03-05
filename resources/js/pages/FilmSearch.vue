@@ -28,12 +28,24 @@ export default {
 .film-search-container {
     display: grid;
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(6, 1fr);
     gap: 20px;
     margin-top: 10px;
 }
 
-main {
-    padding: 0 20px;
+main h2 {
+    margin-top: 40px;
 }
+
+@media (max-width: 550px) {
+    main {
+        padding: 0 20px;
+    }
+
+    .film-search-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
 </style>

@@ -11,8 +11,7 @@
 
             <input type="text" placeholder="Популярные новинки"
                    v-model="search.query"
-                   @change="searchFilmDebounce"
-                   @keypress.enter="searchFilm">
+                   @input="searchFilmDebounce">
 
             <button @click="searchFilm"><i class="fas fa-search"></i></button>
 
