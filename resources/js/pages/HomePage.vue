@@ -1,119 +1,113 @@
 <template>
-    <div class="template">
-        <BaseHeader/>
-        <main>
-            <div class="main-poster-block">
-                <div class="main-poster-info">
-                    <div class="main-poster-section-title">
-                        <h3>Anime Zero</h3>
-                        <p>/ Каталог</p>
-                    </div>
-                    <h2 class="main-poster-title">Смотрите онлайн<br> фильмы на Anime<span>Zero</span></h2>
-                    <p class="main-poster-description">Смотрите фильмы в хорошем качестве<br> только у нас !</p>
-                    <div class="main-poster-buttons">
-                        <BaseButton @click="watchFilm"><i class="fal fa-play"></i>Перейти к просмотру</BaseButton>
-                    </div>
-                </div>
-                <Flickity ref="flickity" :options="flickity.bestFilmSlider" class="flickity" v-if="best_films.length">
-                    <div class="carousel-cell" v-for="best in best_films" :key="best.id">
-                        <InertiaLink :href="route('film.show', best.id)"
-                                     as="img"
-                                     class="gallery-cell-img"
-                                     :src="best.poster"
-                                     :alt="best.title"/>
-                    </div>
-                </Flickity>
-                <div class="main-poster-grid">
-                    <div class="image-block"
-                         v-for="(best, index) in best_films"
-                         :key="best.id"
-                         @click="selectPoster(index)"
-                         :class="{'selected-poster': index === selected_poster}">
+    <div class="main-poster-block">
+        <div class="main-poster-info">
+            <div class="main-poster-section-title">
+                <h3>Anime Zero</h3>
+                <p>/ Каталог</p>
+            </div>
+            <h2 class="main-poster-title">Смотрите онлайн<br> фильмы на Anime<span>Zero</span></h2>
+            <p class="main-poster-description">Смотрите фильмы в хорошем качестве<br> только у нас !</p>
+            <div class="main-poster-buttons">
+                <BaseButton @click="watchFilm"><i class="fal fa-play"></i>Перейти к просмотру</BaseButton>
+            </div>
+        </div>
+        <Flickity ref="flickity" :options="flickity.bestFilmSlider" class="flickity" v-if="best_films.length">
+            <div class="carousel-cell" v-for="best in best_films" :key="best.id">
+                <InertiaLink :href="route('film.show', best.id)"
+                             as="img"
+                             class="gallery-cell-img"
+                             :src="best.poster"
+                             :alt="best.title"/>
+            </div>
+        </Flickity>
+        <div class="main-poster-grid">
+            <div class="image-block"
+                 v-for="(best, index) in best_films"
+                 :key="best.id"
+                 @click="selectPoster(index)"
+                 :class="{'selected-poster': index === selected_poster}">
 
-                        <img :src="best.poster" :alt="best.title">
-                    </div>
-                </div>
+                <img :src="best.poster" :alt="best.title">
             </div>
-            <div class="main-films-block">
-                <div class="films-block-head">
-                    <div class="films-block-title">
-                        <i class="fal fa-chart-bar"></i>
-                        <h4>Новинки</h4>
-                    </div>
-                    <BaseButton>Показать все</BaseButton>
-                </div>
-                <div class="films-block-body">
-                    <FilmCard v-for="film in newest_films" :key="film.id" :item="film"/>
-                </div>
-                <div class="films-block-body mobile">
-                    <Flickity ref="flickity" :options="flickity.filmsSlider" class="flickity flickity-films"
-                              v-if="best_films.length">
-                        <div class="carousel-cell carousel-cell-films" v-for="film in newest_films" :key="film.id">
-                            <FilmCard :item="film"/>
-                        </div>
-                    </Flickity>
-                </div>
+        </div>
+    </div>
+    <div class="main-films-block">
+        <div class="films-block-head">
+            <div class="films-block-title">
+                <i class="fal fa-chart-bar"></i>
+                <h4>Новинки</h4>
             </div>
-            <div class="main-films-block main-films-block-big">
-                <div class="films-block-head">
-                    <div class="films-block-title">
-                        <i class="fal fa-star"></i>
-                        <h4>Мы рекомендуем</h4>
-                    </div>
-                    <BaseButton>Показать все</BaseButton>
+            <BaseButton>Показать все</BaseButton>
+        </div>
+        <div class="films-block-body">
+            <FilmCard v-for="film in newest_films" :key="film.id" :item="film"/>
+        </div>
+        <div class="films-block-body mobile">
+            <Flickity ref="flickity" :options="flickity.filmsSlider" class="flickity flickity-films"
+                      v-if="best_films.length">
+                <div class="carousel-cell carousel-cell-films" v-for="film in newest_films" :key="film.id">
+                    <FilmCard :item="film"/>
                 </div>
-                <div class="films-block-body films-block-body-big">
-                    <div class="first">
-                        <img src="/img/plaseholder-big-1.webp" alt="placeholder">
-                        <div class="first-text-box">
-                            <h3>Вайолет Эвергарден</h3>
-                            <p>Сотрудница почты Вайолет получает новое задание — отправиться в пансион благородных девиц
-                                и
-                                научить манерам богатую наследницу Изабеллу. Сначала та не горит желанием становиться
-                                настоящей леди, но постепенно сближается с Вайолет и даже просит помочь написать письмо
-                                младшей сестре Тейлор, с которой её недавно разлучили.</p>
-                        </div>
-                        <BaseButton>Смотреть</BaseButton>
-                    </div>
-                    <div class="second">
-                        <img src="/img/plaseholder-big-2.webp" alt="placeholder">
-                        <div class="second-info">
-                            <p class="second-info-title">Унесенные призраками</p>
-                            <p class="second-info-description">Тихиро должна придумать, как избавить своих родителей от
-                                чар коварной старухи.</p>
-                        </div>
+            </Flickity>
+        </div>
+    </div>
+    <div class="main-films-block main-films-block-big">
+        <div class="films-block-head">
+            <div class="films-block-title">
+                <i class="fal fa-star"></i>
+                <h4>Мы рекомендуем</h4>
+            </div>
+            <BaseButton>Показать все</BaseButton>
+        </div>
+        <div class="films-block-body films-block-body-big">
+            <div class="first">
+                <img src="/img/plaseholder-big-1.webp" alt="placeholder">
+                <div class="first-text-box">
+                    <h3>Вайолет Эвергарден</h3>
+                    <p>Сотрудница почты Вайолет получает новое задание — отправиться в пансион благородных девиц
+                        и
+                        научить манерам богатую наследницу Изабеллу. Сначала та не горит желанием становиться
+                        настоящей леди, но постепенно сближается с Вайолет и даже просит помочь написать письмо
+                        младшей сестре Тейлор, с которой её недавно разлучили.</p>
+                </div>
+                <BaseButton>Смотреть</BaseButton>
+            </div>
+            <div class="second">
+                <img src="/img/plaseholder-big-2.webp" alt="placeholder">
+                <div class="second-info">
+                    <p class="second-info-title">Унесенные призраками</p>
+                    <p class="second-info-description">Тихиро должна придумать, как избавить своих родителей от
+                        чар коварной старухи.</p>
+                </div>
 
-                    </div>
-                    <div class="third">
-                        <img src="/img/plaseholder-big-2.webp" alt="placeholder">
-                        <div class="third-info">
-                            <p class="third-info-title">Унесенные призраками</p>
-                            <p class="third-info-description">Тихиро должна придумать, как избавить своих родителей от
-                                чар коварной старухи.</p>
-                        </div>
-                    </div>
+            </div>
+            <div class="third">
+                <img src="/img/plaseholder-big-2.webp" alt="placeholder">
+                <div class="third-info">
+                    <p class="third-info-title">Унесенные призраками</p>
+                    <p class="third-info-description">Тихиро должна придумать, как избавить своих родителей от
+                        чар коварной старухи.</p>
                 </div>
             </div>
-            <div class="main-films-block">
-                <div class="films-block-head">
-                    <div class="films-block-title">
-                        <i><img src="/img/ongoing-icon.svg" alt="ongoing"></i>
-                        <h4>Скоро выйдет</h4>
-                    </div>
-                    <BaseButton>Показать все</BaseButton>
-                </div>
-                <div class="films-block-body ongoing-block mobile">
-                    <OngoingCard v-for="ongoing in ongoing_films" :key="ongoing.id" :item="ongoing"/>
-                </div>
-                <Flickity ref="flickity" :options="flickity.filmsSlider" class="flickity flickity-films"
-                          v-if="ongoing_films.length">
-                    <div class="carousel-cell carousel-cell-films" v-for="ongoing in ongoing_films" :key="ongoing.id">
-                        <FilmCard :item="ongoing"/>
-                    </div>
-                </Flickity>
+        </div>
+    </div>
+    <div class="main-films-block">
+        <div class="films-block-head">
+            <div class="films-block-title">
+                <i><img src="/img/ongoing-icon.svg" alt="ongoing"></i>
+                <h4>Скоро выйдет</h4>
             </div>
-        </main>
-        <BaseFooter/>
+            <BaseButton>Показать все</BaseButton>
+        </div>
+        <div class="films-block-body ongoing-block mobile">
+            <OngoingCard v-for="ongoing in ongoing_films" :key="ongoing.id" :item="ongoing"/>
+        </div>
+        <Flickity ref="flickity" :options="flickity.filmsSlider" class="flickity flickity-films"
+                  v-if="ongoing_films.length">
+            <div class="carousel-cell carousel-cell-films" v-for="ongoing in ongoing_films" :key="ongoing.id">
+                <FilmCard :item="ongoing"/>
+            </div>
+        </Flickity>
     </div>
 </template>
 
@@ -409,6 +403,7 @@ export default {
 
     .main-poster-info {
         padding: 0 20px;
+        margin-top: 20px;
     }
 
     .flickity {
@@ -427,7 +422,7 @@ export default {
         margin-right: 18px;
     }
 
-    .carousel-cell-films{
+    .carousel-cell-films {
         width: 180px;
     }
 
@@ -486,6 +481,14 @@ export default {
 
     .ongoing-block {
         display: none !important;
+    }
+
+    .main-poster-title {
+        margin-bottom: 5px;
+    }
+
+    .main-poster-description {
+        margin-bottom: 10px;
     }
 
 }

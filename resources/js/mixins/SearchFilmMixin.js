@@ -18,7 +18,7 @@ export default {
                 clearTimeout(this.search.debounce_timer);
             }
 
-            if (!this.search.query)
+            if (!this.search.query || this.search.query.trim().length <= 0)
                 return;
 
             this.search.debounce_timer = setTimeout(() => {

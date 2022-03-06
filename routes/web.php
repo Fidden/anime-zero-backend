@@ -7,6 +7,9 @@ use App\Http\Controllers\HomePageController;
 use App\Http\Controllers\TrackedFilmController;
 use App\Http\Controllers\UserAvatarController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserFilmTrackedController;
+use App\Http\Controllers\UserFilmWantToWatchController;
+use App\Http\Controllers\UserFilmWatchedController;
 use App\Http\Controllers\WantToWatchFilmController;
 use App\Http\Controllers\WatchedFilmController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -54,6 +57,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('/user')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('user.account');
+        Route::get('/watched', UserFilmWatchedController::class)->name('user.watched');
+        Route::get('/want-to-watch', UserFilmWantToWatchController::class)->name('user.want-to-watch');
+        Route::get('/tracked', UserFilmTrackedController::class)->name('user.tracked');
+
+
         Route::put('/', [UserController::class, 'update'])->name('user.update');
         Route::get('/logout', [UserController::class, 'logout'])->name('user.logout');
     });
@@ -62,7 +70,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/', [UserAvatarController::class, 'update'])->name('user-avatar.update');
     });
 });
-
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();

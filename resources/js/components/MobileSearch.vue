@@ -7,11 +7,13 @@
                 <i class="fal fa-lg fa-search"></i>
                 <input type="text" placeholder="Популярные новинки"
                        v-model="search.query"
-                       @input="searchFilmDebounce">
+                       @input="searchFilmDebounce"
+                       @keypress.enter="searchFilmDebounce">
             </div>
             <div class="mobile-search-response">
                 <LoadingAnimation v-if="search.loading" class="loading-animation"/>
-                <InertiaLink :href="route('film-page.search', search.query)" as="div" class="show-all-results" v-if="search.response.length">
+                <InertiaLink :href="route('film-page.search', search.query)" as="div" class="show-all-results"
+                             v-if="search.response.length">
                     <p>Посмотреть все результаты</p>
                     <i class="fas fa-chevron-right"></i>
                 </InertiaLink>
@@ -32,8 +34,8 @@
 </template>
 
 <script>
-import disableBodyScrollMixin from "../mixins/disableBodyScrollMixin";
-import searchFilmMixin from "../mixins/searchFilmMixin";
+import disableBodyScrollMixin from "../mixins/DisableBodyScrollMixin";
+import searchFilmMixin from "../mixins/SearchFilmMixin";
 import LoadingAnimation from "./LoadingAnimation";
 
 export default {

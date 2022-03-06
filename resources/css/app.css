@@ -107,9 +107,24 @@ img {
     display: none;
 }
 
+.account-container {
+    display: flex;
+    flex-direction: row;
+    margin-top: 40px;
+    width: 100%;
+}
+
 @media (max-width: 550px) {
     .mobile {
         display: block;
+    }
+
+    .account-container {
+        flex-direction: column;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
     }
 }
 

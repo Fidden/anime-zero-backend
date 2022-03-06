@@ -29,7 +29,13 @@ class UserLoginRequest extends FormRequest
     {
         return [
             'login' => 'required|string|max:32',
+            'email' => 'required|email',
             'password' => 'required|string|max:32',
         ];
+    }
+
+    public function prepareForValidation()
+    {
+        $this->merge(['email' => $this->login]);
     }
 }

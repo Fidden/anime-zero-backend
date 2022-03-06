@@ -17,19 +17,12 @@ use Inertia\Inertia;
 
 class UserController extends Controller
 {
-    public function index()
+    /**
+     * @return \Inertia\Response
+     */
+    public function index(): \Inertia\Response
     {
-        $user = auth()->user();
-        return Inertia::render('AccountPage', [
-            'films' => [
-                'watched' => FilmResource::collection(
-                    Film::whereIn('id', WatchedFilm::where('user_id', $user->id)->pluck('film_id'))->paginate(10)),
-                'want_to_watch' => FilmResource::collection(
-                    Film::whereIn('id', WantToWatchFilm::where('user_id', $user->id)->pluck('film_id'))->paginate(10)),
-                'tracked' => FilmResource::collection(
-                    Film::whereIn('id', TrackedFilm::where('user_id', $user->id)->pluck('film_id'))->paginate(10)),
-            ]
-        ]);
+        return Inertia::render('AccountPage');
     }
 
     /**
@@ -55,7 +48,9 @@ class UserController extends Controller
      */
     public function login(UserLoginRequest $request): \Illuminate\Http\RedirectResponse
     {
-        if (auth()->attempt($request->validated())) {
+        if (auth()->attempt($request->only('login', 'password')) ||
+            auth()->attempt($request->only('email', 'password')))
+        {
             $request->session()->regenerate();
             return redirect()->route('user.account');
         }

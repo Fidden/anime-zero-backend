@@ -1,8 +1,9 @@
+import Layout from "./Layout";
+
 require('./bootstrap');
 // Components
-import BaseHeader from "./components/BaseHeader";
 import BaseButton from "./components/BaseButton";
-import BaseFooter from "./components/BaseFooter";
+
 
 // Packets
 import {createApp, getCurrentInstance, h} from 'vue';
@@ -15,21 +16,24 @@ import 'vue-cropper/dist/index.css';
 import VueCropper from "vue-cropper";
 
 //Mixins
-import modalWindowMixin from "./mixins/modalWindowMixin";
-import notificationMixin from "./mixins/notificationMixin";
+import modalWindowMixin from "./mixins/ModalWindowMixin";
+import notificationMixin from "./mixins/NotificationMixin";
 
 createInertiaApp({
-    resolve: name => require(`./pages/${name}`),
+    resolve: name => {
+        const page = require(`./pages/${name}`).default;
+        page.layout = page.layout || Layout;
+        return page;
+    },
     setup({el, App, props, plugin}) {
         const app = createApp({
             render: () => h(App, props),
             mixins: [modalWindowMixin, notificationMixin],
         });
 
-        app.component('BaseHeader', BaseHeader)
-        app.component('BaseFooter', BaseFooter)
         app.component('BaseButton', BaseButton)
         app.component('InertiaLink', InertiaLink)
+
         app.use(plugin)
         app.use(VueCropper)
         app.use(ZiggyVue, Ziggy)

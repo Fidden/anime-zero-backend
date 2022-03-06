@@ -16,6 +16,7 @@
             <button @click="searchFilm"><i class="fas fa-search"></i></button>
 
             <div class="search-bar-body" v-if="search.open">
+                <LoadingAnimation class="loading-animation"/>
                 <InertiaLink :href="route('film.show', film.id)" as="div" class="search-bar-item"
                              v-for="film in search.response">
 
@@ -43,13 +44,13 @@ import {computed} from "vue";
 import {usePage} from '@inertiajs/inertia-vue3';
 import MobileBurger from "./MobileBurger";
 import MobileSearch from "./MobileSearch";
-import searchFilmMixin from "../mixins/searchFilmMixin";
-
+import searchFilmMixin from "../mixins/SearchFilmMixin";
+import LoadingAnimation from '../components/LoadingAnimation';
 
 export default {
-    name: "BaseHeader",
+    name: "TheHeader",
     mixins: [searchFilmMixin],
-    components: {MobileSearch, MobileBurger, Notification, AuthModal},
+    components: {MobileSearch, MobileBurger, Notification, AuthModal, LoadingAnimation},
     setup() {
         const user = computed(() => usePage().props.value.user);
         return {user};
@@ -165,6 +166,11 @@ h1 span {
     top: 0;
     width: 100vw;
     height: 100vh;
+}
+
+
+.loading-animation {
+    margin: 0 auto;
 }
 
 @media (max-width: 550px) {

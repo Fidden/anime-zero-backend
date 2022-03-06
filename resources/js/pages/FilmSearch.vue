@@ -1,14 +1,7 @@
 <template>
-    <div class="template">
-        <BaseHeader/>
-        <main>
-            <h2>Результаты поиска</h2>
-            <div class="film-search-container">
-                <FilmCard v-for="film in films.data" :key="film.id" :item="film"/>
-            </div>
-
-        </main>
-        <BaseFooter/>
+    <h2>Результаты поиска</h2>
+    <div class="film-search-container">
+        <FilmCard v-for="film in films.data" :key="film.id" :item="film"/>
     </div>
 </template>
 

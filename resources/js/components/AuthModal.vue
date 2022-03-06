@@ -4,7 +4,7 @@
             <div class="modal-window">
                 <i class="fal fa-times fa-lg" @click="$root.closeModal"></i>
                 <img src="/img/modal.svg" alt="modal">
-                <h2>Hola!</h2>
+                <h2 class="modal-window-title">Hola!</h2>
                 <div class="modal-window-body" v-if="modal.state === modal.enum.LOGIN">
                     <h3>Войдите, что бы получить доступ к дополнительным возможностям</h3>
                     <ul class="validation-errors">
@@ -35,7 +35,7 @@
                         <input type="password" placeholder="Пароль" v-model="register_form.password">
                         <input type="password" placeholder="Повтор пароля" v-model="register_form.password_repeat"
                                class="last-input">
-                        <BaseButton>Зарегистрироваться</BaseButton>
+                        <BaseButton class="register-button">Зарегистрироваться</BaseButton>
                     </form>
                     <div class="modal-window-additional">
                         <p @click="$root.setModalState(modal.enum.LOGIN)">Авторизация</p>
@@ -57,7 +57,7 @@
 <script>
 import {useForm} from "@inertiajs/inertia-vue3";
 import BaseButton from "./BaseButton";
-import modalWindowMixin from "../mixins/modalWindowMixin";
+import modalWindowMixin from "../mixins/ModalWindowMixin";
 
 export default {
     name: "AuthModal",
@@ -149,9 +149,9 @@ export default {
 }
 
 
-.modal-window h2 {
+.modal-window-title {
     text-align: center;
-    margin-top: 35px;
+    margin: 17px 0 13px 0;
 }
 
 .modal-window-body {
@@ -251,6 +251,10 @@ input[type='checkbox'] {
 .ok-btn {
     width: 100%;
     margin-top: 20px;
+}
+
+.register-button {
+    margin-top: 10px;
 }
 
 </style>

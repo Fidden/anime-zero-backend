@@ -36,7 +36,7 @@
 import BaseButton from "./BaseButton";
 
 export default {
-    name: "BaseFooter",
+    name: "TheFooter",
     components: {BaseButton}
 }
 </script>
