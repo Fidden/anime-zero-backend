@@ -4,7 +4,7 @@
             <img :src="item.poster" :alt="item.title">
             <BaseButton><i class="fal fa-play"></i>Смотреть</BaseButton>
         </div>
-        <p class="film-card-title">{{ item.title }}</p>
+        <p class="film-card-title">{{ ItemTitle }}</p>
         <p class="film-card-info">{{ item.year }} {{ item.genres[0].name }}</p>
         <div class="film-card-rating" v-if="item.rating">
             {{ item.rating }}
@@ -17,6 +17,12 @@ export default {
     name: "FilmCard",
     props: {
         item: Object
+    },
+    computed: {
+        ItemTitle() {
+            let sliced = this.item.title.toString().slice(0, 30);
+            return this.item.title.length > 30 ? `${sliced}...` : sliced;
+        }
     }
 }
 </script>

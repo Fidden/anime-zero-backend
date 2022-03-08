@@ -19,6 +19,9 @@ import VueCropper from "vue-cropper";
 import modalWindowMixin from "./mixins/ModalWindowMixin";
 import notificationMixin from "./mixins/NotificationMixin";
 
+//Directives
+import ClickOutside from "./directives/ClickOutside";
+
 createInertiaApp({
     resolve: name => {
         const page = require(`./pages/${name}`).default;
@@ -30,6 +33,8 @@ createInertiaApp({
             render: () => h(App, props),
             mixins: [modalWindowMixin, notificationMixin],
         });
+
+        app.directive('click-outside', ClickOutside)
 
         app.component('BaseButton', BaseButton)
         app.component('InertiaLink', InertiaLink)

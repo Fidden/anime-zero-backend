@@ -4,11 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-/**
- * @property string $login
- * @property string $password
- */
-class UserLoginRequest extends FormRequest
+class FilmsPageIndexRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,13 +24,13 @@ class UserLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'login' => 'required|string|max:32',
-            'password' => 'required|string|max:32',
+            'genres' => 'string'
         ];
     }
 
     public function passedValidation()
     {
-        $this->merge(['email' => $this->login]);
+        if ($this->has('genres'))
+            $this->replace(['genres' => str($this->genres)->explode(',')]);
     }
 }

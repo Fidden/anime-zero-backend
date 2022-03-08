@@ -4,7 +4,7 @@
         <MobileSearch/>
         <InertiaLink as="h1" :href="route('home')">Anime<span>Zero</span></InertiaLink>
         <InertiaLink as="button" class="section">Каталог</InertiaLink>
-        <InertiaLink as="button" class="section">Фильмы</InertiaLink>
+        <InertiaLink as="button" :href="route('films')" class="section">Фильмы</InertiaLink>
         <InertiaLink as="button" class="section">Сериалы</InertiaLink>
         <div class="search-bar">
             <div class="search-bar-background" v-if="search.open" @click.self="closeSearchBar"></div>
@@ -16,9 +16,12 @@
             <button @click="searchFilm"><i class="fas fa-search"></i></button>
 
             <div class="search-bar-body" v-if="search.open">
-                <LoadingAnimation class="loading-animation"/>
-                <InertiaLink :href="route('film.show', film.id)" as="div" class="search-bar-item"
-                             v-for="film in search.response">
+                <LoadingAnimation class="loading-animation" v-if="search.loading"/>
+                <InertiaLink class="search-bar-item"
+                             :href="route('film.show', film.id)"
+                             as="div"
+                             v-for="film in search.response"
+                             v-else>
 
                     <img :src="film.poster" :alt="film.title">
                     <p>{{ film.title }} <span v-if="film.year">({{ film.year }})</span><br>

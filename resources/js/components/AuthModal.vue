@@ -79,7 +79,11 @@ export default {
     },
     methods: {
         loginUser() {
-            this.auth_form.post(route('user.login'));
+            this.auth_form.post(route('user.login'), {
+                onSuccess: () => {
+                    this.$root.closeModal();
+                }
+            });
         },
         registerUser() {
             this.register_form.post(route('user.store'),

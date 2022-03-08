@@ -2,11 +2,11 @@
     <div class="pagination" v-if="meta.last_page > 1">
         <InertiaLink
             class="pagination-block"
-            v-for="(link, index) in meta.links" :key="index"
+            v-for="link in meta.links" :key="link.label"
             :href="link.url">
 
-            <i class="fas fa-chevron-left" v-if="link.label === '&laquo; Previous'"></i>
-            <i class="fas fa-chevron-right" v-else-if="link.label === 'Next &raquo;'"></i>
+            <i class="fas fa-chevron-left" v-if="link.label === 'prev'"></i>
+            <i class="fas fa-chevron-right" v-else-if="link.label === 'next'"></i>
             <span v-else :class="{'active': link.active}">{{ link.label }}</span>
         </InertiaLink>
     </div>
@@ -30,16 +30,19 @@ export default {
     padding: 6px 0;
     border-radius: 8px;
     font-size: 14px;
+    margin-left: auto;
 }
 
 .pagination-block {
     margin: 0 10px;
+    text-decoration: none;
 }
 
 .pagination-block span {
     text-align: center;
-    font-size: 18px;
+    font-size: 16px;
     color: #B4B4B4;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .active {
