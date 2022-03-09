@@ -234,6 +234,10 @@ export default {
         font-size: 14px;
     }
 
+    .film-page-main-block h3 {
+        line-height: 35px;
+        margin-bottom: 10px;
+    }
 }
 
 </style>

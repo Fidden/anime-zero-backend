@@ -1,5 +1,5 @@
 <template>
-    <header>
+    <header class="header">
         <MobileBurger/>
         <MobileSearch/>
         <InertiaLink as="h1" :href="route('home')">Anime<span>Zero</span></InertiaLink>
@@ -63,7 +63,7 @@ export default {
 
 <style scoped>
 
-header {
+.header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -71,6 +71,8 @@ header {
     height: 55px;
     z-index: 50;
     background: var(--background);
+    margin-top: 5px;
+    position: relative;
 }
 
 h1 {

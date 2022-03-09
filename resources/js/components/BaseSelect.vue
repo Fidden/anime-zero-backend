@@ -45,7 +45,7 @@ export default {
             this.$emit('change', this.selected);
         },
         RemoveItem(option) {
-            this.selected.splice(this.selected.findIndex(item => item.id === option.id))
+            this.selected = this.selected.filter(item => item.id !== option.id);
         },
         IsSelected(option) {
             return this.selected.findIndex(item => item.id === option.id) !== -1;

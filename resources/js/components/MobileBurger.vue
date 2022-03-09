@@ -3,8 +3,8 @@
         <i class="far fa-bars fa-lg mobile" @click="changeBurgerOpenState"></i>
         <div class="mobile-burger-container" v-show="burger.open">
             <InertiaLink as="button" class="section">Каталог</InertiaLink>
-            <InertiaLink as="button" :href="route('films')" class="section">Фильмы</InertiaLink>
-            <InertiaLink as="button" class="section">Сериалы</InertiaLink>
+            <InertiaLink as="button" class="section">Фильмы</InertiaLink>
+            <InertiaLink as="button" :href="route('serials')" class="section">Сериалы</InertiaLink>
 
             <BaseButton v-if="$page.props.user && $page.url === '/user'"
                         @click="$inertia.visit(route('user.logout'))">
