@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\FilmParseJob;
+use App\Jobs\ParseJob;
 use App\Models\Film;
 use App\Models\FilmGenre;
 use App\Models\Genre;
@@ -14,6 +14,6 @@ class FilmParserController extends Controller
 {
     public function store()
     {
-        FilmParseJob::dispatch();
+        ParseJob::dispatch();
     }
 }

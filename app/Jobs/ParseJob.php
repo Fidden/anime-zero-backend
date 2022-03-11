@@ -14,19 +14,21 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 
-class FilmParseJob implements ShouldQueue
+class ParseJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private string $kodik_token, $cdn_token;
+    private int $type;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(int $type = 0)
     {
+        $this->type = $type;
         $this->kodik_token = 'ac8c072e62855540ec492698e2c1c326';
         $this->cdn_token = 'uKsTcuM4vCJBMVYb7ysJwnfyhmtBJ9p0';
     }
@@ -38,9 +40,11 @@ class FilmParseJob implements ShouldQueue
      */
     public function handle()
     {
-        ini_set('max_execution_time', 9999999999);
+        ini_set('max_execution_time', 9999999);
 
-        $request = $this->request("https://videocdn.tv/api/anime-tv-series?api_token={$this->cdn_token}");
+        $request = $this->type == 0 ?
+            $this->request("https://videocdn.tv/api/anime-tv-series?api_token={$this->cdn_token}")
+            : $this->request("https://videocdn.tv/api/animes?api_token={$this->cdn_token}");
 
         while ($request['next_page_url']) {
             foreach ($request['data'] as $result) {
@@ -50,7 +54,7 @@ class FilmParseJob implements ShouldQueue
                     continue;
 
                 $film_status = Status::firstOrCreate([
-                    'name' => $this->getProperty($kodik_data['material_data'], 'all_status', 1)
+                    'name' => $this->getFilmStatusName($kodik_data),
                 ]);
 
                 $film = Film::firstOrCreate([
@@ -68,7 +72,7 @@ class FilmParseJob implements ShouldQueue
                     'rating' => $this->getRating($kodik_data),
                     'minimal_age' => $this->getProperty($kodik_data['material_data'], 'minimal_age'),
                     'status_id' => $film_status->id,
-                    'content_type_id' => 2,
+                    'content_type_id' => $this->type == 0 ? 2 : 1,
                 ]);
 
                 if (!$this->getProperty($kodik_data['material_data'], 'anime_genres'))
@@ -136,7 +140,7 @@ class FilmParseJob implements ShouldQueue
     {
         try {
             if (Arr::exists($result, 'kinopoisk_id'))
-            $kinopoisk_data = $this->request("https://kodikapi.com/search?token={$this->kodik_token}&with_material_data=true&kinopoisk_id={$result['kinopoisk_id']}");
+                $kinopoisk_data = $this->request("https://kodikapi.com/search?token={$this->kodik_token}&with_material_data=true&kinopoisk_id={$result['kinopoisk_id']}");
 
             if (Arr::exists($result, 'imdb_id'))
                 $imdb_data = $this->request("https://kodikapi.com/search?token={$this->kodik_token}&with_material_data=true&imdb_id={$result['imdb_id']}");
@@ -173,5 +177,16 @@ class FilmParseJob implements ShouldQueue
         else if ($this->getProperty($result['material_data'], 'mydramalist_rating'))
             return $result['material_data']['mydramalist_rating'];
         return 0;
+    }
+
+    public function getFilmStatusName(array $kodik_data)
+    {
+        $status = $this->getProperty($kodik_data['material_data'], 'all_status', 'Без статуса');
+        return match ($status) {
+            'ongoing' => 'Онгоинг',
+            'released' => 'Вышел',
+            'anons' => 'Анонсирован',
+            default => $status,
+        };
     }
 }

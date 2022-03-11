@@ -1,53 +1,101 @@
 <template>
-    <div class="film-page-container">
-        <div class="film-page-poster-block">
-            <img :src="item.poster" :alt="item.title">
-            <div class="film-actions" v-if="$page.props.user">
-                <button v-if="is_wanted_watch" @click="removeWantWatch"><i class="fal fa-minus"></i>Не буду
-                    смотреть
-                </button>
-                <button v-else @click="addWantWatch"><i class="fal fa-plus"></i>Буду смотреть</button>
-                <i v-if="is_watched" @click="removeWatched" class="fal fa-check"></i>
-                <i v-else @click="addWatched" class="fas fa-eye"></i>
-            </div>
-        </div>
-        <div class="film-page-main-block">
-            <h3>{{ item.title }}</h3>
-            <h4>{{ item.title_orig }}</h4>
-            <iframe class="film-iframe" :src="item.player_link" frameborder="0" allowfullscreen></iframe>
-            <h2 v-if="item.description">Описание</h2>
-            <p class="film-description" v-if="item.description">
-                {{ item.description }}
-            </p>
-            <h2>О фильме</h2>
-            <div class="film-page-info-container">
-                <div class="film-page-info-block" v-if="item.year">
-                    <h5>Год выпуска</h5>
-                    <h4>{{ item.year }}</h4>
-                </div>
-                <div class="film-page-info-block" v-if="item.duration">
-                    <h5>Длительность</h5>
-                    <h4>{{ item.duration }} мин</h4>
-                </div>
-                <div class="film-page-info-block" v-if="getGenres">
-                    <h5>Жанры</h5>
-                    <h4>{{ getGenres }}</h4>
-                </div>
-            </div>
-        </div>
+  <div class="film-page-container">
+    <div class="film-page-poster-block">
+      <img
+        :src="item.poster"
+        :alt="item.title"
+      >
+      <div
+        v-if="$page.props.user"
+        class="film-actions"
+      >
+        <button
+          v-if="isWantedWatch"
+          @click="removeWantWatch"
+        >
+          <i class="fal fa-minus" />Не буду
+          смотреть
+        </button>
+        <button
+          v-else
+          @click="addWantWatch"
+        >
+          <i class="fal fa-plus" />Буду смотреть
+        </button>
+        <i
+          v-if="isWatched"
+          class="fal fa-check"
+          @click="removeWatched"
+        />
+        <i
+          v-else
+          class="fas fa-eye"
+          @click="addWatched"
+        />
+      </div>
     </div>
+    <div class="film-page-main-block">
+      <h3>{{ item.title }}</h3>
+      <h4>{{ item.title_orig }}</h4>
+      <iframe
+        class="film-iframe"
+        :src="item.player_link"
+        frameborder="0"
+        allowfullscreen
+      />
+      <h2 v-if="item.description">
+        Описание
+      </h2>
+      <p
+        v-if="item.description"
+        class="film-description"
+      >
+        {{ item.description }}
+      </p>
+      <h2>О фильме</h2>
+      <div class="film-page-info-container">
+        <div
+          v-if="item.year"
+          class="film-page-info-block"
+        >
+          <h5>Год выпуска</h5>
+          <h4>{{ item.year }}</h4>
+        </div>
+        <div
+          v-if="item.duration"
+          class="film-page-info-block"
+        >
+          <h5>Длительность</h5>
+          <h4>{{ item.duration }} мин</h4>
+        </div>
+        <div
+          v-if="getGenres"
+          class="film-page-info-block"
+        >
+          <h5>Жанры</h5>
+          <h4>{{ getGenres }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import Layout from "../Layout";
-
 export default {
-    name: "FilmPage",
-    components: {Layout},
+    name: 'FilmPage',
     props: {
-        item: Object,
-        is_wanted_watch: Boolean,
-        is_watched: Boolean,
+        item: {
+            type: Object,
+            required: true,
+        },
+        isWantedWatch: {
+            type: Boolean,
+            default: false
+        },
+        isWatched: {
+            type: Boolean,
+            default: false
+        },
     },
     computed: {
         getGenres() {
@@ -60,23 +108,23 @@ export default {
     },
     methods: {
         addWantWatch() {
-            this.$inertia.post(route('want-to-watch-film.store'), {
+            this.$inertia.post(this.route('want-to-watch-film.store'), {
                 film_id: this.item.id,
             });
         },
         removeWantWatch() {
-            this.$inertia.delete(route('want-to-watch-film.destroy', this.item.id))
+            this.$inertia.delete(this.route('want-to-watch-film.destroy', this.item.id));
         },
         removeWatched() {
-            this.$inertia.delete(route('watched-film.destroy', this.item.id));
+            this.$inertia.delete(this.route('watched-film.destroy', this.item.id));
         },
         addWatched() {
-            this.$inertia.post(route('watched-film.store'), {
+            this.$inertia.post(this.route('watched-film.store'), {
                 film_id: this.item.id,
             });
         }
     }
-}
+};
 </script>
 
 <style scoped>

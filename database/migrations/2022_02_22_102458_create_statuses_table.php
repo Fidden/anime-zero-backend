@@ -20,7 +20,7 @@ return new class extends Migration
         });
 
         DB::table('statuses')->insert([
-            'name' => 'Unknown'
+            'name' => 'unknown'
         ]);
     }
 

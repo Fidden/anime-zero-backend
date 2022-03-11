@@ -1,33 +1,69 @@
 <template>
-    <div class="select" v-click-outside="Close">
-        <div class="select-head" @click="SwitchOpenState">
-            <p class="select-head-title">{{ title }}</p>
-            <i class="fal fa-chevron-down"></i>
-        </div>
-        <div class="select-body" v-if="open">
-            <div class="select-item"
-                 :class="{'active': IsSelected(option)}"
-                 v-for="option in options"
-                 :key="option.id"
-                 @click="PushItem(option)">
-                {{ option.name }}
-            </div>
-        </div>
+  <div
+    v-click-outside="Close"
+    class="select"
+  >
+    <div
+      class="select-head"
+      @click="SwitchOpenState"
+    >
+      <p class="select-head-title">
+        {{ title }}
+      </p>
+      <i
+        class="fal fa-chevron-down"
+        :class="{'open': open}"
+      />
     </div>
+    <div
+      v-if="open"
+      class="select-body"
+    >
+      <div
+        v-for="option in options"
+        :key="option.id"
+        class="select-item"
+        :class="{'active': IsSelected(option)}"
+        @click="PushItem(option)"
+      >
+        {{ option.name }}
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
-    name: "BaseSelect",
+    name: 'BaseSelect',
     props: {
-        title: String,
-        options: Array,
+        title: {
+            type: String,
+            required: true,
+        },
+        options: {
+            type: Array,
+            required: true,
+        },
+        single: {
+            type: Boolean,
+            default: false,
+        },
+        backup: {
+            type: Array,
+            required: true,
+        },
     },
+    emits: ['change'],
     data() {
         return {
             open: false,
             selected: [],
-        }
+        };
+    },
+    watch: {
+        backup() {
+            this.selected = this.backup;
+        },
     },
     methods: {
         Close() {
@@ -39,19 +75,23 @@ export default {
         PushItem(option) {
             if (this.IsSelected(option))
                 this.RemoveItem(option);
-            else
-                this.selected.push(option);
+            else {
+                if (this.single)
+                    this.selected = [option.name];
+                else
+                    this.selected.push(option.name);
+            }
 
             this.$emit('change', this.selected);
         },
         RemoveItem(option) {
-            this.selected = this.selected.filter(item => item.id !== option.id);
+            this.selected = this.selected.filter(item => item !== option.name);
         },
         IsSelected(option) {
-            return this.selected.findIndex(item => item.id === option.id) !== -1;
+            return this.selected.findIndex(item => item === option.name) !== -1;
         }
     }
-}
+};
 </script>
 
 <style scoped>
@@ -103,5 +143,13 @@ export default {
     padding: 0 14px;
     cursor: pointer;
     margin-bottom: 14px;
+}
+
+.fa-chevron-down {
+    transition: 0.5s;
+}
+
+.open {
+    transform: rotate(180deg);
 }
 </style>

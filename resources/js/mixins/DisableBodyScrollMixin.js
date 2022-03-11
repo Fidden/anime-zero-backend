@@ -1,7 +1,7 @@
 export default {
-    methods: {
-        disableBodyScroll(value) {
-            document.body.style.overflowY = value ? 'hidden' : 'visible';
-        }
-    }
-}
+	methods: {
+		disableBodyScroll(value) {
+			document.body.style.overflowY = value ? 'hidden' : 'visible';
+		}
+	}
+};

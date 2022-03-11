@@ -1,26 +1,26 @@
-import Layout from "./Layout";
+import Layout from './TheLayout';
 
 require('./bootstrap');
 // Components
-import BaseButton from "./components/BaseButton";
+import BaseButton from './components/BaseButton';
 
 
 // Packets
-import {createApp, getCurrentInstance, h} from 'vue';
+import {createApp, h} from 'vue';
 import {createInertiaApp} from '@inertiajs/inertia-vue3';
-import {InertiaLink} from "@inertiajs/inertia-vue3/src";
+import {InertiaLink} from '@inertiajs/inertia-vue3/src';
 import {ZiggyVue} from '../../vendor/tightenco/ziggy/dist/vue';
 import {Ziggy} from 'ziggy';
-import axios from "axios";
+import axios from 'axios';
 import 'vue-cropper/dist/index.css';
-import VueCropper from "vue-cropper";
+import VueCropper from 'vue-cropper';
 
 //Mixins
-import modalWindowMixin from "./mixins/ModalWindowMixin";
-import notificationMixin from "./mixins/NotificationMixin";
+import modalWindowMixin from './mixins/ModalWindowMixin';
+import notificationMixin from './mixins/NotificationMixin';
 
 //Directives
-import ClickOutside from "./directives/ClickOutside";
+import ClickOutside from './directives/ClickOutside';
 
 createInertiaApp({
     resolve: name => {
@@ -30,20 +30,20 @@ createInertiaApp({
     },
     setup({el, App, props, plugin}) {
         const app = createApp({
-            render: () => h(App, props),
             mixins: [modalWindowMixin, notificationMixin],
+            render: () => h(App, props),
         });
 
-        app.directive('click-outside', ClickOutside)
+        app.directive('click-outside', ClickOutside);
 
-        app.component('BaseButton', BaseButton)
-        app.component('InertiaLink', InertiaLink)
+        app.component('BaseButton', BaseButton);
+        app.component('InertiaLink', InertiaLink);
 
-        app.use(plugin)
-        app.use(VueCropper)
-        app.use(ZiggyVue, Ziggy)
+        app.use(plugin);
+        app.use(VueCropper);
+        app.use(ZiggyVue, Ziggy);
         app.mount(el);
 
         app.config.globalProperties.$axois = axios;
     },
-})
+});

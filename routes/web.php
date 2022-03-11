@@ -5,7 +5,6 @@ use App\Http\Controllers\FilmParserController;
 use App\Http\Controllers\FilmSearchPageController;
 use App\Http\Controllers\FilmsPageController;
 use App\Http\Controllers\HomePageController;
-use App\Http\Controllers\SerialsPageController;
 use App\Http\Controllers\TrackedFilmController;
 use App\Http\Controllers\UserAvatarController;
 use App\Http\Controllers\UserController;
@@ -30,7 +29,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomePageController::class)->name('home');
 Route::get('/films', FilmsPageController::class)->name('films');
-Route::get('/serials', SerialsPageController::class)->name('serials');
 Route::get('/parse', [FilmParserController::class, 'store']);
 
 Route::prefix('/film')->group(function () {

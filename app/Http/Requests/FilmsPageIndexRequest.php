@@ -4,6 +4,11 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @property string $genres
+ * @property string $statuses
+ * @property string $type
+ */
 class FilmsPageIndexRequest extends FormRequest
 {
     /**
@@ -24,13 +29,25 @@ class FilmsPageIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'genres' => 'string'
+            'genres' => 'string',
+            'statuses' => 'string',
+            'type' => 'string',
         ];
     }
 
     public function passedValidation()
     {
-        if ($this->has('genres'))
-            $this->replace(['genres' => str($this->genres)->explode(',')]);
+        $this->transformToArray('genres');
+        $this->transformToArray('statuses');
+    }
+
+    public function transformToArray(string $input)
+    {
+        if (!$this->has($input))
+            return;
+
+        $this->merge([$input => str($this->input($input))->contains(',') ?
+            str($this->input($input))->explode(',')
+            : [$this->input($input)]]);
     }
 }

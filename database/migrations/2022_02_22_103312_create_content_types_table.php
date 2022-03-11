@@ -21,8 +21,8 @@ return new class extends Migration
         });
 
         DB::table('content_types')->insert([
-            ['name' => 'Film'],
-            ['name' => 'Serial']
+            ['name' => 'Фильм'],
+            ['name' => 'Сериал']
         ]);
     }
 

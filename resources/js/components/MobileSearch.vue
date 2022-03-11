@@ -1,61 +1,88 @@
 <template>
-    <div>
-        <i class="fal fa-times fa-2x mobile search-icon" v-if="search.open" @click="changeOpenState"></i>
-        <i class="far fa-lg fa-search mobile search-icon" v-else @click="changeOpenState"></i>
-        <div class="mobile-search-container" v-if="search.open">
-            <div class="mobile-search-bar">
-                <i class="fal fa-lg fa-search"></i>
-                <input type="text" placeholder="Популярные новинки"
-                       v-model="search.query"
-                       @input="searchFilmDebounce"
-                       @keypress.enter="searchFilmDebounce">
-            </div>
-            <div class="mobile-search-response">
-                <LoadingAnimation v-if="search.loading" class="loading-animation"/>
-                <InertiaLink :href="route('film-page.search', search.query)" as="div" class="show-all-results"
-                             v-if="search.response.length">
-                    <p>Посмотреть все результаты</p>
-                    <i class="fas fa-chevron-right"></i>
-                </InertiaLink>
+  <div>
+    <i
+      v-if="search.open"
+      class="fal fa-times fa-2x mobile search-icon"
+      @click="changeOpenState"
+    />
+    <i
+      v-else
+      class="far fa-lg fa-search mobile search-icon"
+      @click="changeOpenState"
+    />
+    <div
+      v-if="search.open"
+      class="mobile-search-container"
+    >
+      <div class="mobile-search-bar">
+        <i class="fal fa-lg fa-search" />
+        <input
+          v-model="search.query"
+          type="text"
+          placeholder="Популярные новинки"
+          @input="searchFilmDebounce"
+          @keypress.enter="searchFilmDebounce"
+        >
+      </div>
+      <div class="mobile-search-response">
+        <LoadingAnimation
+          v-if="search.loading"
+          class="loading-animation"
+        />
+        <InertiaLink
+          v-if="search.response.length"
+          :href="route('film-page.search', search.query)"
+          as="div"
+          class="show-all-results"
+        >
+          <p>Посмотреть все результаты</p>
+          <i class="fas fa-chevron-right" />
+        </InertiaLink>
 
-                <InertiaLink :href="route('film.show', film.id)"
-                             as="div"
-                             class="search-bar-item"
-                             v-for="film in search.response">
-
-                    <img :src="film.poster" :alt="film.title">
-                    <p>{{ film.title }} <span v-if="film.year">({{ film.year }})</span><br>
-                        <span class="orig-title">{{ film.title_orig }}</span>
-                    </p>
-                </InertiaLink>
-            </div>
-        </div>
+        <InertiaLink
+          v-for="film in search.response"
+          :key="film.id"
+          :href="route('film.show', film.id)"
+          as="div"
+          class="search-bar-item"
+        >
+          <img
+            :src="film.poster"
+            :alt="film.title"
+          >
+          <p>
+            {{ film.title }} <span v-if="film.year">({{ film.year }})</span><br>
+            <span class="orig-title">{{ film.title_orig }}</span>
+          </p>
+        </InertiaLink>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
-import disableBodyScrollMixin from "../mixins/DisableBodyScrollMixin";
-import searchFilmMixin from "../mixins/SearchFilmMixin";
-import LoadingAnimation from "./LoadingAnimation";
+import disableBodyScrollMixin from '../mixins/DisableBodyScrollMixin';
+import searchFilmMixin from '../mixins/SearchFilmMixin';
+import LoadingAnimation from './LoadingAnimation';
 
 export default {
-    name: "MobileSearch",
-    components: {LoadingAnimation},
-    mixins: [disableBodyScrollMixin, searchFilmMixin],
-    methods: {
-        changeOpenState() {
-            this.search.open = !this.search.open;
-        }
-    },
-    watch: {
-        search: {
-            deep: true,
-            handler(value) {
-                this.disableBodyScroll(value.open);
-            }
-        }
-    }
-}
+	name: 'MobileSearch',
+	components: {LoadingAnimation},
+	mixins: [disableBodyScrollMixin, searchFilmMixin],
+	watch: {
+		search: {
+			deep: true,
+			handler(value) {
+				this.disableBodyScroll(value.open);
+			}
+		}
+	},
+	methods: {
+		changeOpenState() {
+			this.search.open = !this.search.open;
+		}
+	}
+};
 </script>
 
 <style scoped>

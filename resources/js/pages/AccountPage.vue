@@ -1,48 +1,71 @@
 <template>
-    <div class="account-container">
-        <AccountProfileBar/>
-        <div class="profile-container profile-settings">
-            <div class="profile-settings-block">
-                <label class="input-label">
-                    Логин
-                    <input type="text" placeholder="Введите ваш логин" v-model="profile_form.login">
-                </label>
-                <label class="input-label">
-                    Email
-                    <input type="text" placeholder="Введите ваш email" v-model="profile_form.email">
-                </label>
-                <label class="input-label">
-                    Сменить пароль
-                    <input type="password" placeholder="Введите старый пароль" v-model="profile_form.password_old">
-                    <input type="password" placeholder="Введите новый пароль" v-model="profile_form.password_new">
-                    <input type="password" placeholder="Подтвердите новый пароль"
-                           v-model="profile_form.password_new_repeat">
-                </label>
-                <BaseButton @click="saveProfileChanges">Сохранить</BaseButton>
-            </div>
-            <div class="profile-settings-block">
-                <label class="input-label">
-                    Двухфакторная аутентификация
-                    <input type="text" placeholder="Введите ник Telegram">
-                </label>
-            </div>
-        </div>
+  <div class="account-container">
+    <AccountProfileBar />
+    <div class="profile-container profile-settings">
+      <div class="profile-settings-block">
+        <label class="input-label">
+          Логин
+          <input
+            v-model="profile_form.login"
+            type="text"
+            placeholder="Введите ваш логин"
+          >
+        </label>
+        <label class="input-label">
+          Email
+          <input
+            v-model="profile_form.email"
+            type="text"
+            placeholder="Введите ваш email"
+          >
+        </label>
+        <label class="input-label">
+          Сменить пароль
+          <input
+            v-model="profile_form.password_old"
+            type="password"
+            placeholder="Введите старый пароль"
+          >
+          <input
+            v-model="profile_form.password_new"
+            type="password"
+            placeholder="Введите новый пароль"
+          >
+          <input
+            v-model="profile_form.password_new_repeat"
+            type="password"
+            placeholder="Подтвердите новый пароль"
+          >
+        </label>
+        <BaseButton @click="saveProfileChanges">
+          Сохранить
+        </BaseButton>
+      </div>
+      <div class="profile-settings-block">
+        <label class="input-label">
+          Двухфакторная аутентификация
+          <input
+            type="text"
+            placeholder="Введите ник Telegram"
+          >
+        </label>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
-import FilmCard from "../components/FilmCard";
-import Pagination from "../components/Pagination";
-import BaseButton from "../components/BaseButton";
-import {useForm} from "@inertiajs/inertia-vue3";
-import AccountFilmCard from "../components/AccountFilmCard";
-import AccountProfileBar from "../components/AccountProfileBar";
+import {useForm} from '@inertiajs/inertia-vue3';
+import AccountProfileBar from '../components/AccountProfileBar';
 
 export default {
-    name: "AccountPage",
-    components: {AccountProfileBar, AccountFilmCard, Pagination, FilmCard},
+    name: 'AccountPage',
+    components: {AccountProfileBar},
     props: {
-        films: Object,
+        films: {
+            type: Object,
+            required: true
+        },
     },
     setup() {
         const profile_form = useForm({
@@ -61,10 +84,10 @@ export default {
     },
     methods: {
         saveProfileChanges() {
-            this.profile_form.put(route('user.update'));
+            this.profile_form.put(this.route('user.update'));
         },
     }
-}
+};
 </script>
 
 <style scoped>

@@ -1,64 +1,104 @@
 <template>
-    <header class="header">
-        <MobileBurger/>
-        <MobileSearch/>
-        <InertiaLink as="h1" :href="route('home')">Anime<span>Zero</span></InertiaLink>
-        <InertiaLink as="button" class="section">Каталог</InertiaLink>
-        <InertiaLink as="button" :href="route('films')" class="section">Фильмы</InertiaLink>
-        <InertiaLink as="button" class="section">Сериалы</InertiaLink>
-        <div class="search-bar">
-            <div class="search-bar-background" v-if="search.open" @click.self="closeSearchBar"></div>
+  <header class="header">
+    <MobileBurger />
+    <MobileSearch />
 
-            <input type="text" placeholder="Популярные новинки"
-                   v-model="search.query"
-                   @input="searchFilmDebounce">
+    <InertiaLink
+      class="header-title"
+      as="h1"
+      :href="route('home')"
+    >
+      Anime<span>Zero</span><span class="beta">BETA</span>
+    </InertiaLink>
 
-            <button @click="searchFilm"><i class="fas fa-search"></i></button>
+    <TheHeaderNav />
 
-            <div class="search-bar-body" v-if="search.open">
-                <LoadingAnimation class="loading-animation" v-if="search.loading"/>
-                <InertiaLink class="search-bar-item"
-                             :href="route('film.show', film.id)"
-                             as="div"
-                             v-for="film in search.response"
-                             v-else>
+    <div class="search-bar">
+      <div
+        v-if="search.open"
+        class="search-bar-background"
+        @click.self="closeSearchBar"
+      />
 
-                    <img :src="film.poster" :alt="film.title">
-                    <p>{{ film.title }} <span v-if="film.year">({{ film.year }})</span><br>
-                        <span class="orig-title">{{ film.title_orig }}</span>
-                    </p>
-                </InertiaLink>
-            </div>
-        </div>
-        <BaseButton v-if="user && $page.url == '/user'" @click="$inertia.visit(route('user.logout'))">
-            <i class="fal fa-sign-out"></i>Выход
-        </BaseButton>
-        <BaseButton v-else-if="user" @click="$inertia.visit(route('user.account'))">
-            <i class="fal fa-user"></i> Личный кабинет
-        </BaseButton>
-        <BaseButton v-else @click="$root.openModal"><i class="fal fa-sign-out"></i>Вход</BaseButton>
-        <AuthModal/>
-    </header>
+      <input
+        v-model="search.query"
+        type="text"
+        placeholder="Популярные новинки"
+        @input="searchFilmDebounce"
+      >
+
+      <button @click="searchFilm">
+        <i class="fas fa-search" />
+      </button>
+
+      <div
+        v-if="search.open"
+        class="search-bar-body"
+      >
+        <LoadingAnimation
+          v-if="search.loading"
+          class="loading-animation"
+        />
+        <InertiaLink
+          v-for="film in search.response"
+          v-else
+          :key="film.id"
+          class="search-bar-item"
+          :href="route('film.show', film.id)"
+          as="div"
+        >
+          <img
+            :src="film.poster"
+            :alt="film.title"
+          >
+          <p>
+            {{ film.title }} <span v-if="film.year">({{ film.year }})</span><br>
+            <span class="orig-title">{{ film.title_orig }}</span>
+          </p>
+        </InertiaLink>
+      </div>
+    </div>
+    <BaseButton
+      v-if="user && $page.url === '/user'"
+      @click="$inertia.visit(this.route('user.logout'))"
+    >
+      <i class="fal fa-sign-out" />Выход
+    </BaseButton>
+    <BaseButton
+      v-else-if="user"
+      @click="$inertia.visit(this.route('user.account'))"
+    >
+      <i class="fal fa-user" /> Личный кабинет
+    </BaseButton>
+    <BaseButton
+      v-else
+      @click="$root.openModal"
+    >
+      <i class="fal fa-sign-out" />Вход
+    </BaseButton>
+    <AuthModal />
+  </header>
 </template>
 
 <script>
-import AuthModal from "./AuthModal";
-import {computed} from "vue";
+import AuthModal from './AuthModal';
+import {computed} from 'vue';
 import {usePage} from '@inertiajs/inertia-vue3';
-import MobileBurger from "./MobileBurger";
-import MobileSearch from "./MobileSearch";
-import searchFilmMixin from "../mixins/SearchFilmMixin";
+import MobileBurger from './MobileBurger';
+import MobileSearch from './MobileSearch';
+import searchFilmMixin from '../mixins/SearchFilmMixin';
 import LoadingAnimation from '../components/LoadingAnimation';
+import TheHeaderNav from './TheHeaderNav';
 
 export default {
-    name: "TheHeader",
-    mixins: [searchFilmMixin],
-    components: {MobileSearch, MobileBurger, Notification, AuthModal, LoadingAnimation},
-    setup() {
-        const user = computed(() => usePage().props.value.user);
-        return {user};
-    },
-}
+	name: 'TheHeader',
+	components: {TheHeaderNav, MobileSearch, MobileBurger, AuthModal, LoadingAnimation},
+	mixins: [searchFilmMixin],
+	setup() {
+		const user = computed(() => usePage().props.value.user);
+		return {user};
+	},
+};
 </script>
 
 <style scoped>
@@ -75,22 +115,16 @@ export default {
     position: relative;
 }
 
-h1 {
+.header-title {
     font-weight: bold;
     font-size: 32px;
     margin-right: 14px;
     cursor: pointer;
+    position: relative;
 }
 
-h1 span {
+.header-title span {
     color: var(--main-color);
-}
-
-.section {
-    height: 100%;
-    width: 77px;
-    background: none;
-    font-size: 14px;
 }
 
 .search-bar {
@@ -115,7 +149,7 @@ h1 span {
 
 .search-bar button {
     background: #181818;
-    border-radius: 0px 5px 5px 0px;
+    border-radius: 0 5px 5px 0;
     width: 32px;
 }
 
@@ -178,6 +212,16 @@ h1 span {
     margin: 0 auto;
 }
 
+.beta {
+    font-size: 12px;
+    color: white !important;
+    margin-bottom: auto;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 3px;
+}
+
 @media (max-width: 550px) {
     header {
         padding: 10px 20px;
@@ -188,6 +232,10 @@ h1 span {
     }
 
     h1 {
+        margin: 0 auto;
+    }
+
+    .header-title {
         margin: 0 auto;
     }
 }

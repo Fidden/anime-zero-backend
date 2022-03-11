@@ -1,109 +1,187 @@
 <template>
-    <div class="black-out" v-if="modal.open" @mousedown.self="$root.closeModal">
-        <transition name="shadow">
-            <div class="modal-window">
-                <i class="fal fa-times fa-lg" @click="$root.closeModal"></i>
-                <img src="/img/modal.svg" alt="modal">
-                <h2 class="modal-window-title">Hola!</h2>
-                <div class="modal-window-body" v-if="modal.state === modal.enum.LOGIN">
-                    <h3>Войдите, что бы получить доступ к дополнительным возможностям</h3>
-                    <ul class="validation-errors">
-                        <li v-for="error in $page.props.errors">{{ error }}</li>
-                    </ul>
-                    <form @submit.prevent="loginUser">
-                        <input type="text" placeholder="Логин" v-model="auth_form.login">
-                        <input type="password" placeholder="Пароль" v-model="auth_form.password" class="last-input">
-                        <label class="checkbox-label">
-                            <input type="checkbox" v-model="auth_form.remember">
-                            Запомнить меня
-                        </label>
-                        <BaseButton>Войти</BaseButton>
-                    </form>
-                    <div class="modal-window-additional">
-                        <p @click="$root.setModalState(modal.enum.REGISTER)">Регистрация</p>
-                        <p @click="$root.setModalState(modal.enum.PASSWORD_RESET)">Забыли пароль</p>
-                    </div>
-                </div>
-                <div class="modal-window-body" v-if="modal.state === modal.enum.REGISTER">
-                    <h3>Зарегистрируйтесь, что бы получить доступ к дополнительным возможностям</h3>
-                    <ul class="validation-errors">
-                        <li v-for="error in $page.props.errors">{{ error }}</li>
-                    </ul>
-                    <form @submit.prevent="registerUser">
-                        <input type="text" placeholder="Логин" v-model="register_form.login">
-                        <input type="email" placeholder="Email" v-model="register_form.email">
-                        <input type="password" placeholder="Пароль" v-model="register_form.password">
-                        <input type="password" placeholder="Повтор пароля" v-model="register_form.password_repeat"
-                               class="last-input">
-                        <BaseButton class="register-button">Зарегистрироваться</BaseButton>
-                    </form>
-                    <div class="modal-window-additional">
-                        <p @click="$root.setModalState(modal.enum.LOGIN)">Авторизация</p>
-                        <p @click="$root.setModalState(modal.enum.PASSWORD_RESET)">Забыли пароль</p>
-                    </div>
-                </div>
-                <div class="modal-window-body" v-if="modal.state === modal.enum.EMAIL_VERIFY">
-                    <ul class="validation-errors">
-                        <li v-for="error in $page.props.errors">{{ error }}</li>
-                    </ul>
-                    <h3>Письмо для подверждения email отправлено на {{ $page.props.user.email }}</h3>
-                    <BaseButton class="ok-btn" @click="resendEmail">Отправить повторно</BaseButton>
-                </div>
-            </div>
-        </transition>
-    </div>
+  <div
+    v-if="modal.open"
+    class="black-out"
+    @mousedown.self="$root.closeModal"
+  >
+    <transition name="shadow">
+      <div class="modal-window">
+        <i
+          class="fal fa-times fa-lg"
+          @click="$root.closeModal"
+        />
+        <img
+          src="/img/modal.svg"
+          alt="modal"
+        >
+        <h2 class="modal-window-title">
+          Hola!
+        </h2>
+        <div
+          v-if="modal.state === modal.enum.LOGIN"
+          class="modal-window-body"
+        >
+          <h3>Войдите, что бы получить доступ к дополнительным возможностям</h3>
+          <ul class="validation-errors">
+            <li
+              v-for="(error, index) in $page.props.errors"
+              :key="index"
+            >
+              {{ error }}
+            </li>
+          </ul>
+          <form @submit.prevent="loginUser">
+            <input
+              v-model="auth_form.login"
+              type="text"
+              placeholder="Логин"
+            >
+            <input
+              v-model="auth_form.password"
+              type="password"
+              placeholder="Пароль"
+              class="last-input"
+            >
+            <label class="checkbox-label">
+              <input
+                v-model="auth_form.remember"
+                type="checkbox"
+              >
+              Запомнить меня
+            </label>
+            <BaseButton>Войти</BaseButton>
+          </form>
+          <div class="modal-window-additional">
+            <p @click="$root.setModalState(modal.enum.REGISTER)">
+              Регистрация
+            </p>
+            <p @click="$root.setModalState(modal.enum.PASSWORD_RESET)">
+              Забыли пароль
+            </p>
+          </div>
+        </div>
+        <div
+          v-if="modal.state === modal.enum.REGISTER"
+          class="modal-window-body"
+        >
+          <h3>Зарегистрируйтесь, что бы получить доступ к дополнительным возможностям</h3>
+          <ul class="validation-errors">
+            <li
+              v-for="(error, index) in $page.props.errors"
+              :key="index"
+            >
+              {{ error }}
+            </li>
+          </ul>
+          <form @submit.prevent="registerUser">
+            <input
+              v-model="register_form.login"
+              type="text"
+              placeholder="Логин"
+            >
+            <input
+              v-model="register_form.email"
+              type="email"
+              placeholder="Email"
+            >
+            <input
+              v-model="register_form.password"
+              type="password"
+              placeholder="Пароль"
+            >
+            <input
+              v-model="register_form.password_repeat"
+              type="password"
+              placeholder="Повтор пароля"
+              class="last-input"
+            >
+            <BaseButton class="register-button">
+              Зарегистрироваться
+            </BaseButton>
+          </form>
+          <div class="modal-window-additional">
+            <p @click="$root.setModalState(modal.enum.LOGIN)">
+              Авторизация
+            </p>
+            <p @click="$root.setModalState(modal.enum.PASSWORD_RESET)">
+              Забыли пароль
+            </p>
+          </div>
+        </div>
+        <div
+          v-if="modal.state === modal.enum.EMAIL_VERIFY"
+          class="modal-window-body"
+        >
+          <ul class="validation-errors">
+            <li
+              v-for="(error, index) in $page.props.errors"
+              :key="index"
+            >
+              {{ error }}
+            </li>
+          </ul>
+          <h3>Письмо для подверждения email отправлено на {{ $page.props.user.email }}</h3>
+          <BaseButton
+            class="ok-btn"
+            @click="resendEmail"
+          >
+            Отправить повторно
+          </BaseButton>
+        </div>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script>
-import {useForm} from "@inertiajs/inertia-vue3";
-import BaseButton from "./BaseButton";
-import modalWindowMixin from "../mixins/ModalWindowMixin";
+import {useForm} from '@inertiajs/inertia-vue3';
+import BaseButton from './BaseButton';
 
 export default {
-    name: "AuthModal",
-    components: {BaseButton},
-    setup() {
-        const auth_form = useForm({
-            login: null,
-            password: null,
-            remember: false,
-        });
-        const register_form = useForm({
-            login: null,
-            email: null,
-            password: null,
-            password_repeat: null,
-        });
+	name: 'AuthModal',
+	components: {BaseButton},
+	setup() {
+		const auth_form = useForm({
+			login: null,
+			password: null,
+			remember: false,
+		});
+		const register_form = useForm({
+			login: null,
+			email: null,
+			password: null,
+			password_repeat: null,
+		});
 
-        return {auth_form, register_form};
-    },
-    methods: {
-        loginUser() {
-            this.auth_form.post(route('user.login'), {
-                onSuccess: () => {
-                    this.$root.closeModal();
-                }
-            });
-        },
-        registerUser() {
-            this.register_form.post(route('user.store'),
-                {
-                    onSuccess: () => {
-                        this.$root.openModal();
-                        this.$root.setModalState(this.modal.enum.EMAIL_VERIFY);
-                    }
-                });
-        },
-        resendEmail() {
-            this.$inertia.post(route('verification.send'));
-        }
-    },
-    computed: {
-        modal() {
-            return this.$root.modal;
-        }
-    }
-}
+		return {auth_form, register_form};
+	},
+	computed: {
+		modal() {
+			return this.$root.modal;
+		}
+	},
+	methods: {
+		loginUser() {
+			this.auth_form.post(this.route('user.login'), {
+				onSuccess: () => {
+					this.$root.closeModal();
+				}
+			});
+		},
+		registerUser() {
+			this.register_form.post(this.route('user.store'),
+				{
+					onSuccess: () => {
+						this.$root.openModal();
+						this.$root.setModalState(this.modal.enum.EMAIL_VERIFY);
+					}
+				});
+		},
+		resendEmail() {
+			this.$inertia.post(this.route('verification.send'));
+		}
+	}
+};
 </script>
 
 <style scoped>

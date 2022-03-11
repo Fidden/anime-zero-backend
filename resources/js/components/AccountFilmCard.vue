@@ -1,23 +1,24 @@
 <template>
-    <InertiaLink :href="route('film.show', item.id)"
-                 class="account-film-card"
-                 :style="{backgroundImage: `url(${item.poster})`}">
-        <p>{{ item.title }}<br>
-            <span v-if="item.year">
-                ({{ item.year }})
-            </span>
-        </p>
-        <div class="black"></div>
-    </InertiaLink>
+  <InertiaLink
+    :href="route('film.show', item.id)"
+    class="account-film-card"
+    :style="{backgroundImage: `url(${item.poster})`}"
+  >
+    <p>{{ item.title }}<br><span v-if="item.year">({{ item.year }})</span></p>
+    <div class="black" />
+  </InertiaLink>
 </template>
 
 <script>
 export default {
-    name: "AccountFilmCard",
+    name: 'AccountFilmCard',
     props: {
-        item: Object,
+        item: {
+            type: Object,
+            required: true,
+        }
     }
-}
+};
 </script>
 
 <style scoped>

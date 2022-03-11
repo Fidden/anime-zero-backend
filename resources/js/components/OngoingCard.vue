@@ -1,41 +1,59 @@
 <template>
     <div class="ongoing-card">
-        <img :src="item.poster" :alt="item.title">
+        <img
+            :src="item.poster"
+            :alt="item.title"
+        >
         <div class="ongoing-card-body">
-            <p class="title">{{ item.title }} ({{ item.year }})</p>
-            <p class="genre">Жанры: {{ getGenres }}</p>
-            <p class="rating">Возрастной рейтинг: <span>{{ item.rating }}</span></p>
-            <BaseButton v-if="$page.props.user" @click="trackFilm">Отслеживать</BaseButton>
+            <p class="title">
+                <span class="title-title">{{ item.title }}</span> ({{ item.year }})
+            </p>
+            <p class="genre">
+                <span class="genre-title">Жанры: </span>{{ getGenres }}
+            </p>
+            <p class="rating">
+                <span class="rating-title">Возрастной рейтинг: </span>
+                <span class="rating-year">{{ item.rating }}</span>
+            </p>
+            <BaseButton
+                v-if="$page.props.user"
+                @click="trackFilm"
+            >
+                Отслеживать
+            </BaseButton>
         </div>
     </div>
 </template>
 
 <script>
-import BaseButton from "./BaseButton";
+import BaseButton from './BaseButton';
 
 export default {
-    name: "OngoingCard",
+    name: 'OngoingCard',
     components: {BaseButton},
     props: {
-        item: Object,
+        item: {
+            type: Object,
+            required: true,
+        },
     },
     computed: {
         getGenres() {
             let out = '';
             this.item.genres.forEach((item, index) => {
                 out += index === this.item.genres.length - 1 ? item.name : `${item.name}, `;
-            })
+            });
             return out;
         }
     },
     methods: {
         trackFilm() {
-            this.$inertia.post(route('tracked-film.store'), {
+            this.$inertia.post(this.route('tracked-film.store'), {
                 film_id: this.item.id,
-            })
+            });
         }
     }
-}
+};
 </script>
 
 <style scoped>
@@ -65,8 +83,13 @@ export default {
     font-size: 18px;
 }
 
-.rating, .genre {
+.rating, .genre, .rating {
     margin-top: 5px;
+    color: #B7B7B7;
+}
+
+.rating-year {
+    color: #B7B7B7;
 }
 
 button {
@@ -74,7 +97,9 @@ button {
     margin-top: 15px;
 }
 
-.rating span {
-    font-weight: 600;
+.title-title, .genre-title, .rating-title {
+    color: white;
+    font-weight: bold;
 }
+
 </style>

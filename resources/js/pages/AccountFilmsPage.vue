@@ -1,20 +1,24 @@
 <template>
-    <div class="account-container">
-        <AccountProfileBar/>
-        <AccountFilms :films="films"/>
-    </div>
+  <div class="account-container">
+    <AccountProfileBar />
+    <AccountFilms :films="films" />
+  </div>
 </template>
 
 <script>
-import AccountFilms from "../components/AccountFilms";
-import AccountProfileBar from "../components/AccountProfileBar";
+import AccountFilms from '../components/AccountFilms';
+import AccountProfileBar from '../components/AccountProfileBar';
+
 export default {
-    name: "AccountFilmsWatchedPage",
+    name: 'AccountFilmsWatchedPage',
     components: {AccountFilms, AccountProfileBar},
     props: {
-        films: Object,
+        films: {
+            type: Object,
+            required: true,
+        },
     }
-}
+};
 </script>
 
 <style scoped>

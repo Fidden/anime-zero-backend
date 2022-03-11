@@ -1,29 +1,43 @@
 <template>
-    <div class="profile-container">
-        <div class="films-empty" v-if="!films.data.length">
-            <img src="/img/hmm_emoji.webp" alt="hmm">
-            <h3>Хм, похоже тут ничего нет...</h3>
-        </div>
-        <div class="films-container" v-else>
-            <AccountFilmCard v-for="film in films.data"
-                             :key="film.id"
-                             :item="film"/>
-        </div>
-        <Pagination :meta="films.meta"/>
+  <div class="profile-container">
+    <div
+      v-if="!films.data.length"
+      class="films-empty"
+    >
+      <img
+        src="/img/hmm_emoji.webp"
+        alt="hmm"
+      >
+      <h3>Хм, похоже тут ничего нет...</h3>
     </div>
+    <div
+      v-else
+      class="films-container"
+    >
+      <AccountFilmCard
+        v-for="film in films.data"
+        :key="film.id"
+        :item="film"
+      />
+    </div>
+    <Pagination :meta="films.meta" />
+  </div>
 </template>
 
 <script>
-import AccountFilmCard from './AccountFilmCard'
-import Pagination from "./Pagination";
+import AccountFilmCard from './AccountFilmCard';
+import Pagination from './BasePagination';
 
 export default {
-    name: "AccountFilms",
-    components: {AccountFilmCard, Pagination},
-    props: {
-        films: Object,
-    }
-}
+	name: 'AccountFilms',
+	components: {AccountFilmCard, Pagination},
+	props: {
+		films: {
+            type: Object,
+            required: true,
+        },
+	}
+};
 </script>
 
 <style scoped>

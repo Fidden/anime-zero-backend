@@ -1,20 +1,27 @@
 <template>
-    <h2>Результаты поиска</h2>
-    <div class="film-search-container">
-        <FilmCard v-for="film in films.data" :key="film.id" :item="film"/>
-    </div>
+  <h2>Результаты поиска</h2>
+  <div class="film-search-container">
+    <FilmCard
+      v-for="film in films.data"
+      :key="film.id"
+      :item="film"
+    />
+  </div>
 </template>
 
 <script>
-import FilmCard from "../components/FilmCard";
+import FilmCard from '../components/FilmCard';
 
 export default {
-    name: "FilmSearch",
+    name: 'FilmSearch',
     components: {FilmCard},
     props: {
-        films: Object,
+        films: {
+            type: Object,
+            required: true,
+        },
     }
-}
+};
 </script>
 
 <style scoped>
