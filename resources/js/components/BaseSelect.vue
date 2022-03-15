@@ -1,35 +1,35 @@
 <template>
-  <div
-    v-click-outside="Close"
-    class="select"
-  >
     <div
-      class="select-head"
-      @click="SwitchOpenState"
+        v-click-outside="Close"
+        class="select"
     >
-      <p class="select-head-title">
-        {{ title }}
-      </p>
-      <i
-        class="fal fa-chevron-down"
-        :class="{'open': open}"
-      />
+        <div
+            class="select-head"
+            @click="SwitchOpenState"
+        >
+            <p class="select-head-title">
+                {{ title }}
+            </p>
+            <i
+                class="fal fa-chevron-down"
+                :class="{'open': open}"
+            />
+        </div>
+        <div
+            v-if="open"
+            class="select-body"
+        >
+            <div
+                v-for="option in options"
+                :key="option.id"
+                class="select-item"
+                :class="{'active': IsSelected(option)}"
+                @click="PushItem(option)"
+            >
+                {{ option.name }}
+            </div>
+        </div>
     </div>
-    <div
-      v-if="open"
-      class="select-body"
-    >
-      <div
-        v-for="option in options"
-        :key="option.id"
-        class="select-item"
-        :class="{'active': IsSelected(option)}"
-        @click="PushItem(option)"
-      >
-        {{ option.name }}
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -73,7 +73,7 @@ export default {
             this.open = !this.open;
         },
         PushItem(option) {
-            if (this.IsSelected(option))
+            if (this.IsSelected(option) && (!this.single && this.selected.length))
                 this.RemoveItem(option);
             else {
                 if (this.single)
@@ -115,6 +115,7 @@ export default {
 
 .select-head-title {
     margin-right: auto;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .select-body {
@@ -143,6 +144,7 @@ export default {
     padding: 0 14px;
     cursor: pointer;
     margin-bottom: 14px;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .fa-chevron-down {

@@ -18,10 +18,6 @@ return new class extends Migration
             $table->string('name');
             $table->timestamps();
         });
-
-        DB::table('statuses')->insert([
-            'name' => 'unknown'
-        ]);
     }
 
     /**

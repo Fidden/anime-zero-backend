@@ -1,50 +1,74 @@
 <template>
-  <div class="films-filter-container">
-    <h2>Фильтры</h2>
-    <div class="selectors-container">
-      <BaseSelect
-        title="Жанры"
-        :options="genres"
-        :backup="filters.genres"
-        @change="setGenres"
-      />
+    <div class="films-filter-container">
+        <h2>Фильтры</h2>
+        <div class="selectors-container">
+            <BaseSelect
+                title="Жанры"
+                :options="genres"
+                :backup="filters.genres"
+                @change="setGenres"
+            />
 
-      <BaseSelect
-        title="Статус"
-        :options="statuses"
-        :backup="filters.statuses"
-        @change="setStatuses"
-      />
+            <BaseSelect
+                title="Статус"
+                :options="statuses"
+                :backup="filters.statuses"
+                @change="setStatuses"
+            />
 
-      <BaseSelect
-        title="Тип"
-        :options="contentTypes"
-        :backup="filters.type"
-        :single="true"
-        @change="setContentTypes"
-      />
+            <BaseSelect
+                title="Тип"
+                :options="contentTypes"
+                :backup="filters.type"
+                :single="true"
+                @change="setContentTypes"
+            />
+
+            <BaseSelect
+                title="Годы выхода"
+                :options="options.years"
+                :backup="filters.years"
+                :single="true"
+                @change="setYears"
+            />
+
+            <BaseSelect
+                title="Рейтинг"
+                :options="options.rating"
+                :backup="order.rating"
+                :single="true"
+                @change="setRating"
+            />
+
+            <BaseSelect
+                title="Название"
+                :options="options.title"
+                :backup="order.title"
+                :single="true"
+                @change="setTitle"
+            />
+        </div>
+        <div class="controls-container">
+            <button
+                class="reset-filters"
+                @click="resetFilters"
+            >
+                <i class="fal fa-times"/>Сбросить фильтры
+            </button>
+        </div>
     </div>
-    <div class="controls-container">
-      <button
-        class="reset-filters"
-        @click="resetFilters"
-      >
-        <i class="fal fa-times" />Сбросить фильтры
-      </button>
+    <div class="films-container">
+        <FilmCard
+            v-for="film in films.data"
+            :key="film.id"
+            :item="film"
+        />
     </div>
-  </div>
-  <div class="films-container">
-    <FilmCard
-      v-for="film in films.data"
-      :key="film.id"
-      :item="film"
+    <Pagination
+        class="films-pagination"
+        :meta="films.meta"
+        :filters="getTransformedFilters"
     />
-  </div>
-  <Pagination
-    class="films-pagination"
-    :meta="films.meta"
-    :filters="getTransformedFilters"
-  />
 </template>
 
 <script>
@@ -79,6 +103,32 @@ export default {
                 genres: [],
                 statuses: [],
                 type: [],
+                years: [],
+            },
+            order: {
+                rating: [],
+                title: [],
+            },
+            options: {
+                years: [
+                    {id: 0, name: 'Все'},
+                    {id: 1, name: '2021-2022'},
+                    {id: 2, name: '2020-2020'},
+                    {id: 3, name: '2010-2019'},
+                    {id: 4, name: '2000-2009'},
+                    {id: 5, name: '1990-1999'},
+                    {id: 6, name: '1980-1989'},
+                ],
+                rating: [
+                    {id: 0, name: 'По умолчанию'},
+                    {id: 1, name: 'По убыванию'},
+                    {id: 2, name: 'По возрастанию'},
+                ],
+                title: [
+                    {id: 0, name: 'По умолчанию'},
+                    {id: 1, name: 'По убыванию (Я-а)'},
+                    {id: 2, name: 'По возрастанию (А-я)'},
+                ]
             }
         };
     },
@@ -88,29 +138,40 @@ export default {
                 genres: this.filters.genres.toString(),
                 statuses: this.filters.statuses.toString(),
                 type: this.filters.type.toString(),
+                years: this.filters.years.toString(),
+                rating: this.order.rating.toString(),
+                title: this.order.title.toString(),
             });
         },
-    },
-    watch: {
-        filters: {
-            deep: true,
-            handler() {
-                this.applyFilters();
-            }
-        }
     },
     mounted() {
         this.restoreFilters();
     },
     methods: {
+        //fixme:
         setGenres(array) {
             this.filters.genres = array;
+            this.applyFilters();
         },
         setStatuses(array) {
             this.filters.statuses = array;
+            this.applyFilters();
         },
         setContentTypes(array) {
             this.filters.type = array;
+            this.applyFilters();
+        },
+        setYears(array) {
+            this.filters.years = array;
+            this.applyFilters();
+        },
+        setRating(array) {
+            this.order.rating = array;
+            this.applyFilters();
+        },
+        setTitle(array) {
+            this.order.title = array;
+            this.applyFilters();
         },
         removeBlank(object) {
             let result = {};
@@ -121,12 +182,13 @@ export default {
             return result;
         },
         applyFilters() {
-            this.$inertia.get(this.route('films'), this.getTransformedFilters, {preserveState: true});
+            this.$inertia.get(this.route('films'), this.getTransformedFilters, {
+                preserveState: true,
+            });
         },
         resetFilters() {
             Object.keys(this.filters).forEach(key => {
                 this.filters[key] = [];
-                console.log(this.filters[key]);
             });
         },
         restoreFilters() {
@@ -153,7 +215,7 @@ export default {
 .selectors-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: 50px;
+    grid-template-rows: repeat(2, 50px);
     gap: 30px;
     margin-top: 20px;
     margin-bottom: 35px;

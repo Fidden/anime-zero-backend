@@ -1,89 +1,87 @@
 <template>
-  <header class="header">
-    <MobileBurger />
-    <MobileSearch />
+    <header class="header">
+        <MobileBurger/>
+        <MobileSearch/>
 
-    <InertiaLink
-      class="header-title"
-      as="h1"
-      :href="route('home')"
-    >
-      Anime<span>Zero</span><span class="beta">BETA</span>
-    </InertiaLink>
-
-    <TheHeaderNav />
-
-    <div class="search-bar">
-      <div
-        v-if="search.open"
-        class="search-bar-background"
-        @click.self="closeSearchBar"
-      />
-
-      <input
-        v-model="search.query"
-        type="text"
-        placeholder="Популярные новинки"
-        @input="searchFilmDebounce"
-      >
-
-      <button @click="searchFilm">
-        <i class="fas fa-search" />
-      </button>
-
-      <div
-        v-if="search.open"
-        class="search-bar-body"
-      >
-        <LoadingAnimation
-          v-if="search.loading"
-          class="loading-animation"
-        />
         <InertiaLink
-          v-for="film in search.response"
-          v-else
-          :key="film.id"
-          class="search-bar-item"
-          :href="route('film.show', film.id)"
-          as="div"
+            class="header-title"
+            as="h1"
+            :href="route('home')"
         >
-          <img
-            :src="film.poster"
-            :alt="film.title"
-          >
-          <p>
-            {{ film.title }} <span v-if="film.year">({{ film.year }})</span><br>
-            <span class="orig-title">{{ film.title_orig }}</span>
-          </p>
+            Anime<span>Zero</span><span class="beta">BETA</span>
         </InertiaLink>
-      </div>
-    </div>
-    <BaseButton
-      v-if="user && $page.url === '/user'"
-      @click="$inertia.visit(this.route('user.logout'))"
-    >
-      <i class="fal fa-sign-out" />Выход
-    </BaseButton>
-    <BaseButton
-      v-else-if="user"
-      @click="$inertia.visit(this.route('user.account'))"
-    >
-      <i class="fal fa-user" /> Личный кабинет
-    </BaseButton>
-    <BaseButton
-      v-else
-      @click="$root.openModal"
-    >
-      <i class="fal fa-sign-out" />Вход
-    </BaseButton>
-    <AuthModal />
-  </header>
+
+        <TheHeaderNav/>
+
+        <div class="search-bar">
+            <div
+                v-if="search.open"
+                class="search-bar-background"
+                @click.self="closeSearchBar"
+            />
+
+            <input
+                v-model="search.query"
+                type="text"
+                placeholder="Популярные новинки"
+                @input="searchFilmDebounce"
+            >
+
+            <button @click="searchFilm">
+                <i class="fas fa-search"/>
+            </button>
+
+            <div
+                v-if="search.open"
+                class="search-bar-body"
+            >
+                <LoadingAnimation
+                    v-if="search.loading"
+                    class="loading-animation"
+                />
+                <InertiaLink
+                    v-for="film in search.response"
+                    v-else
+                    :key="film.id"
+                    class="search-bar-item"
+                    :href="route('film.show', film.id)"
+                    as="div"
+                >
+                    <img
+                        :src="film.poster"
+                        :alt="film.title"
+                    >
+                    <p>
+                        {{ film.title }} <span v-if="film.year">({{ film.year }})</span><br>
+                        <span class="orig-title">{{ film.title_orig }}</span>
+                    </p>
+                </InertiaLink>
+            </div>
+        </div>
+        <BaseButton
+            v-if="user && $page.url === '/user'"
+            @click="$inertia.visit(route('user.logout'))"
+        >
+            <i class="fal fa-sign-out"/>Выход
+        </BaseButton>
+        <BaseButton
+            v-else-if="user"
+            @click="$inertia.visit(route('user.account'))"
+        >
+            <i class="fal fa-user"/> Личный кабинет
+        </BaseButton>
+        <BaseButton
+            v-else
+            @click="$root.openModal"
+        >
+            <i class="fal fa-sign-out"/>Вход
+        </BaseButton>
+        <AuthModal/>
+    </header>
 </template>
 
 <script>
 import AuthModal from './AuthModal';
-import {computed} from 'vue';
-import {usePage} from '@inertiajs/inertia-vue3';
 import MobileBurger from './MobileBurger';
 import MobileSearch from './MobileSearch';
 import searchFilmMixin from '../mixins/SearchFilmMixin';
@@ -91,13 +89,14 @@ import LoadingAnimation from '../components/LoadingAnimation';
 import TheHeaderNav from './TheHeaderNav';
 
 export default {
-	name: 'TheHeader',
-	components: {TheHeaderNav, MobileSearch, MobileBurger, AuthModal, LoadingAnimation},
-	mixins: [searchFilmMixin],
-	setup() {
-		const user = computed(() => usePage().props.value.user);
-		return {user};
-	},
+    name: 'TheHeader',
+    components: {TheHeaderNav, MobileSearch, MobileBurger, AuthModal, LoadingAnimation},
+    mixins: [searchFilmMixin],
+    computed: {
+        user() {
+            return this.$page.props.user;
+        }
+    }
 };
 </script>
 

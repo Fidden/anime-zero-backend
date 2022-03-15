@@ -42,6 +42,34 @@ class FilmsPageController extends Controller
             $films->where('content_type_id',
                 ContentType::where('name', $request->type)->pluck('id'));
 
+        if ($request->has('years') && $request->years != 'Все') {
+            $year_start = str($request->years)->explode('-')[0];
+            $year_end = str($request->years)->explode('-')[1];
+            $films->where([['year', '>=', $year_start], ['year', '<=', $year_end]]);
+        }
+
+        if ($request->has('rating')) {
+            switch ($request->rating) {
+                case 'По убыванию':
+                    $films->orderBy('rating', 'desc');
+                    break;
+                case 'По возрастанию':
+                    $films->orderBy('rating');
+                    break;
+            }
+        }
+
+        if ($request->has('title')) {
+            switch ($request->title) {
+                case 'По убыванию (Я-а)':
+                    $films->orderBy('title', 'desc');
+                    break;
+                case 'По возрастанию (А-я)':
+                    $films->orderBy('title');
+                    break;
+            }
+        }
+
         return Inertia::render('FilmsPage', [
             'films' => FilmResource::collection($films->paginate(18)->onEachSide(1)),
             'genres' => GenreResource::collection(Genre::all()),

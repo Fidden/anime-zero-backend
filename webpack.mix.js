@@ -63,6 +63,9 @@ mix.js('resources/js/app.js', 'public/js')
                     'always'
                 ],
                 'vue/no-multiple-template-root': 'off',
+                'vue/html-indent': 'off',
+                'vue/html-closing-bracket-spacing': 'off',
+                'vue/html-closing-bracket-newline': 'off',
             }
         }
     });

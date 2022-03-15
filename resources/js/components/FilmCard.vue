@@ -1,46 +1,49 @@
 <template>
-  <InertiaLink
-    :href="route('film.show', item.id)"
-    class="film-card"
-    as="div"
-  >
-    <div class="film-card-image-block">
-      <img
-        :src="item.poster"
-        :alt="item.title"
-      >
-      <BaseButton><i class="fal fa-play" />Смотреть</BaseButton>
-    </div>
-    <p class="film-card-title">
-      {{ ItemTitle }}
-    </p>
-    <p class="film-card-info">
-      {{ item.year }} {{ item.genres[0].name }}
-    </p>
-    <div
-      v-if="item.rating"
-      class="film-card-rating"
+    <InertiaLink
+        :href="route('film.show', item.id)"
+        class="film-card"
+        as="div"
     >
-      {{ item.rating }}
-    </div>
-  </InertiaLink>
+        <div class="film-card-image-block">
+            <img
+                :src="item.poster"
+                :alt="item.title"
+            >
+            <BaseButton><i class="fal fa-play"/>Смотреть</BaseButton>
+        </div>
+        <p class="film-card-title">
+            {{ ItemTitle }}
+        </p>
+        <p class="film-card-info">
+            {{ item.year }} {{ genre }}
+        </p>
+        <div
+            v-if="item.rating"
+            class="film-card-rating"
+        >
+            {{ item.rating }}
+        </div>
+    </InertiaLink>
 </template>
 
 <script>
 export default {
-	name: 'FilmCard',
-	props: {
-		item: {
+    name: 'FilmCard',
+    props: {
+        item: {
             type: Object,
             required: true,
         }
-	},
-	computed: {
-		ItemTitle() {
-			let sliced = this.item.title.toString().slice(0, 30);
-			return this.item.title.length > 30 ? `${sliced}...` : sliced;
-		}
-	}
+    },
+    computed: {
+        ItemTitle() {
+            let sliced = this.item.title.toString().slice(0, 30);
+            return this.item.title.length > 30 ? `${sliced}...` : sliced;
+        },
+        genre() {
+            return this.item.genres.length > 0 ? this.item.genres[0].name : '';
+        }
+    }
 };
 </script>
 

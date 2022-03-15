@@ -1,44 +1,47 @@
 <template>
-  <div
-    v-if="meta.last_page > 1"
-    class="pagination"
-  >
-    <InertiaLink
-      v-for="link in meta.links"
-      :key="link.label"
-      class="pagination-block"
-      :href="link.url"
-      :data="filters"
+    <div
+        v-if="meta.last_page > 1"
+        class="pagination"
     >
-      <i
-        v-if="link.label === 'prev'"
-        class="fas fa-chevron-left"
-      />
-      <i
-        v-else-if="link.label === 'next'"
-        class="fas fa-chevron-right"
-      />
-      <span
-        v-else
-        :class="{'active': link.active}"
-      >{{ link.label }}</span>
-    </InertiaLink>
-  </div>
+        <InertiaLink
+            v-for="link in meta.links"
+            :key="link.label"
+            class="pagination-block"
+            :href="link.url"
+            :data="filters"
+            :preserve-state="false"
+        >
+            <i
+                v-if="link.label === 'prev'"
+                class="fas fa-chevron-left"
+            />
+            <i
+                v-else-if="link.label === 'next'"
+                class="fas fa-chevron-right"
+            />
+            <span
+                v-else
+                :class="{'active': link.active}"
+            >{{ link.label }}</span>
+        </InertiaLink>
+    </div>
 </template>
 
 <script>
 export default {
-	name: 'BasePagination',
-	props: {
-		meta: {
+    name: 'BasePagination',
+    props: {
+        meta: {
             type: Object,
             required: true,
         },
-		filters: {
+        filters: {
             type: Object,
-            default: {},
+            default() {
+                return {};
+            },
         },
-	}
+    }
 };
 </script>
 
