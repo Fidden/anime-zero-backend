@@ -12,7 +12,7 @@ use App\Models\Film;
 use App\Models\FilmGenre;
 use App\Models\Genre;
 use App\Models\Status;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
 use Inertia\Inertia;
 
 class FilmsPageController extends Controller
@@ -20,55 +20,49 @@ class FilmsPageController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param FilmsPageIndexRequest $request
      * @return \Inertia\Response
      */
     public function __invoke(FilmsPageIndexRequest $request): \Inertia\Response
     {
-        $films = Film::query();
-
-        if ($request->has('genres'))
-            $films->whereIn('id',
-                FilmGenre::whereIn('genre_id',
-                    Genre::whereIn('name', $request->genres)
-                        ->pluck('id'))
-                    ->pluck('film_id'));
-
-        if ($request->has('statuses'))
-            $films->whereIn('status_id',
-                Status::whereIn('name', $request->statuses)->pluck('id'));
-
-        if ($request->has('type'))
-            $films->where('content_type_id',
-                ContentType::where('name', $request->type)->pluck('id'));
-
-        if ($request->has('years') && $request->years != 'Все') {
-            $year_start = str($request->years)->explode('-')[0];
-            $year_end = str($request->years)->explode('-')[1];
-            $films->where([['year', '>=', $year_start], ['year', '<=', $year_end]]);
-        }
-
-        if ($request->has('rating')) {
-            switch ($request->rating) {
-                case 'По убыванию':
-                    $films->orderBy('rating', 'desc');
-                    break;
-                case 'По возрастанию':
-                    $films->orderBy('rating');
-                    break;
-            }
-        }
-
-        if ($request->has('title')) {
-            switch ($request->title) {
-                case 'По убыванию (Я-а)':
-                    $films->orderBy('title', 'desc');
-                    break;
-                case 'По возрастанию (А-я)':
-                    $films->orderBy('title');
-                    break;
-            }
-        }
+        $films = Film::select("*")
+            ->when($request->has('genres'), function (Builder $query) use ($request) {
+                $query->whereIn('id',
+                    FilmGenre::whereIn('genre_id',
+                        Genre::whereIn('name', $request->genres)
+                            ->pluck('id'))
+                        ->pluck('film_id'));
+            })
+            ->when($request->has('statuses'), function (Builder $query) use ($request) {
+                $query->whereIn('status_id',
+                    Status::whereIn('name', $request->statuses)
+                        ->pluck('id'));
+            })
+            ->when($request->has('type'), function (Builder $query) use ($request) {
+                $query->where('content_type_id',
+                    ContentType::where('name', $request->type)
+                        ->pluck('id'));
+            })
+            ->when(($request->has('years') && $request->get('years') != 'Все'), function (Builder $query) use ($request) {
+                $years_array = str($request->years)->explode('-');
+                $query->where([['year', '>=', $years_array[0]], ['year', '<=', $years_array[1]]]);
+            })
+            ->when($request->get('rating') == 'По убыванию',
+                function (Builder $query) {
+                    $query->orderBy('rating', 'desc');
+                },
+                function (Builder $query) {
+                    $query->orderBy('rating');
+                }
+            )
+            ->when($request->get('title') == 'По убыванию (Я-а)',
+                function (Builder $query) {
+                    $query->orderBy('title', 'desc');
+                },
+                function (Builder $query) {
+                    $query->orderBy('title');
+                }
+            );
 
         return Inertia::render('FilmsPage', [
             'films' => FilmResource::collection($films->paginate(18)->onEachSide(1)),

@@ -1,4 +1,3 @@
-require('laravel-mix-webp-watched');
 require('laravel-mix-eslint');
 
 const mix = require('laravel-mix');
@@ -21,15 +20,14 @@ mix.alias({
 
 mix.disableNotifications();
 
-mix.copy('resources/img/*.svg', 'public/img');
-mix.webpWatched('resources/img', 'public/img');
+mix.copy('resources/img/', 'public/img');
 
 mix.js('resources/js/app.js', 'public/js')
     .vue()
     .sourceMaps(false, 'source-map')
     .postCss('resources/css/app.css', 'public/css')
     .eslint({
-        fix: false,
+        fix: true,
         extensions: ['js', 'vue'],
         exclude: ['node_modules', 'vendor', 'resources/js/bootstrap.js'],
         overrideConfig: {
@@ -70,4 +68,4 @@ mix.js('resources/js/app.js', 'public/js')
         }
     });
 
-mix.browserSync('http://192.168.0.130:8000');
+mix.browserSync('http://127.0.0.1:8000');

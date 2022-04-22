@@ -36,7 +36,7 @@ class Parse extends Command
      */
     public function handle()
     {
-        $this->info('Start parsing data');
+        $this->info('[INFO] Start parsing data');
         ParseJob::dispatch(1);
         ParseJob::dispatch(0);
     }

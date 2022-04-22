@@ -86,7 +86,10 @@
             </Flickity>
         </div>
     </div>
-    <div class="main-films-block main-films-block-big">
+    <div
+        v-if="films.recommended.length > 2"
+        class="main-films-block main-films-block-big"
+    >
         <div class="films-block-head">
             <div class="films-block-title">
                 <i class="fal fa-star"/>
@@ -94,53 +97,55 @@
             </div>
         </div>
         <div class="films-block-body films-block-body-big">
-            <div class="first">
+            <InertiaLink
+                :href="route('film.show', films.recommended[0].id)"
+                as="div"
+                class="first">
                 <img
-                    src="/img/plaseholder-big-1.webp"
-                    alt="placeholder"
+                    :src="films.recommended[0].poster"
+                    :alt="films.recommended[0].title"
                 >
                 <div class="first-text-box">
-                    <h3>Вайолет Эвергарден</h3>
-                    <p>
-                        Сотрудница почты Вайолет получает новое задание — отправиться в пансион благородных девиц
-                        и
-                        научить манерам богатую наследницу Изабеллу. Сначала та не горит желанием становиться
-                        настоящей леди, но постепенно сближается с Вайолет и даже просит помочь написать письмо
-                        младшей сестре Тейлор, с которой её недавно разлучили.
-                    </p>
+                    <h3>{{ films.recommended[0].title }}</h3>
+                    <p>{{ films.recommended[0].description.slice(0, 200) }}...</p>
                 </div>
                 <BaseButton>Смотреть</BaseButton>
-            </div>
-            <div class="second">
+                <div class="backdrop"/>
+            </InertiaLink>
+            <InertiaLink
+                :href="route('film.show', films.recommended[1].id)"
+                as="div"
+                class="second">
                 <img
-                    src="/img/plaseholder-big-2.webp"
-                    alt="placeholder"
+                    :src="films.recommended[1].poster"
+                    :alt="films.recommended[1].title"
                 >
                 <div class="second-info">
                     <p class="second-info-title">
-                        Унесенные призраками
+                        {{ films.recommended[1].title }}
                     </p>
                     <p class="second-info-description">
-                        Тихиро должна придумать, как избавить своих родителей от
-                        чар коварной старухи.
+                        {{ films.recommended[1].description.slice(0, 150) }} ...
                     </p>
                 </div>
-            </div>
-            <div class="third">
+            </InertiaLink>
+            <InertiaLink
+                :href="route('film.show', films.recommended[2].id)"
+                as="div"
+                class="third">
                 <img
-                    src="/img/plaseholder-big-2.webp"
-                    alt="placeholder"
+                    :src="films.recommended[2].poster"
+                    :alt="films.recommended[2].title"
                 >
                 <div class="third-info">
                     <p class="third-info-title">
-                        Унесенные призраками
+                        {{ films.recommended[2].title }}
                     </p>
                     <p class="third-info-description">
-                        Тихиро должна придумать, как избавить своих родителей от
-                        чар коварной старухи.
+                        {{ films.recommended[2].description.slice(0, 150) }} ...
                     </p>
                 </div>
-            </div>
+            </InertiaLink>
         </div>
     </div>
     <div class="main-films-block">
@@ -373,6 +378,7 @@ export default {
 .first {
     grid-area: first;
     position: relative;
+    cursor: pointer;
 }
 
 .first img {
@@ -387,14 +393,25 @@ export default {
     right: 30px;
     bottom: 20px;
     position: absolute;
+    z-index: 150;
 }
 
 .first-text-box {
     position: absolute;
-    z-index: 20;
     width: 65%;
     left: 30px;
     bottom: 20px;
+    z-index: 150;
+}
+
+.backdrop {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);
+    z-index: 100;
 }
 
 .first-text-box p {
@@ -407,17 +424,23 @@ export default {
     background: #0F0F0F;
     display: flex;
     flex-direction: row;
+    cursor: pointer;
 }
 
 .second img, .third img {
     width: 160px;
     margin-right: 20px;
+    object-fit: scale-down;
 }
 
 .second-info, .third-info {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.third-info {
+    margin-right: 10px;
 }
 
 .second-info-title, .third-info-title {

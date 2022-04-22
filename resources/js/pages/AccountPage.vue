@@ -1,57 +1,64 @@
 <template>
-  <div class="account-container">
-    <AccountProfileBar />
-    <div class="profile-container profile-settings">
-      <div class="profile-settings-block">
-        <label class="input-label">
-          Логин
-          <input
-            v-model="profile_form.login"
-            type="text"
-            placeholder="Введите ваш логин"
-          >
-        </label>
-        <label class="input-label">
-          Email
-          <input
-            v-model="profile_form.email"
-            type="text"
-            placeholder="Введите ваш email"
-          >
-        </label>
-        <label class="input-label">
-          Сменить пароль
-          <input
-            v-model="profile_form.password_old"
-            type="password"
-            placeholder="Введите старый пароль"
-          >
-          <input
-            v-model="profile_form.password_new"
-            type="password"
-            placeholder="Введите новый пароль"
-          >
-          <input
-            v-model="profile_form.password_new_repeat"
-            type="password"
-            placeholder="Подтвердите новый пароль"
-          >
-        </label>
-        <BaseButton @click="saveProfileChanges">
-          Сохранить
-        </BaseButton>
-      </div>
-      <div class="profile-settings-block">
-        <label class="input-label">
-          Двухфакторная аутентификация
-          <input
-            type="text"
-            placeholder="Введите ник Telegram"
-          >
-        </label>
-      </div>
+    <div class="account-container">
+        <AccountProfileBar/>
+        <div class="profile-container profile-settings">
+            <form
+                class="profile-settings-block"
+                @submit.prevent>
+                <label class="input-label">
+                    Логин
+                    <input
+                        v-model="profile_form.login"
+                        type="text"
+                        placeholder="Введите ваш логин"
+                    >
+                </label>
+                <label class="input-label">
+                    Email
+                    <input
+                        v-model="profile_form.email"
+                        type="text"
+                        placeholder="Введите ваш email"
+                    >
+                </label>
+                <label class="input-label">
+                    Сменить пароль
+                    <input
+                        v-model="profile_form.password_old"
+                        type="password"
+                        placeholder="Введите старый пароль"
+                        autocomplete="on"
+                    >
+                    <input
+                        v-model="profile_form.password_new"
+                        type="password"
+                        placeholder="Введите новый пароль"
+                        autocomplete="on"
+                    >
+                    <input
+                        v-model="profile_form.password_new_repeat"
+                        type="password"
+                        placeholder="Подтвердите новый пароль"
+                        autocomplete="on"
+                    >
+                </label>
+                <BaseButton @click="saveProfileChanges">
+                    Сохранить
+                </BaseButton>
+            </form>
+            <form
+                class="profile-settings-block"
+                @submit.prevent>
+                <label class="input-label">
+                    Двухфакторная аутентификация ( Скоро )
+                    <input
+                        type="text"
+                        placeholder="Введите ник Telegram"
+                    >
+                </label>
+            </form>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>

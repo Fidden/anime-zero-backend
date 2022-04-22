@@ -14,8 +14,9 @@ use App\Http\Controllers\UserFilmWatchedController;
 use App\Http\Controllers\WantToWatchFilmController;
 use App\Http\Controllers\WatchedFilmController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------

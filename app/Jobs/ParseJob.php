@@ -7,7 +7,6 @@ use App\Models\FilmGenre;
 use App\Models\Genre;
 use App\Models\Status;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -40,8 +39,6 @@ class ParseJob implements ShouldQueue
      */
     public function handle()
     {
-        ini_set('max_execution_time', 9999999);
-
         $request = $this->type == 0 ?
             $this->request("https://videocdn.tv/api/anime-tv-series?api_token={$this->cdn_token}")
             : $this->request("https://videocdn.tv/api/animes?api_token={$this->cdn_token}");
@@ -53,8 +50,10 @@ class ParseJob implements ShouldQueue
                 if (!$this->isKodikDataValid($kodik_data) || !$this->isFilmValid($result))
                     continue;
 
+                $status = $this->getFilmStatus($kodik_data);
                 $film_status = Status::firstOrCreate([
-                    'name' => $this->getFilmStatusName($kodik_data),
+                    'name' => $status[0],
+                    'value' => $status[1],
                 ]);
 
                 $film = Film::firstOrCreate([
@@ -179,14 +178,14 @@ class ParseJob implements ShouldQueue
         return 0;
     }
 
-    public function getFilmStatusName(array $kodik_data)
+    public function getFilmStatus(array $kodik_data): array
     {
-        $status = $this->getProperty($kodik_data['material_data'], 'all_status', 'Без статуса');
+        $status = $this->getProperty($kodik_data['material_data'], 'all_status');
         return match ($status) {
-            'ongoing' => 'Онгоинг',
-            'released' => 'Вышел',
-            'anons' => 'Анонсирован',
-            default => $status,
+            'ongoing' => ['Онгоинг', 'ONGOING'],
+            'released' => ['Вышел', 'RELEASED'],
+            'anons' => ['Анонсирован', 'ANNOUNCED'],
+            default => ['Без статуса', 'UNKNOWN'],
         };
     }
 }

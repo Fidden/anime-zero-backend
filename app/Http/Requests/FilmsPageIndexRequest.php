@@ -5,12 +5,12 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * @property string $genres
- * @property string $statuses
- * @property string $type
- * @property string $years
- * @property string $rating
- * @property string $title
+ * @property array|null $genres
+ * @property array|null $statuses
+ * @property string|null $type
+ * @property string|null $years
+ * @property string|null $rating
+ * @property string|null $title
  */
 class FilmsPageIndexRequest extends FormRequest
 {
@@ -32,28 +32,12 @@ class FilmsPageIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'genres' => 'string',
-            'statuses' => 'string',
+            'genres' => 'array',
+            'statuses' => 'array',
             'type' => 'string',
             'years' => 'string',
             'rating' => 'string',
             'title' => 'string',
         ];
-    }
-
-    public function passedValidation()
-    {
-        $this->transformToArray('genres');
-        $this->transformToArray('statuses');
-    }
-
-    public function transformToArray(string $input)
-    {
-        if (!$this->has($input))
-            return;
-
-        $this->merge([$input => str($this->input($input))->contains(',') ?
-            str($this->input($input))->explode(',')
-            : [$this->input($input)]]);
     }
 }

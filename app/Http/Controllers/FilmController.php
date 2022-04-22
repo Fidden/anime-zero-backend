@@ -19,12 +19,14 @@ class FilmController extends Controller
      */
     public function show(Film $film): \Inertia\Response
     {
-        $user = auth()->check() ? auth()->user() : null;
+        $user = auth()->user();
+        if ($user)
+            $condition = [['user_id', $user->id], ['film_id', $film->id]];
 
         return Inertia::render('FilmPage', [
             'item' => FilmResource::make($film),
-            'isWantedWatch' => $user && WantToWatchFilm::where([['user_id', $user->id], ['film_id', $film->id]])->exists(),
-            'isWatched' => $user && WatchedFilm::where([['user_id', $user->id], ['film_id', $film->id]])->exists(),
+            'isWantedWatch' => $user && WantToWatchFilm::where($condition)->exists(),
+            'isWatched' => $user && WatchedFilm::where($condition)->exists(),
         ]);
     }
 

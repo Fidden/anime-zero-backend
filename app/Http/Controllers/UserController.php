@@ -5,14 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
-use App\Http\Resources\FilmResource;
-use App\Models\Film;
-use App\Models\TrackedFilm;
 use App\Models\User;
-use App\Models\WantToWatchFilm;
-use App\Models\WatchedFilm;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -22,7 +16,9 @@ class UserController extends Controller
      */
     public function index(): \Inertia\Response
     {
-        return Inertia::render('AccountPage');
+        return Inertia::render('AccountPage', [
+            'films' => [],
+        ]);
     }
 
     /**
@@ -49,8 +45,7 @@ class UserController extends Controller
     public function login(UserLoginRequest $request): \Illuminate\Http\RedirectResponse
     {
         if (auth()->attempt($request->only('login', 'password')) ||
-            auth()->attempt($request->only('email', 'password')))
-        {
+            auth()->attempt($request->only('email', 'password'))) {
             $request->session()->regenerate();
             return redirect()->route('user.account');
         }

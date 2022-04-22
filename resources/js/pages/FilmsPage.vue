@@ -135,8 +135,8 @@ export default {
     computed: {
         getTransformedFilters() {
             return this.removeBlank({
-                genres: this.filters.genres.toString(),
-                statuses: this.filters.statuses.toString(),
+                genres: this.filters.genres,
+                statuses: this.filters.statuses,
                 type: this.filters.type.toString(),
                 years: this.filters.years.toString(),
                 rating: this.order.rating.toString(),
@@ -192,10 +192,15 @@ export default {
             });
         },
         restoreFilters() {
-            let url = new URLSearchParams(window.location.search);
-            for (let key in this.filters) {
-                if (url.has(key))
-                    this.filters[key] = url.get(key).split(',');
+            let url = {};
+            location.search.substr(1).split('&').forEach(function (item) {
+                let k = item.split('=')[0].replace('[]', '');
+                let v = decodeURIComponent(item.split('=')[1]);
+                (k in url) ? url[k].push(v) : url[k] = [v];
+            });
+
+            for (let key in url) {
+                this.filters[key] = url[key];
             }
         }
     }
@@ -257,7 +262,7 @@ export default {
 
     .selectors-container {
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(2, 50px);
+        grid-template-rows: repeat(3, 50px);
         gap: 10px
     }
 

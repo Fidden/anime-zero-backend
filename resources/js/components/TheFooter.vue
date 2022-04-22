@@ -1,46 +1,58 @@
 <template>
-  <footer>
-    <div class="footer-background" />
-    <div
-      id="sections"
-      class="footer-block"
-    >
-      <h3>Разделы</h3>
-      <ul>
-        <li><a href="#">Каталог</a></li>
-        <li><a href="#">Фильмы</a></li>
-        <li><a href="#">Сериалы</a></li>
-      </ul>
-    </div>
-    <div class="footer-block">
-      <h3>Пользователям и партнёрам</h3>
-      <ul>
-        <li><a href="#">Сотрудничество</a></li>
-        <li><a href="#">О проекте</a></li>
-        <li><a href="#">Политика конфиденциальности</a></li>
-        <li><a href="#">Для правообладателей</a></li>
-      </ul>
-    </div>
-    <div class="footer-block">
-      <h3>Мы в социальных сетях</h3>
-      <div class="footer-social-block">
-        <i class="fab fa-vk" />
-        <i class="fab fa-telegram" />
-      </div>
-    </div>
-    <div class="footer-block">
-      <h3>Поддержка</h3>
-      <BaseButton>Написать в чате</BaseButton>
-    </div>
-  </footer>
+    <footer>
+        <div class="footer-background"/>
+        <div
+            id="sections"
+            class="footer-block"
+        >
+            <h3>Разделы</h3>
+            <ul>
+                <li>
+                    <InertiaLink :href="route('home')">
+Главная
+</InertiaLink>
+                </li>
+                <li>
+                    <InertiaLink :href="route('films', {type: 'Фильм'})">
+Фильмы
+</InertiaLink>
+                </li>
+                <li>
+                    <InertiaLink :href="route('films', {type: 'Сериал'})">
+                        Сериалы
+                    </InertiaLink>
+                </li>
+            </ul>
+        </div>
+        <div class="footer-block">
+            <h3>Пользователям и партнёрам</h3>
+            <ul>
+                <li><a href="#">Сотрудничество</a></li>
+                <li><a href="#">О проекте</a></li>
+                <li><a href="#">Политика конфиденциальности</a></li>
+                <li><a href="#">Для правообладателей</a></li>
+            </ul>
+        </div>
+        <div class="footer-block">
+            <h3>Мы в социальных сетях</h3>
+            <div class="footer-social-block">
+                <i class="fab fa-vk"/>
+                <i class="fab fa-telegram"/>
+            </div>
+        </div>
+        <div class="footer-block">
+            <h3>Поддержка</h3>
+            <BaseButton>Написать в чате</BaseButton>
+        </div>
+    </footer>
 </template>
 
 <script>
 import BaseButton from './BaseButton';
 
 export default {
-	name: 'TheFooter',
-	components: {BaseButton}
+    name: 'TheFooter',
+    components: {BaseButton}
 };
 </script>
 

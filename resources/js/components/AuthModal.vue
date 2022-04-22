@@ -142,7 +142,8 @@
                         </li>
                     </ul>
                     <form>
-                        <input v-model="registerForm.email"
+                        <input
+                            v-model="registerForm.email"
                             class="reset-password"
                             type="email"
                             placeholder="Email"
@@ -163,7 +164,7 @@
 <script>
 import {useForm} from '@inertiajs/inertia-vue3';
 import BaseButton from './BaseButton';
-
+//todo: перенести в Layout
 export default {
     name: 'AuthModal',
     components: {BaseButton},
