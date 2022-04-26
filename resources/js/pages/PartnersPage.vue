@@ -29,7 +29,7 @@
 import BaseButton from '../components/BaseButton';
 
 export default {
-    name: 'Partners',
+    name: 'PartnersPage',
     components: {BaseButton}
 };
 </script>
