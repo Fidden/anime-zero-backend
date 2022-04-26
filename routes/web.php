@@ -1,37 +1,33 @@
 <?php
 
-use App\Http\Controllers\FilmController;
-use App\Http\Controllers\FilmParserController;
-use App\Http\Controllers\FilmSearchPageController;
-use App\Http\Controllers\FilmsPageController;
-use App\Http\Controllers\HomePageController;
-use App\Http\Controllers\TrackedFilmController;
-use App\Http\Controllers\UserAvatarController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserFilmTrackedController;
-use App\Http\Controllers\UserFilmWantToWatchController;
-use App\Http\Controllers\UserFilmWatchedController;
-use App\Http\Controllers\WantToWatchFilmController;
-use App\Http\Controllers\WatchedFilmController;
+use App\Http\Controllers\{
+    CopyrightPageController,
+    FilmController,
+    FilmParserController,
+    FilmSearchPageController,
+    FilmsPageController,
+    HomePageController,
+    PrivacyPageController,
+    TrackedFilmController,
+    UserAvatarController,
+    UserController,
+    UserFilmTrackedController,
+    UserFilmWantToWatchController,
+    UserFilmWatchedController,
+    WantToWatchFilmController,
+    WatchedFilmController,
+};
+
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 Route::get('/', HomePageController::class)->name('home');
 Route::get('/films', FilmsPageController::class)->name('films');
 Route::get('/parse', [FilmParserController::class, 'store']);
+Route::get('/privacy', PrivacyPageController::class)->name('privacy');
+Route::get('/copy-right', CopyrightPageController::class)->name('copy-right');
 
 Route::prefix('/film')->group(function () {
     Route::get('/{film}', [FilmController::class, 'show'])->name('film.show');

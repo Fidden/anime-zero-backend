@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\FilmResource;
-use App\Models\Film;
-use App\Models\WantToWatchFilm;
+use App\Models\{
+    Film,
+    WantToWatchFilm
+};
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 

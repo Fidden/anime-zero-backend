@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserLoginRequest;
-use App\Http\Requests\UserStoreRequest;
-use App\Http\Requests\UserUpdateRequest;
+use App\Http\Requests\{UserLoginRequest, UserStoreRequest, UserUpdateRequest};
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Inertia\Inertia;

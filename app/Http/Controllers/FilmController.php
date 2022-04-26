@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FilmSearchQueryRequest;
 use App\Http\Resources\FilmResource;
-use App\Models\Film;
-use App\Models\WantToWatchFilm;
-use App\Models\WatchedFilm;
+use App\Models\{Film, WantToWatchFilm, WatchedFilm};
 use Inertia\Inertia;
 
 class FilmController extends Controller

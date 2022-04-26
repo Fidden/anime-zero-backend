@@ -12,4 +12,9 @@ class RecommendedFilm extends Model
     protected $fillable = [
         'film_id',
     ];
+
+    public function film()
+    {
+        return $this->hasOne(Film::class, 'id', 'film_id');
+    }
 }

@@ -72,7 +72,7 @@ class Film extends Model
         'duration',
     ];
 
-    public function genres()
+    public function genres(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(FilmGenre::class, 'film_id', 'id');
     }

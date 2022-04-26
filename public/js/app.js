@@ -22794,6 +22794,58 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=script&lang=js":
+/*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=script&lang=js ***!
+  \***********************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: 'RecommendedPoster',
+  props: {
+    item: {
+      type: Object,
+      required: true
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=script&lang=js":
+/*!****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=script&lang=js ***!
+  \****************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+//text-overflow: ellipsis;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: 'RecommendedPosterSmall',
+  props: {
+    item: {
+      type: Object,
+      required: true
+    }
+  },
+  computed: {
+    description: function description() {
+      return this.item.film.description;
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/TheFooter.vue?vue&type=script&lang=js":
 /*!***************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/TheFooter.vue?vue&type=script&lang=js ***!
@@ -22954,6 +23006,23 @@ __webpack_require__.r(__webpack_exports__);
       this.profile_form.put(this.route('user.update'));
     }
   }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=script&lang=js":
+/*!**************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=script&lang=js ***!
+  \**************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: 'CopyrightPage'
 });
 
 /***/ }),
@@ -23240,12 +23309,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_FilmCard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/FilmCard */ "./resources/js/components/FilmCard.vue");
 /* harmony import */ var _components_OngoingCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/OngoingCard */ "./resources/js/components/OngoingCard.vue");
 /* harmony import */ var vue_flickity__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-flickity */ "./node_modules/vue-flickity/src/flickity.vue");
+/* harmony import */ var _components_RecommendedPosterSmall__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/RecommendedPosterSmall */ "./resources/js/components/RecommendedPosterSmall.vue");
+/* harmony import */ var _components_RecommendedPoster__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/RecommendedPoster */ "./resources/js/components/RecommendedPoster.vue");
+
+
 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'HomePage',
   components: {
+    RecommendedPoster: _components_RecommendedPoster__WEBPACK_IMPORTED_MODULE_4__["default"],
+    RecommendedPosterSmall: _components_RecommendedPosterSmall__WEBPACK_IMPORTED_MODULE_3__["default"],
     OngoingCard: _components_OngoingCard__WEBPACK_IMPORTED_MODULE_1__["default"],
     FilmCard: _components_FilmCard__WEBPACK_IMPORTED_MODULE_0__["default"],
     Flickity: vue_flickity__WEBPACK_IMPORTED_MODULE_2__["default"]
@@ -23291,10 +23366,27 @@ __webpack_require__.r(__webpack_exports__);
       this.selected_poster = id;
     },
     watchFilm: function watchFilm() {
-      if (this.selected_poster === -1) return;
+      if (this.selected_poster === -1) return this.$inertia.get(this.route('films'));
       this.$inertia.get(this.route('film.show', this.films.best[this.selected_poster].id));
     }
   }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=script&lang=js":
+/*!******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=script&lang=js ***!
+  \******************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: 'PrivacyPolicyPage'
 });
 
 /***/ }),
@@ -24615,6 +24707,136 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=template&id=432dbea6&scoped=true":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=template&id=432dbea6&scoped=true ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+
+var _withScopeId = function _withScopeId(n) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.pushScopeId)("data-v-432dbea6"), n = n(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.popScopeId)(), n;
+};
+
+var _hoisted_1 = ["src", "alt"];
+var _hoisted_2 = {
+  "class": "poster-text-box"
+};
+
+var _hoisted_3 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Смотреть");
+
+var _hoisted_4 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": "backdrop"
+  }, null, -1
+  /* HOISTED */
+  );
+});
+
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _component_BaseButton = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("BaseButton");
+
+  var _component_InertiaLink = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("InertiaLink");
+
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_InertiaLink, {
+    href: _ctx.route('film.show', $props.item.film.id),
+    as: "div",
+    "class": "poster"
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+        src: $props.item.film.poster,
+        alt: $props.item.film.title
+      }, null, 8
+      /* PROPS */
+      , _hoisted_1), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.item.film.title), 1
+      /* TEXT */
+      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.item.film.description) + "...", 1
+      /* TEXT */
+      )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BaseButton, null, {
+        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+          return [_hoisted_3];
+        }),
+        _: 1
+        /* STABLE */
+
+      }), _hoisted_4];
+    }),
+    _: 1
+    /* STABLE */
+
+  }, 8
+  /* PROPS */
+  , ["href"]);
+}
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=template&id=3478a30a&scoped=true":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=template&id=3478a30a&scoped=true ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+
+var _withScopeId = function _withScopeId(n) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.pushScopeId)("data-v-3478a30a"), n = n(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.popScopeId)(), n;
+};
+
+var _hoisted_1 = ["src", "alt"];
+var _hoisted_2 = {
+  "class": "poster-info"
+};
+var _hoisted_3 = {
+  "class": "poster-title"
+};
+var _hoisted_4 = {
+  "class": "poster-description"
+};
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _component_InertiaLink = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("InertiaLink");
+
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_InertiaLink, {
+    href: _ctx.route('film.show', $props.item.film.id),
+    as: "div",
+    "class": "poster-small"
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+        src: $props.item.film.poster,
+        alt: $props.item.film.title
+      }, null, 8
+      /* PROPS */
+      , _hoisted_1), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.item.film.title), 1
+      /* TEXT */
+      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.description) + " ... ", 1
+      /* TEXT */
+      )])];
+    }),
+    _: 1
+    /* STABLE */
+
+  }, 8
+  /* PROPS */
+  , ["href"]);
+}
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/TheFooter.vue?vue&type=template&id=2a04c4de&scoped=true":
 /*!*******************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/TheFooter.vue?vue&type=template&id=2a04c4de&scoped=true ***!
@@ -25176,6 +25398,37 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=template&id=3fb14d3d&scoped=true":
+/*!******************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=template&id=3fb14d3d&scoped=true ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+
+var _withScopeId = function _withScopeId(n) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.pushScopeId)("data-v-3fb14d3d"), n = n(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.popScopeId)(), n;
+};
+
+var _hoisted_1 = {
+  "class": "copyright-container"
+};
+
+var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"copyright-head\" data-v-3fb14d3d><h3 data-v-3fb14d3d>Anime Zero</h3><p data-v-3fb14d3d>/ Для правообладателей</p></div><h2 class=\"copyright-title\" data-v-3fb14d3d> Информация для правообладателей </h2><p class=\"copyright-subtitle\" data-v-3fb14d3d> Деятельность сайта AnimeZero осуществляется в соответствии с законодательством РФ в области защиты информации и авторских прав на предоставляемый контент. </p><div class=\"copyright-body\" data-v-3fb14d3d><p data-v-3fb14d3d> Все размещенные на нашем ресурсе материалы находятся в свободном доступе и могут быть бесплатно скачаны из интернета. Сбор информации в сети и размещение контента производится в автоматическом режиме. </p><p data-v-3fb14d3d> Публикация нелицензионного, похищенного контента и материалов, защищенных авторским правом, не допускается. Администрация размещает только любительские русскоязычные материалы из свободных источников при использовании автоматической системы. </p><p data-v-3fb14d3d> Администрация ресурса предлагает сотрудничество с правообладателями контента. В случае нарушения прав собственности сайт обязуется убрать неправомерно размещенный материал или предложить выгодные условия сотрудничества правообладателю. Если вы обнаружили материал, представленный на нашем сайте, который нарушает ваши авторские права, или же дискредитирует Вашу компанию, предоставляя неверную или искаженную информацию, пожалуйста свяжитесь с нами для решения этого вопроса. </p><p data-v-3fb14d3d> Для этого вы можете обратиться в поддержку или отправить сообщение на нашу корпоративную почту admin@animezero.ru со следующим содержанием: </p><ul data-v-3fb14d3d><li data-v-3fb14d3d>Контактные данные</li><li data-v-3fb14d3d>Реквизиты вашей компании</li><li data-v-3fb14d3d>Прямую ссылку (ссылки) на материал, который вы считаете спорным</li><li data-v-3fb14d3d> Заверенные сканированные копии документов, подтверждающих ваше эксклюзивное право на материал (или копии документов на посреднические услуги) </li></ul><p data-v-3fb14d3d> После проверки всей информации, администрация сайта свяжется с вами для урегулирования спорного вопроса. </p></div>", 4);
+
+var _hoisted_6 = [_hoisted_2];
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, _hoisted_6);
+}
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/FilmPage.vue?vue&type=template&id=25dd233c&scoped=true":
 /*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/FilmPage.vue?vue&type=template&id=25dd233c&scoped=true ***!
@@ -25623,49 +25876,14 @@ var _hoisted_19 = /*#__PURE__*/_withScopeId(function () {
 var _hoisted_20 = {
   "class": "films-block-body films-block-body-big"
 };
-var _hoisted_21 = ["src", "alt"];
-var _hoisted_22 = {
-  "class": "first-text-box"
-};
-
-var _hoisted_23 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Смотреть");
-
-var _hoisted_24 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-    "class": "backdrop"
-  }, null, -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_25 = ["src", "alt"];
-var _hoisted_26 = {
-  "class": "second-info"
-};
-var _hoisted_27 = {
-  "class": "second-info-title"
-};
-var _hoisted_28 = {
-  "class": "second-info-description"
-};
-var _hoisted_29 = ["src", "alt"];
-var _hoisted_30 = {
-  "class": "third-info"
-};
-var _hoisted_31 = {
-  "class": "third-info-title"
-};
-var _hoisted_32 = {
-  "class": "third-info-description"
-};
-var _hoisted_33 = {
+var _hoisted_21 = {
   "class": "main-films-block"
 };
-var _hoisted_34 = {
+var _hoisted_22 = {
   "class": "films-block-head"
 };
 
-var _hoisted_35 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_23 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "films-block-title"
   }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
@@ -25676,9 +25894,9 @@ var _hoisted_35 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_36 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Показать все ");
+var _hoisted_24 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Показать все ");
 
-var _hoisted_37 = {
+var _hoisted_25 = {
   "class": "films-block-body ongoing-block mobile"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -25689,6 +25907,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Flickity = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Flickity");
 
   var _component_FilmCard = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("FilmCard");
+
+  var _component_RecommendedPoster = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("RecommendedPoster");
+
+  var _component_RecommendedPosterSmall = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("RecommendedPosterSmall");
 
   var _component_OngoingCard = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("OngoingCard");
 
@@ -25798,80 +26020,28 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   }, 8
   /* PROPS */
-  , ["options"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), $props.films.recommended.length > 2 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_18, [_hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_InertiaLink, {
-    href: _ctx.route('film.show', $props.films.recommended[0].id),
-    as: "div",
-    "class": "first"
-  }, {
-    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
-        src: $props.films.recommended[0].poster,
-        alt: $props.films.recommended[0].title
-      }, null, 8
-      /* PROPS */
-      , _hoisted_21), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.films.recommended[0].title), 1
-      /* TEXT */
-      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.films.recommended[0].description.slice(0, 200)) + "...", 1
-      /* TEXT */
-      )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BaseButton, null, {
-        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [_hoisted_23];
-        }),
-        _: 1
-        /* STABLE */
-
-      }), _hoisted_24];
-    }),
-    _: 1
-    /* STABLE */
-
-  }, 8
+  , ["options"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), $props.films.recommended.length > 2 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_18, [_hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_RecommendedPoster, {
+    item: $props.films.recommended[0],
+    style: {
+      "grid-area": "first"
+    }
+  }, null, 8
   /* PROPS */
-  , ["href"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_InertiaLink, {
-    href: _ctx.route('film.show', $props.films.recommended[1].id),
-    as: "div",
-    "class": "second"
-  }, {
-    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
-        src: $props.films.recommended[1].poster,
-        alt: $props.films.recommended[1].title
-      }, null, 8
-      /* PROPS */
-      , _hoisted_25), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_27, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.films.recommended[1].title), 1
-      /* TEXT */
-      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_28, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.films.recommended[1].description.slice(0, 150)) + " ... ", 1
-      /* TEXT */
-      )])];
-    }),
-    _: 1
-    /* STABLE */
-
-  }, 8
+  , ["item"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_RecommendedPosterSmall, {
+    item: $props.films.recommended[1],
+    style: {
+      "grid-area": "second"
+    }
+  }, null, 8
   /* PROPS */
-  , ["href"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_InertiaLink, {
-    href: _ctx.route('film.show', $props.films.recommended[2].id),
-    as: "div",
-    "class": "third"
-  }, {
-    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
-        src: $props.films.recommended[2].poster,
-        alt: $props.films.recommended[2].title
-      }, null, 8
-      /* PROPS */
-      , _hoisted_29), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_30, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.films.recommended[2].title), 1
-      /* TEXT */
-      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.films.recommended[2].description.slice(0, 150)) + " ... ", 1
-      /* TEXT */
-      )])];
-    }),
-    _: 1
-    /* STABLE */
-
-  }, 8
+  , ["item"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_RecommendedPosterSmall, {
+    item: $props.films.recommended[2],
+    style: {
+      "grid-area": "third"
+    }
+  }, null, 8
   /* PROPS */
-  , ["href"])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [_hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BaseButton, {
+  , ["item"])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [_hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BaseButton, {
     onClick: _cache[1] || (_cache[1] = function ($event) {
       return _ctx.$inertia.visit(_ctx.route('films', {
         statuses: 'Онгоинг'
@@ -25879,12 +26049,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [_hoisted_36];
+      return [_hoisted_24];
     }),
     _: 1
     /* STABLE */
 
-  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_37, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.films.ongoing, function (ongoing) {
+  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.films.ongoing, function (ongoing) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_OngoingCard, {
       key: ongoing.id,
       item: ongoing
@@ -25921,6 +26091,37 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   , ["options"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])], 64
   /* STABLE_FRAGMENT */
   );
+}
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=template&id=244915d0&scoped=true":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=template&id=244915d0&scoped=true ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+
+var _withScopeId = function _withScopeId(n) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.pushScopeId)("data-v-244915d0"), n = n(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.popScopeId)(), n;
+};
+
+var _hoisted_1 = {
+  "class": "privacy-container"
+};
+
+var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"privacy-head\" data-v-244915d0><h3 data-v-244915d0>Anime Zero</h3><p data-v-244915d0>/ Политика конфиденциальности</p></div><h2 class=\"privacy-title\" data-v-244915d0> Политика конфиденциальности </h2><p class=\"privacy-subtitle\" data-v-244915d0> Мы уверяем вас, что данные, оставленные на нашем сайте не будут подвергаться распространению. </p><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>1. Общие положения</h3><p data-v-244915d0> Настоящая политика обработки персональных данных составлена в соответствии с требованиями Федерального закона от 27.07.2006. №152-ФЗ «О персональных данных» (далее - Закон о персональных данных) и определяет порядок обработки персональных данных и меры по обеспечению безопасности персональных данных, предпринимаемые ООО «AnimeZero» (далее – Оператор). </p><ul data-v-244915d0><li data-v-244915d0> 1.1. Оператор ставит своей важнейшей целью и условием осуществления своей деятельности соблюдение прав и свобод человека и гражданина при обработке его персональных данных, в том числе защиты прав на неприкосновенность частной жизни, личную и семейную тайну. </li><li data-v-244915d0> 1.2. Настоящая политика Оператора в отношении обработки персональных данных (далее – Политика) применяется ко всей информации, которую Оператор может получить о посетителях веб-сайта <a href=\"https://animezero.ru\" data-v-244915d0>https://animezero.ru</a>. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>2. Основные понятия, используемые в Политике</h3><ul data-v-244915d0><li data-v-244915d0> 2.1. Автоматизированная обработка персональных данных – обработка персональных данных с помощью средств вычислительной техники. </li><li data-v-244915d0> 2.2. Блокирование персональных данных – временное прекращение обработки персональных данных (за исключением случаев, если обработка необходима для уточнения персональных данных). </li><li data-v-244915d0> 2.3. Веб-сайт – совокупность графических и информационных материалов, а также программ для ЭВМ и баз данных, обеспечивающих их доступность в сети интернет по сетевому адресу <a href=\"https://animezero.ru\" data-v-244915d0>https://animezero.ru</a>. </li><li data-v-244915d0> 2.4. Информационная система персональных данных — совокупность содержащихся в базах данных персональных данных, и обеспечивающих их обработку информационных технологий и технических средств. </li><li data-v-244915d0> 2.5. Обезличивание персональных данных — действия, в результате которых невозможно определить без использования дополнительной информации принадлежность персональных данных конкретному Пользователю или иному субъекту персональных данных. </li><li data-v-244915d0> 2.6. Обработка персональных данных – любое действие (операция) или совокупность действий (операций), совершаемых с использованием средств автоматизации или без использования таких средств с персональными данными, включая сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передачу (распространение, предоставление, доступ), обезличивание, блокирование, удаление, уничтожение персональных данных. </li><li data-v-244915d0> 2.7. Оператор – государственный орган, муниципальный орган, юридическое или физическое лицо, самостоятельно или совместно с другими лицами организующие и (или) осуществляющие обработку персональных данных, а также определяющие цели обработки персональных данных, состав персональных данных, подлежащих обработке, действия (операции), совершаемые с персональными данными. </li><li data-v-244915d0> 2.8. Персональные данные – любая информация, относящаяся прямо или косвенно к определенному или определяемому Пользователю веб-сайта <a href=\"https://animezero.ru\" data-v-244915d0>https://animezero.ru</a>. </li><li data-v-244915d0> 2.9. Персональные данные, разрешенные субъектом персональных данных для распространения, - персональные данные, доступ неограниченного круга лиц к которым предоставлен субъектом персональных данных путем дачи согласия на обработку персональных данных, разрешенных субъектом персональных данных для распространения в порядке, предусмотренном Законом о персональных данных (далее - персональные данные, разрешенные для распространения). </li><li data-v-244915d0> 2.10. Пользователь – любой посетитель веб-сайта <a href=\"https://animezero.ru\" data-v-244915d0>https://animezero.ru</a>. </li><li data-v-244915d0> 2.11. Предоставление персональных данных – действия, направленные на раскрытие персональных данных определенному лицу или определенному кругу лиц. </li><li data-v-244915d0> 2.12. Распространение персональных данных – любые действия, направленные на раскрытие персональных данных неопределенному кругу лиц (передача персональных данных) или на ознакомление с персональными данными неограниченного круга лиц, в том числе обнародование персональных данных в средствах массовой информации, размещение в информационно-телекоммуникационных сетях или предоставление доступа к персональным данным каким-либо иным способом. </li><li data-v-244915d0> 2.13. Трансграничная передача персональных данных – передача персональных данных на территорию иностранного государства органу власти иностранного государства, иностранному физическому или иностранному юридическому лицу. </li><li data-v-244915d0> 2.14. Уничтожение персональных данных – любые действия, в результате которых персональные данные уничтожаются безвозвратно с невозможностью дальнейшего восстановления содержания персональных данных в информационной системе персональных данных и (или) уничтожаются материальные носители персональных данных. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>3. Основные права и обязанности Оператора</h3><ul data-v-244915d0><li data-v-244915d0> 3.1. Оператор имеет право:<br data-v-244915d0> – получать от субъекта персональных данных достоверные информацию и/или документы, содержащие персональные данные;<br data-v-244915d0> – в случае отзыва субъектом персональных данных согласия на обработку персональных данных Оператор вправе продолжить обработку персональных данных без согласия субъекта персональных данных при наличии оснований, указанных в Законе о персональных данных;<br data-v-244915d0> – самостоятельно определять состав и перечень мер, необходимых и достаточных для обеспечения выполнения обязанностей, предусмотренных Законом о персональных данных и принятыми в соответствии с ним нормативными правовыми актами, если иное не предусмотрено Законом о персональных данных или другими федеральными законами. </li><li data-v-244915d0> 3.2. Оператор обязан:<br data-v-244915d0> – предоставлять субъекту персональных данных по его просьбе информацию, касающуюся обработки его персональных данных;<br data-v-244915d0> – организовывать обработку персональных данных в порядке, установленном действующим законодательством РФ;<br data-v-244915d0> – отвечать на обращения и запросы субъектов персональных данных и их законных представителей в соответствии с требованиями Закона о персональных данных;<br data-v-244915d0> – сообщать в уполномоченный орган по защите прав субъектов персональных данных по запросу этого органа необходимую информацию в течение 30 дней с даты получения такого запроса;<br data-v-244915d0> – публиковать или иным образом обеспечивать неограниченный доступ к настоящей Политике в отношении обработки персональных данных;<br data-v-244915d0> – принимать правовые, организационные и технические меры для защиты персональных данных от неправомерного или случайного доступа к ним, уничтожения, изменения, блокирования, копирования, предоставления, распространения персональных данных, а также от иных неправомерных действий в отношении персональных данных;<br data-v-244915d0> – прекратить передачу (распространение, предоставление, доступ) персональных данных, прекратить обработку и уничтожить персональные данные в порядке и случаях, предусмотренных Законом о персональных данных;<br data-v-244915d0> – исполнять иные обязанности, предусмотренные Законом о персональных данных. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>4. Основные права и обязанности субъектов персональных данных</h3><ul data-v-244915d0><li data-v-244915d0> 4.1. Субъекты персональных данных имеют право:<br data-v-244915d0> – получать информацию, касающуюся обработки его персональных данных, за исключением случаев, предусмотренных федеральными законами. Сведения предоставляются субъекту персональных данных Оператором в доступной форме, и в них не должны содержаться персональные данные, относящиеся к другим субъектам персональных данных, за исключением случаев, когда имеются законные основания для раскрытия таких персональных данных. Перечень информации и порядок ее получения установлен Законом о персональных данных;<br data-v-244915d0> – требовать от оператора уточнения его персональных данных, их блокирования или уничтожения в случае, если персональные данные являются неполными, устаревшими, неточными, незаконно полученными или не являются необходимыми для заявленной цели обработки, а также принимать предусмотренные законом меры по защите своих прав;<br data-v-244915d0> – выдвигать условие предварительного согласия при обработке персональных данных в целях продвижения на рынке товаров, работ и услуг;<br data-v-244915d0> – на отзыв согласия на обработку персональных данных;<br data-v-244915d0> – обжаловать в уполномоченный орган по защите прав субъектов персональных данных или в судебном порядке неправомерные действия или бездействие Оператора при обработке его персональных данных;<br data-v-244915d0> – на осуществление иных прав, предусмотренных законодательством РФ.<br data-v-244915d0></li><li data-v-244915d0> 4.2. Субъекты персональных данных обязаны: – предоставлять Оператору достоверные данные о себе;<br data-v-244915d0> – сообщать Оператору об уточнении (обновлении, изменении) своих персональных данных.<br data-v-244915d0></li><li data-v-244915d0> 4.3. Лица, передавшие Оператору недостоверные сведения о себе, либо сведения о другом субъекте персональных данных без согласия последнего, несут ответственность в соответствии с законодательством РФ. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>5. Оператор может обрабатывать следующие персональные данные Пользователя</h3><ul data-v-244915d0><li data-v-244915d0>5.1. Электронный адрес.</li><li data-v-244915d0> 5.2. Также на сайте происходит сбор и обработка обезличенных данных о посетителях (в т.ч. файлов «cookie») с помощью сервисов интернет-статистики (Яндекс Метрика и Гугл Аналитика и других). </li><li data-v-244915d0> 5.3. Вышеперечисленные данные далее по тексту Политики объединены общим понятием Персональные данные. </li><li data-v-244915d0> 5.4. Обработка специальных категорий персональных данных, касающихся расовой, национальной принадлежности, политических взглядов, религиозных или философских убеждений, интимной жизни, Оператором не осуществляется. </li><li data-v-244915d0> 5.5. Обработка персональных данных, разрешенных для распространения, из числа специальных категорий персональных данных, указанных в ч. 1 ст. 10 Закона о персональных данных, допускается, если соблюдаются запреты и условия, предусмотренные ст. 10.1 Закона о персональных данных. </li><li data-v-244915d0> 5.6. Согласие Пользователя на обработку персональных данных, разрешенных для распространения, оформляется отдельно от других согласий на обработку его персональных данных. При этом соблюдаются условия, предусмотренные, в частности, ст. 10.1 Закона о персональных данных. Требования к содержанию такого согласия устанавливаются уполномоченным органом по защите прав субъектов персональных данных. </li><ul data-v-244915d0><li data-v-244915d0> 5.6.1 Согласие на обработку персональных данных, разрешенных для распространения, Пользователь предоставляет Оператору непосредственно. </li><li data-v-244915d0> 5.6.2 Оператор обязан в срок не позднее трех рабочих дней с момента получения указанного согласия Пользователя опубликовать информацию об условиях обработки, о наличии запретов и условий на обработку неограниченным кругом лиц персональных данных, разрешенных для распространения. </li><li data-v-244915d0> 5.6.3 Передача (распространение, предоставление, доступ) персональных данных, разрешенных субъектом персональных данных для распространения, должна быть прекращена в любое время по требованию субъекта персональных данных. Данное требование должно включать в себя фамилию, имя, отчество (при наличии), контактную информацию (номер телефона, адрес электронной почты или почтовый адрес) субъекта персональных данных, а также перечень персональных данных, обработка которых подлежит прекращению. Указанные в данном требовании персональные данные могут обрабатываться только Оператором, которому оно направлено. </li><li data-v-244915d0> 5.6.4 Согласие на обработку персональных данных, разрешенных для распространения, прекращает свое действие с момента поступления Оператору требования, указанного в п. 5.6.3 настоящей Политики в отношении обработки персональных данных. </li></ul></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>6. Принципы обработки персональных данных</h3><ul data-v-244915d0><li data-v-244915d0>6.1. Обработка персональных данных осуществляется на законной и справедливой основе.</li><li data-v-244915d0> 6.2. Обработка персональных данных ограничивается достижением конкретных, заранее определенных и законных целей. Не допускается обработка персональных данных, несовместимая с целями сбора персональных данных. </li><li data-v-244915d0> 6.3. Не допускается объединение баз данных, содержащих персональные данные, обработка которых осуществляется в целях, несовместимых между собой. </li><li data-v-244915d0>6.4. Обработке подлежат только персональные данные, которые отвечают целям их обработки.</li><li data-v-244915d0> 6.5. Содержание и объем обрабатываемых персональных данных соответствуют заявленным целям обработки. Не допускается избыточность обрабатываемых персональных данных по отношению к заявленным целям их обработки. </li><li data-v-244915d0> 6.6. При обработке персональных данных обеспечивается точность персональных данных, их достаточность, а в необходимых случаях и актуальность по отношению к целям обработки персональных данных. Оператор принимает необходимые меры и/или обеспечивает их принятие по удалению или уточнению неполных или неточных данных. </li><li data-v-244915d0> 6.7. Хранение персональных данных осуществляется в форме, позволяющей определить субъекта персональных данных, не дольше, чем этого требуют цели обработки персональных данных, если срок хранения персональных данных не установлен федеральным законом, договором, стороной которого, выгодоприобретателем или поручителем по которому является субъект персональных данных. Обрабатываемые персональные данные уничтожаются либо обезличиваются по достижении целей обработки или в случае утраты необходимости в достижении этих целей, если иное не предусмотрено федеральным законом. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>7. Цели обработки персональных данных</h3><ul data-v-244915d0><li data-v-244915d0> 7.1. Цель обработки персональных данных Пользователя:<br data-v-244915d0> – информирование Пользователя посредством отправки электронных писем;<br data-v-244915d0> – предоставление доступа Пользователю к сервисам, информации и/или материалам, содержащимся на веб-сайте <a href=\"https://animezero.ru\" data-v-244915d0>https://animezero.ru</a>. </li><li data-v-244915d0> 7.2. Также Оператор имеет право направлять Пользователю уведомления о новых продуктах и услугах, специальных предложениях и различных событиях. Пользователь всегда может отказаться от получения информационных сообщений, направив Оператору письмо на адрес электронной почты <a href=\"mailto:admin@animezero.ru\" data-v-244915d0>admin@animezero.ru</a> с пометкой «Отказ от уведомлений о новых продуктах и услугах и специальных предложениях». </li><li data-v-244915d0> 7.3. Обезличенные данные Пользователей, собираемые с помощью сервисов интернет-статистики, служат для сбора информации о действиях Пользователей на сайте, улучшения качества сайта и его содержания. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>8. Правовые основания обработки персональных данных</h3><ul data-v-244915d0><li data-v-244915d0> 8.1. Правовыми основаниями обработки персональных данных Оператором являются:<br data-v-244915d0> – перечислите нормативно-правовые акты, регулирующие отношения, связанные с вашей деятельностью, например, если ваша деятельность связана с информационными технологиями, в частности с созданием сайтов, то здесь можно указать Федеральный закон &quot;Об информации, информационных технологиях и о защите информации&quot; от 27.07.2006 N 149-ФЗ;<br data-v-244915d0> – уставные документы Оператора;<br data-v-244915d0> – договоры, заключаемые между оператором и субъектом персональных данных;<br data-v-244915d0> – федеральные законы, иные нормативно-правовые акты в сфере защиты персональных данных;<br data-v-244915d0> – согласия Пользователей на обработку их персональных данных, на обработку персональных данных, разрешенных для распространения. </li><li data-v-244915d0> 8.2. Оператор обрабатывает персональные данные Пользователя только в случае их заполнения и/или отправки Пользователем самостоятельно через специальные формы, расположенные на сайте https://animezero.ru или направленные Оператору посредством электронной почты. Заполняя соответствующие формы и/или отправляя свои персональные данные Оператору, Пользователь выражает свое согласие с данной Политикой. </li><li data-v-244915d0> 8.3. Оператор обрабатывает обезличенные данные о Пользователе в случае, если это разрешено в настройках браузера Пользователя (включено сохранение файлов «cookie» и использование технологии JavaScript). </li><li data-v-244915d0> 8.4. Субъект персональных данных самостоятельно принимает решение о предоставлении его персональных данных и дает согласие свободно, своей волей и в своем интересе. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>9. Условия обработки персональных данных</h3><ul data-v-244915d0><li data-v-244915d0> 9.1. Обработка персональных данных осуществляется с согласия субъекта персональных данных на обработку его персональных данных. </li><li data-v-244915d0> 9.2. Обработка персональных данных необходима для достижения целей, предусмотренных международным договором Российской Федерации или законом, для осуществления возложенных законодательством Российской Федерации на оператора функций, полномочий и обязанностей. </li><li data-v-244915d0> 9.3. Обработка персональных данных необходима для осуществления правосудия, исполнения судебного акта, акта другого органа или должностного лица, подлежащих исполнению в соответствии с законодательством Российской Федерации об исполнительном производстве. </li><li data-v-244915d0> 9.4. Обработка персональных данных необходима для исполнения договора, стороной которого либо выгодоприобретателем или поручителем по которому является субъект персональных данных, а также для заключения договора по инициативе субъекта персональных данных или договора, по которому субъект персональных данных будет являться выгодоприобретателем или поручителем. </li><li data-v-244915d0> 9.5. Обработка персональных данных необходима для осуществления прав и законных интересов оператора или третьих лиц либо для достижения общественно значимых целей при условии, что при этом не нарушаются права и свободы субъекта персональных данных. </li><li data-v-244915d0> 9.6. Осуществляется обработка персональных данных, доступ неограниченного круга лиц к которым предоставлен субъектом персональных данных либо по его просьбе (далее – общедоступные персональные данные). </li><li data-v-244915d0> 9.7. Осуществляется обработка персональных данных, подлежащих опубликованию или обязательному раскрытию в соответствии с федеральным законом. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>10. Порядок сбора, хранения, передачи и других видов обработки персональных данных</h3><p data-v-244915d0> Безопасность персональных данных, которые обрабатываются Оператором, обеспечивается путем реализации правовых, организационных и технических мер, необходимых для выполнения в полном объеме требований действующего законодательства в области защиты персональных данных. </p><ul data-v-244915d0><li data-v-244915d0> 10.1. Оператор обеспечивает сохранность персональных данных и принимает все возможные меры, исключающие доступ к персональным данным неуполномоченных лиц. </li><li data-v-244915d0> 10.2. Персональные данные Пользователя никогда, ни при каких условиях не будут переданы третьим лицам, за исключением случаев, связанных с исполнением действующего законодательства либо в случае, если субъектом персональных данных дано согласие Оператору на передачу данных третьему лицу для исполнения обязательств по гражданско-правовому договору. </li><li data-v-244915d0> 10.3. В случае выявления неточностей в персональных данных, Пользователь может актуализировать их самостоятельно, путем направления Оператору уведомление на адрес электронной почты Оператора <a href=\"mailto:admin@animezero.ru\" data-v-244915d0>admin@animezero.ru</a> с пометкой «Актуализация персональных данных». </li><li data-v-244915d0> 10.4. Срок обработки персональных данных определяется достижением целей, для которых были собраны персональные данные, если иной срок не предусмотрен договором или действующим законодательством. Пользователь может в любой момент отозвать свое согласие на обработку персональных данных, направив Оператору уведомление посредством электронной почты на электронный адрес Оператора <a href=\"mailto:admin@animezero.ru\" data-v-244915d0>admin@animezero.ru</a> с пометкой «Отзыв согласия на обработку персональных данных». </li><li data-v-244915d0> 10.5. Вся информация, которая собирается сторонними сервисами, в том числе платежными системами, средствами связи и другими поставщиками услуг, хранится и обрабатывается указанными лицами (Операторами) в соответствии с их Пользовательским соглашением и Политикой конфиденциальности. Субъект персональных данных и/или Пользователь обязан самостоятельно своевременно ознакомиться с указанными документами. Оператор не несет ответственность за действия третьих лиц, в том числе указанных в настоящем пункте поставщиков услуг. </li><li data-v-244915d0> 10.6. Установленные субъектом персональных данных запреты на передачу (кроме предоставления доступа), а также на обработку или условия обработки (кроме получения доступа) персональных данных, разрешенных для распространения, не действуют в случаях обработки персональных данных в государственных, общественных и иных публичных интересах, определенных законодательством РФ. </li><li data-v-244915d0> 10.7. Оператор при обработке персональных данных обеспечивает конфиденциальность персональных данных. </li><li data-v-244915d0> 10.8. Оператор осуществляет хранение персональных данных в форме, позволяющей определить субъекта персональных данных, не дольше, чем этого требуют цели обработки персональных данных, если срок хранения персональных данных не установлен федеральным законом, договором, стороной которого, выгодоприобретателем или поручителем по которому является субъект персональных данных. </li><li data-v-244915d0> 10.9. Условием прекращения обработки персональных данных может являться достижение целей обработки персональных данных, истечение срока действия согласия субъекта персональных данных или отзыв согласия субъектом персональных данных, а также выявление неправомерной обработки персональных данных. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>11. Перечень действий, производимых Оператором с полученными персональными данными</h3><ul data-v-244915d0><li data-v-244915d0> 11.1. Оператор осуществляет сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передачу (распространение, предоставление, доступ), обезличивание, блокирование, удаление и уничтожение персональных данных. </li><li data-v-244915d0> 11.2. Оператор осуществляет автоматизированную обработку персональных данных с получением и/или передачей полученной информации по информационно-телекоммуникационным сетям или без таковой. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>12. Трансграничная передача персональных данных</h3><ul data-v-244915d0><li data-v-244915d0> 12.1. Оператор до начала осуществления трансграничной передачи персональных данных обязан убедиться в том, что иностранным государством, на территорию которого предполагается осуществлять передачу персональных данных, обеспечивается надежная защита прав субъектов персональных данных. </li> 12.2. Трансграничная передача персональных данных на территории иностранных государств, не отвечающих <li data-v-244915d0> вышеуказанным требованиям, может осуществляться только в случае наличия согласия в письменной форме субъекта персональных данных на трансграничную передачу его персональных данных и/или исполнения договора, стороной которого является субъект персональных данных. </li></ul></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>13. Конфиденциальность персональных данных</h3><p data-v-244915d0> Оператор и иные лица, получившие доступ к персональным данным, обязаны не раскрывать третьим лицам и не распространять персональные данные без согласия субъекта персональных данных, если иное не предусмотрено федеральным законом. </p></div><div class=\"privacy-block\" data-v-244915d0><h3 data-v-244915d0>14. Заключительные положения</h3><ul data-v-244915d0><li data-v-244915d0> 14.1. Пользователь может получить любые разъяснения по интересующим вопросам, касающимся обработки его персональных данных, обратившись к Оператору с помощью электронной почты <a href=\"mailto:admin@animezero.ru\" data-v-244915d0>admin@animezero.ru</a>. </li><li data-v-244915d0> 14.2. В данном документе будут отражены любые изменения политики обработки персональных данных Оператором. Политика действует бессрочно до замены ее новой версией. </li><li data-v-244915d0> 14.3. Актуальная версия Политики в свободном доступе расположена в сети Интернет по адресу <a href=\"https://animezero.ru/privacy\" data-v-244915d0>https://animezero.ru/privacy</a>. </li></ul></div>", 17);
+
+var _hoisted_19 = [_hoisted_2];
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, _hoisted_19);
 }
 
 /***/ }),
@@ -26273,32 +26474,32 @@ __webpack_require__.r(__webpack_exports__);
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
-!function (t, n) {
-  'object' == ( false ? 0 : _typeof(exports)) && 'undefined' != "object" ? n(exports) :  true ? !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (n),
+!function (t, r) {
+  "object" == ( false ? 0 : _typeof(exports)) && "undefined" != "object" ? r(exports) :  true ? !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (r),
 		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : 0;
 }(this, function (t) {
-  function n(t, n) {
-    for (var r = 0; r < n.length; r++) {
-      var e = n[r];
-      e.enumerable = e.enumerable || !1, e.configurable = !0, 'value' in e && (e.writable = !0), Object.defineProperty(t, e.key, e);
+  function r(t, r) {
+    for (var n = 0; n < r.length; n++) {
+      var e = r[n];
+      e.enumerable = e.enumerable || !1, e.configurable = !0, "value" in e && (e.writable = !0), Object.defineProperty(t, e.key, e);
     }
   }
 
-  function r(t, r, e) {
-    return r && n(t.prototype, r), e && n(t, e), Object.defineProperty(t, 'prototype', {
+  function n(t, n, e) {
+    return n && r(t.prototype, n), e && r(t, e), Object.defineProperty(t, "prototype", {
       writable: !1
     }), t;
   }
 
   function e() {
     return e = Object.assign || function (t) {
-      for (var n = 1; n < arguments.length; n++) {
-        var r = arguments[n];
+      for (var r = 1; r < arguments.length; r++) {
+        var n = arguments[r];
 
-        for (var e in r) {
-          Object.prototype.hasOwnProperty.call(r, e) && (t[e] = r[e]);
+        for (var e in n) {
+          Object.prototype.hasOwnProperty.call(n, e) && (t[e] = n[e]);
         }
       }
 
@@ -26306,22 +26507,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }, e.apply(this, arguments);
   }
 
-  function i(t) {
-    return i = Object.setPrototypeOf ? Object.getPrototypeOf : function (t) {
+  function o(t) {
+    return o = Object.setPrototypeOf ? Object.getPrototypeOf : function (t) {
       return t.__proto__ || Object.getPrototypeOf(t);
-    }, i(t);
+    }, o(t);
   }
 
-  function o(t, n) {
-    return o = Object.setPrototypeOf || function (t, n) {
-      return t.__proto__ = n, t;
-    }, o(t, n);
+  function i(t, r) {
+    return i = Object.setPrototypeOf || function (t, r) {
+      return t.__proto__ = r, t;
+    }, i(t, r);
   }
 
   function u() {
-    if ('undefined' == typeof Reflect || !Reflect.construct) return !1;
+    if ("undefined" == typeof Reflect || !Reflect.construct) return !1;
     if (Reflect.construct.sham) return !1;
-    if ('function' == typeof Proxy) return !0;
+    if ("function" == typeof Proxy) return !0;
 
     try {
       return Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})), !0;
@@ -26330,118 +26531,118 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
   }
 
-  function f(t, n, r) {
-    return f = u() ? Reflect.construct : function (t, n, r) {
+  function f(t, r, n) {
+    return f = u() ? Reflect.construct : function (t, r, n) {
       var e = [null];
-      e.push.apply(e, n);
-      var i = new (Function.bind.apply(t, e))();
-      return r && o(i, r.prototype), i;
+      e.push.apply(e, r);
+      var o = new (Function.bind.apply(t, e))();
+      return n && i(o, n.prototype), o;
     }, f.apply(null, arguments);
   }
 
-  function c(t) {
-    var n = 'function' == typeof Map ? new Map() : void 0;
-    return c = function c(t) {
-      if (null === t || -1 === Function.toString.call(t).indexOf('[native code]')) return t;
-      if ('function' != typeof t) throw new TypeError('Super expression must either be null or a function');
+  function a(t) {
+    var r = "function" == typeof Map ? new Map() : void 0;
+    return a = function a(t) {
+      if (null === t || -1 === Function.toString.call(t).indexOf("[native code]")) return t;
+      if ("function" != typeof t) throw new TypeError("Super expression must either be null or a function");
 
-      if (void 0 !== n) {
-        if (n.has(t)) return n.get(t);
-        n.set(t, r);
+      if (void 0 !== r) {
+        if (r.has(t)) return r.get(t);
+        r.set(t, n);
       }
 
-      function r() {
-        return f(t, arguments, i(this).constructor);
+      function n() {
+        return f(t, arguments, o(this).constructor);
       }
 
-      return r.prototype = Object.create(t.prototype, {
+      return n.prototype = Object.create(t.prototype, {
         constructor: {
-          value: r,
+          value: n,
           enumerable: !1,
           writable: !0,
           configurable: !0
         }
-      }), o(r, t);
-    }, c(t);
+      }), i(n, t);
+    }, a(t);
   }
 
-  var a = String.prototype.replace,
+  var c = String.prototype.replace,
       l = /%20/g,
-      s = 'RFC3986',
-      v = {
+      s = "RFC3986",
+      p = {
     "default": s,
     formatters: {
       RFC1738: function RFC1738(t) {
-        return a.call(t, l, '+');
+        return c.call(t, l, "+");
       },
       RFC3986: function RFC3986(t) {
         return String(t);
       }
     },
-    RFC1738: 'RFC1738',
+    RFC1738: "RFC1738",
     RFC3986: s
   },
-      p = Object.prototype.hasOwnProperty,
-      d = Array.isArray,
-      y = function () {
-    for (var t = [], n = 0; n < 256; ++n) {
-      t.push('%' + ((n < 16 ? '0' : '') + n.toString(16)).toUpperCase());
+      v = Object.prototype.hasOwnProperty,
+      y = Array.isArray,
+      d = function () {
+    for (var t = [], r = 0; r < 256; ++r) {
+      t.push("%" + ((r < 16 ? "0" : "") + r.toString(16)).toUpperCase());
     }
 
     return t;
   }(),
-      h = function h(t, n) {
-    for (var r = n && n.plainObjects ? Object.create(null) : {}, e = 0; e < t.length; ++e) {
-      void 0 !== t[e] && (r[e] = t[e]);
+      b = function b(t, r) {
+    for (var n = r && r.plainObjects ? Object.create(null) : {}, e = 0; e < t.length; ++e) {
+      void 0 !== t[e] && (n[e] = t[e]);
     }
 
-    return r;
+    return n;
   },
-      b = {
-    arrayToObject: h,
-    assign: function assign(t, n) {
-      return Object.keys(n).reduce(function (t, r) {
-        return t[r] = n[r], t;
+      h = {
+    arrayToObject: b,
+    assign: function assign(t, r) {
+      return Object.keys(r).reduce(function (t, n) {
+        return t[n] = r[n], t;
       }, t);
     },
-    combine: function combine(t, n) {
-      return [].concat(t, n);
+    combine: function combine(t, r) {
+      return [].concat(t, r);
     },
     compact: function compact(t) {
-      for (var n = [{
+      for (var r = [{
         obj: {
           o: t
         },
-        prop: 'o'
-      }], r = [], e = 0; e < n.length; ++e) {
-        for (var i = n[e], o = i.obj[i.prop], u = Object.keys(o), f = 0; f < u.length; ++f) {
-          var c = u[f],
-              a = o[c];
-          'object' == _typeof(a) && null !== a && -1 === r.indexOf(a) && (n.push({
-            obj: o,
-            prop: c
-          }), r.push(a));
+        prop: "o"
+      }], n = [], e = 0; e < r.length; ++e) {
+        for (var o = r[e], i = o.obj[o.prop], u = Object.keys(i), f = 0; f < u.length; ++f) {
+          var a = u[f],
+              c = i[a];
+          "object" == _typeof(c) && null !== c && -1 === n.indexOf(c) && (r.push({
+            obj: i,
+            prop: a
+          }), n.push(c));
         }
       }
 
       return function (t) {
         for (; t.length > 1;) {
-          var n = t.pop(),
-              r = n.obj[n.prop];
+          var r = t.pop(),
+              n = r.obj[r.prop];
 
-          if (d(r)) {
-            for (var e = [], i = 0; i < r.length; ++i) {
-              void 0 !== r[i] && e.push(r[i]);
+          if (y(n)) {
+            for (var e = [], o = 0; o < n.length; ++o) {
+              void 0 !== n[o] && e.push(n[o]);
             }
 
-            n.obj[n.prop] = e;
+            r.obj[r.prop] = e;
           }
         }
-      }(n), t;
+      }(r), t;
     },
-    decode: function decode(t, n, r) {
-      var e = t.replace(/\+/g, ' ');
-      if ('iso-8859-1' === r) return e.replace(/%[0-9a-f]{2}/gi, unescape);
+    decode: function decode(t, r, n) {
+      var e = t.replace(/\+/g, " ");
+      if ("iso-8859-1" === n) return e.replace(/%[0-9a-f]{2}/gi, unescape);
 
       try {
         return decodeURIComponent(e);
@@ -26449,162 +26650,162 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         return e;
       }
     },
-    encode: function encode(t, n, r, e, i) {
+    encode: function encode(t, r, n, e, o) {
       if (0 === t.length) return t;
-      var o = t;
-      if ('symbol' == _typeof(t) ? o = Symbol.prototype.toString.call(t) : 'string' != typeof t && (o = String(t)), 'iso-8859-1' === r) return escape(o).replace(/%u[0-9a-f]{4}/gi, function (t) {
-        return '%26%23' + parseInt(t.slice(2), 16) + '%3B';
+      var i = t;
+      if ("symbol" == _typeof(t) ? i = Symbol.prototype.toString.call(t) : "string" != typeof t && (i = String(t)), "iso-8859-1" === n) return escape(i).replace(/%u[0-9a-f]{4}/gi, function (t) {
+        return "%26%23" + parseInt(t.slice(2), 16) + "%3B";
       });
 
-      for (var u = '', f = 0; f < o.length; ++f) {
-        var c = o.charCodeAt(f);
-        45 === c || 46 === c || 95 === c || 126 === c || c >= 48 && c <= 57 || c >= 65 && c <= 90 || c >= 97 && c <= 122 || i === v.RFC1738 && (40 === c || 41 === c) ? u += o.charAt(f) : c < 128 ? u += y[c] : c < 2048 ? u += y[192 | c >> 6] + y[128 | 63 & c] : c < 55296 || c >= 57344 ? u += y[224 | c >> 12] + y[128 | c >> 6 & 63] + y[128 | 63 & c] : (c = 65536 + ((1023 & c) << 10 | 1023 & o.charCodeAt(f += 1)), u += y[240 | c >> 18] + y[128 | c >> 12 & 63] + y[128 | c >> 6 & 63] + y[128 | 63 & c]);
+      for (var u = "", f = 0; f < i.length; ++f) {
+        var a = i.charCodeAt(f);
+        45 === a || 46 === a || 95 === a || 126 === a || a >= 48 && a <= 57 || a >= 65 && a <= 90 || a >= 97 && a <= 122 || o === p.RFC1738 && (40 === a || 41 === a) ? u += i.charAt(f) : a < 128 ? u += d[a] : a < 2048 ? u += d[192 | a >> 6] + d[128 | 63 & a] : a < 55296 || a >= 57344 ? u += d[224 | a >> 12] + d[128 | a >> 6 & 63] + d[128 | 63 & a] : (a = 65536 + ((1023 & a) << 10 | 1023 & i.charCodeAt(f += 1)), u += d[240 | a >> 18] + d[128 | a >> 12 & 63] + d[128 | a >> 6 & 63] + d[128 | 63 & a]);
       }
 
       return u;
     },
     isBuffer: function isBuffer(t) {
-      return !(!t || 'object' != _typeof(t) || !(t.constructor && t.constructor.isBuffer && t.constructor.isBuffer(t)));
+      return !(!t || "object" != _typeof(t) || !(t.constructor && t.constructor.isBuffer && t.constructor.isBuffer(t)));
     },
     isRegExp: function isRegExp(t) {
-      return '[object RegExp]' === Object.prototype.toString.call(t);
+      return "[object RegExp]" === Object.prototype.toString.call(t);
     },
-    maybeMap: function maybeMap(t, n) {
-      if (d(t)) {
-        for (var r = [], e = 0; e < t.length; e += 1) {
-          r.push(n(t[e]));
+    maybeMap: function maybeMap(t, r) {
+      if (y(t)) {
+        for (var n = [], e = 0; e < t.length; e += 1) {
+          n.push(r(t[e]));
         }
 
-        return r;
-      }
-
-      return n(t);
-    },
-    merge: function t(n, r, e) {
-      if (!r) return n;
-
-      if ('object' != _typeof(r)) {
-        if (d(n)) n.push(r);else {
-          if (!n || 'object' != _typeof(n)) return [n, r];
-          (e && (e.plainObjects || e.allowPrototypes) || !p.call(Object.prototype, r)) && (n[r] = !0);
-        }
         return n;
       }
 
-      if (!n || 'object' != _typeof(n)) return [n].concat(r);
-      var i = n;
-      return d(n) && !d(r) && (i = h(n, e)), d(n) && d(r) ? (r.forEach(function (r, i) {
-        if (p.call(n, i)) {
-          var o = n[i];
-          o && 'object' == _typeof(o) && r && 'object' == _typeof(r) ? n[i] = t(o, r, e) : n.push(r);
-        } else n[i] = r;
-      }), n) : Object.keys(r).reduce(function (n, i) {
-        var o = r[i];
-        return n[i] = p.call(n, i) ? t(n[i], o, e) : o, n;
-      }, i);
+      return r(t);
+    },
+    merge: function t(r, n, e) {
+      if (!n) return r;
+
+      if ("object" != _typeof(n)) {
+        if (y(r)) r.push(n);else {
+          if (!r || "object" != _typeof(r)) return [r, n];
+          (e && (e.plainObjects || e.allowPrototypes) || !v.call(Object.prototype, n)) && (r[n] = !0);
+        }
+        return r;
+      }
+
+      if (!r || "object" != _typeof(r)) return [r].concat(n);
+      var o = r;
+      return y(r) && !y(n) && (o = b(r, e)), y(r) && y(n) ? (n.forEach(function (n, o) {
+        if (v.call(r, o)) {
+          var i = r[o];
+          i && "object" == _typeof(i) && n && "object" == _typeof(n) ? r[o] = t(i, n, e) : r.push(n);
+        } else r[o] = n;
+      }), r) : Object.keys(n).reduce(function (r, o) {
+        var i = n[o];
+        return r[o] = v.call(r, o) ? t(r[o], i, e) : i, r;
+      }, o);
     }
   },
-      g = Object.prototype.hasOwnProperty,
-      m = {
+      m = Object.prototype.hasOwnProperty,
+      g = {
     brackets: function brackets(t) {
-      return t + '[]';
+      return t + "[]";
     },
-    comma: 'comma',
-    indices: function indices(t, n) {
-      return t + '[' + n + ']';
+    comma: "comma",
+    indices: function indices(t, r) {
+      return t + "[" + r + "]";
     },
     repeat: function repeat(t) {
       return t;
     }
   },
       j = Array.isArray,
-      O = String.prototype.split,
-      w = Array.prototype.push,
-      R = function R(t, n) {
-    w.apply(t, j(n) ? n : [n]);
+      w = String.prototype.split,
+      O = Array.prototype.push,
+      E = function E(t, r) {
+    O.apply(t, j(r) ? r : [r]);
   },
-      E = Date.prototype.toISOString,
-      S = v["default"],
-      k = {
+      R = Date.prototype.toISOString,
+      S = p["default"],
+      x = {
     addQueryPrefix: !1,
     allowDots: !1,
-    charset: 'utf-8',
+    charset: "utf-8",
     charsetSentinel: !1,
-    delimiter: '&',
+    delimiter: "&",
     encode: !0,
-    encoder: b.encode,
+    encoder: h.encode,
     encodeValuesOnly: !1,
     format: S,
-    formatter: v.formatters[S],
+    formatter: p.formatters[S],
     indices: !1,
     serializeDate: function serializeDate(t) {
-      return E.call(t);
+      return R.call(t);
     },
     skipNulls: !1,
     strictNullHandling: !1
   },
-      x = function t(n, r, e, i, o, u, f, c, a, l, s, v, p, d) {
-    var y,
-        h = n;
+      T = function t(r, n, e, o, i, u, f, a, c, l, s, p, v, y) {
+    var d,
+        b = r;
 
-    if ('function' == typeof f ? h = f(r, h) : h instanceof Date ? h = l(h) : 'comma' === e && j(h) && (h = b.maybeMap(h, function (t) {
+    if ("function" == typeof f ? b = f(n, b) : b instanceof Date ? b = l(b) : "comma" === e && j(b) && (b = h.maybeMap(b, function (t) {
       return t instanceof Date ? l(t) : t;
-    })), null === h) {
-      if (i) return u && !p ? u(r, k.encoder, d, 'key', s) : r;
-      h = '';
+    })), null === b) {
+      if (o) return u && !v ? u(n, x.encoder, y, "key", s) : n;
+      b = "";
     }
 
-    if ('string' == typeof (y = h) || 'number' == typeof y || 'boolean' == typeof y || 'symbol' == _typeof(y) || 'bigint' == typeof y || b.isBuffer(h)) {
+    if ("string" == typeof (d = b) || "number" == typeof d || "boolean" == typeof d || "symbol" == _typeof(d) || "bigint" == typeof d || h.isBuffer(b)) {
       if (u) {
-        var g = p ? r : u(r, k.encoder, d, 'key', s);
+        var m = v ? n : u(n, x.encoder, y, "key", s);
 
-        if ('comma' === e && p) {
-          for (var m = O.call(String(h), ','), w = '', E = 0; E < m.length; ++E) {
-            w += (0 === E ? '' : ',') + v(u(m[E], k.encoder, d, 'value', s));
+        if ("comma" === e && v) {
+          for (var g = w.call(String(b), ","), O = "", R = 0; R < g.length; ++R) {
+            O += (0 === R ? "" : ",") + p(u(g[R], x.encoder, y, "value", s));
           }
 
-          return [v(g) + '=' + w];
+          return [p(m) + "=" + O];
         }
 
-        return [v(g) + '=' + v(u(h, k.encoder, d, 'value', s))];
+        return [p(m) + "=" + p(u(b, x.encoder, y, "value", s))];
       }
 
-      return [v(r) + '=' + v(String(h))];
+      return [p(n) + "=" + p(String(b))];
     }
 
     var S,
-        x = [];
-    if (void 0 === h) return x;
-    if ('comma' === e && j(h)) S = [{
-      value: h.length > 0 ? h.join(',') || null : void 0
+        T = [];
+    if (void 0 === b) return T;
+    if ("comma" === e && j(b)) S = [{
+      value: b.length > 0 ? b.join(",") || null : void 0
     }];else if (j(f)) S = f;else {
-      var T = Object.keys(h);
-      S = c ? T.sort(c) : T;
+      var k = Object.keys(b);
+      S = a ? k.sort(a) : k;
     }
 
-    for (var C = 0; C < S.length; ++C) {
-      var N = S[C],
-          F = 'object' == _typeof(N) && void 0 !== N.value ? N.value : h[N];
+    for (var N = 0; N < S.length; ++N) {
+      var C = S[N],
+          D = "object" == _typeof(C) && void 0 !== C.value ? C.value : b[C];
 
-      if (!o || null !== F) {
-        var D = j(h) ? 'function' == typeof e ? e(r, N) : r : r + (a ? '.' + N : '[' + N + ']');
-        R(x, t(F, D, e, i, o, u, f, c, a, l, s, v, p, d));
+      if (!i || null !== D) {
+        var F = j(b) ? "function" == typeof e ? e(n, C) : n : n + (c ? "." + C : "[" + C + "]");
+        E(T, t(D, F, e, o, i, u, f, a, c, l, s, p, v, y));
       }
     }
 
-    return x;
+    return T;
   },
-      T = Object.prototype.hasOwnProperty,
-      C = Array.isArray,
-      N = {
+      k = Object.prototype.hasOwnProperty,
+      N = Array.isArray,
+      C = {
     allowDots: !1,
     allowPrototypes: !1,
     arrayLimit: 20,
-    charset: 'utf-8',
+    charset: "utf-8",
     charsetSentinel: !1,
     comma: !1,
-    decoder: b.decode,
-    delimiter: '&',
+    decoder: h.decode,
+    delimiter: "&",
     depth: 5,
     ignoreQueryPrefix: !1,
     interpretNumericEntities: !1,
@@ -26613,332 +26814,372 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     plainObjects: !1,
     strictNullHandling: !1
   },
-      F = function F(t) {
-    return t.replace(/&#(\d+);/g, function (t, n) {
-      return String.fromCharCode(parseInt(n, 10));
+      D = function D(t) {
+    return t.replace(/&#(\d+);/g, function (t, r) {
+      return String.fromCharCode(parseInt(r, 10));
     });
   },
-      D = function D(t, n) {
-    return t && 'string' == typeof t && n.comma && t.indexOf(',') > -1 ? t.split(',') : t;
+      F = function F(t, r) {
+    return t && "string" == typeof t && r.comma && t.indexOf(",") > -1 ? t.split(",") : t;
   },
-      $ = function $(t, n, r, e) {
+      $ = function $(t, r, n, e) {
     if (t) {
-      var i = r.allowDots ? t.replace(/\.([^.[]+)/g, '[$1]') : t,
-          o = /(\[[^[\]]*])/g,
-          u = r.depth > 0 && /(\[[^[\]]*])/.exec(i),
-          f = u ? i.slice(0, u.index) : i,
-          c = [];
+      var o = n.allowDots ? t.replace(/\.([^.[]+)/g, "[$1]") : t,
+          i = /(\[[^[\]]*])/g,
+          u = n.depth > 0 && /(\[[^[\]]*])/.exec(o),
+          f = u ? o.slice(0, u.index) : o,
+          a = [];
 
       if (f) {
-        if (!r.plainObjects && T.call(Object.prototype, f) && !r.allowPrototypes) return;
-        c.push(f);
+        if (!n.plainObjects && k.call(Object.prototype, f) && !n.allowPrototypes) return;
+        a.push(f);
       }
 
-      for (var a = 0; r.depth > 0 && null !== (u = o.exec(i)) && a < r.depth;) {
-        if (a += 1, !r.plainObjects && T.call(Object.prototype, u[1].slice(1, -1)) && !r.allowPrototypes) return;
-        c.push(u[1]);
+      for (var c = 0; n.depth > 0 && null !== (u = i.exec(o)) && c < n.depth;) {
+        if (c += 1, !n.plainObjects && k.call(Object.prototype, u[1].slice(1, -1)) && !n.allowPrototypes) return;
+        a.push(u[1]);
       }
 
-      return u && c.push('[' + i.slice(u.index) + ']'), function (t, n, r, e) {
-        for (var i = e ? n : D(n, r), o = t.length - 1; o >= 0; --o) {
+      return u && a.push("[" + o.slice(u.index) + "]"), function (t, r, n, e) {
+        for (var o = e ? r : F(r, n), i = t.length - 1; i >= 0; --i) {
           var u,
-              f = t[o];
-          if ('[]' === f && r.parseArrays) u = [].concat(i);else {
-            u = r.plainObjects ? Object.create(null) : {};
-            var c = '[' === f.charAt(0) && ']' === f.charAt(f.length - 1) ? f.slice(1, -1) : f,
-                a = parseInt(c, 10);
-            r.parseArrays || '' !== c ? !isNaN(a) && f !== c && String(a) === c && a >= 0 && r.parseArrays && a <= r.arrayLimit ? (u = [])[a] = i : '__proto__' !== c && (u[c] = i) : u = {
-              0: i
+              f = t[i];
+          if ("[]" === f && n.parseArrays) u = [].concat(o);else {
+            u = n.plainObjects ? Object.create(null) : {};
+            var a = "[" === f.charAt(0) && "]" === f.charAt(f.length - 1) ? f.slice(1, -1) : f,
+                c = parseInt(a, 10);
+            n.parseArrays || "" !== a ? !isNaN(c) && f !== a && String(c) === a && c >= 0 && n.parseArrays && c <= n.arrayLimit ? (u = [])[c] = o : "__proto__" !== a && (u[a] = o) : u = {
+              0: o
             };
           }
-          i = u;
+          o = u;
         }
 
-        return i;
-      }(c, n, r, e);
+        return o;
+      }(a, r, n, e);
     }
   },
-      A = /*#__PURE__*/function () {
-    function t(t, n, r) {
-      var e, i;
-      this.name = t, this.definition = n, this.bindings = null != (e = n.bindings) ? e : {}, this.wheres = null != (i = n.wheres) ? i : {}, this.config = r;
+      A = function A(t, r) {
+    var n = function (t) {
+      if (!t) return C;
+      if (null != t.decoder && "function" != typeof t.decoder) throw new TypeError("Decoder has to be a function.");
+      if (void 0 !== t.charset && "utf-8" !== t.charset && "iso-8859-1" !== t.charset) throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
+      return {
+        allowDots: void 0 === t.allowDots ? C.allowDots : !!t.allowDots,
+        allowPrototypes: "boolean" == typeof t.allowPrototypes ? t.allowPrototypes : C.allowPrototypes,
+        arrayLimit: "number" == typeof t.arrayLimit ? t.arrayLimit : C.arrayLimit,
+        charset: void 0 === t.charset ? C.charset : t.charset,
+        charsetSentinel: "boolean" == typeof t.charsetSentinel ? t.charsetSentinel : C.charsetSentinel,
+        comma: "boolean" == typeof t.comma ? t.comma : C.comma,
+        decoder: "function" == typeof t.decoder ? t.decoder : C.decoder,
+        delimiter: "string" == typeof t.delimiter || h.isRegExp(t.delimiter) ? t.delimiter : C.delimiter,
+        depth: "number" == typeof t.depth || !1 === t.depth ? +t.depth : C.depth,
+        ignoreQueryPrefix: !0 === t.ignoreQueryPrefix,
+        interpretNumericEntities: "boolean" == typeof t.interpretNumericEntities ? t.interpretNumericEntities : C.interpretNumericEntities,
+        parameterLimit: "number" == typeof t.parameterLimit ? t.parameterLimit : C.parameterLimit,
+        parseArrays: !1 !== t.parseArrays,
+        plainObjects: "boolean" == typeof t.plainObjects ? t.plainObjects : C.plainObjects,
+        strictNullHandling: "boolean" == typeof t.strictNullHandling ? t.strictNullHandling : C.strictNullHandling
+      };
+    }(r);
+
+    if ("" === t || null == t) return n.plainObjects ? Object.create(null) : {};
+
+    for (var e = "string" == typeof t ? function (t, r) {
+      var n,
+          e = {},
+          o = (r.ignoreQueryPrefix ? t.replace(/^\?/, "") : t).split(r.delimiter, Infinity === r.parameterLimit ? void 0 : r.parameterLimit),
+          i = -1,
+          u = r.charset;
+      if (r.charsetSentinel) for (n = 0; n < o.length; ++n) {
+        0 === o[n].indexOf("utf8=") && ("utf8=%E2%9C%93" === o[n] ? u = "utf-8" : "utf8=%26%2310003%3B" === o[n] && (u = "iso-8859-1"), i = n, n = o.length);
+      }
+
+      for (n = 0; n < o.length; ++n) {
+        if (n !== i) {
+          var f,
+              a,
+              c = o[n],
+              l = c.indexOf("]="),
+              s = -1 === l ? c.indexOf("=") : l + 1;
+          -1 === s ? (f = r.decoder(c, C.decoder, u, "key"), a = r.strictNullHandling ? null : "") : (f = r.decoder(c.slice(0, s), C.decoder, u, "key"), a = h.maybeMap(F(c.slice(s + 1), r), function (t) {
+            return r.decoder(t, C.decoder, u, "value");
+          })), a && r.interpretNumericEntities && "iso-8859-1" === u && (a = D(a)), c.indexOf("[]=") > -1 && (a = N(a) ? [a] : a), e[f] = k.call(e, f) ? h.combine(e[f], a) : a;
+        }
+      }
+
+      return e;
+    }(t, n) : t, o = n.plainObjects ? Object.create(null) : {}, i = Object.keys(e), u = 0; u < i.length; ++u) {
+      var f = i[u],
+          a = $(f, e[f], n, "string" == typeof t);
+      o = h.merge(o, a, n);
     }
 
-    var n = t.prototype;
-    return n.matchesUrl = function (t) {
-      if (!this.definition.methods.includes('GET')) return !1;
-      var n = this.template.replace(/\/{[^}?]*\?}/g, '(/[^/?]+)?').replace(/{[^}?]*\?}/g, '([^/?]+)?').replace(/{[^}]+}/g, '[^/?]+').replace(/^\w+:\/\//, '');
-      return new RegExp('^' + n + '$').test(t.replace(/\/+$/, '').split('?').shift());
-    }, n.compile = function (t) {
-      var n = this;
-      return this.parameterSegments.length ? this.template.replace(/{([^}?]+)\??}/g, function (r, e) {
-        var i, o;
-        if ([null, void 0].includes(t[e]) && n.parameterSegments.find(function (t) {
-          return t.name === e;
-        }).required) throw new Error('Ziggy error: \'' + e + '\' parameter is required for route \'' + n.name + '\'.');
-        return n.parameterSegments[n.parameterSegments.length - 1].name === e && '.*' === n.wheres[e] ? null != (o = t[e]) ? o : '' : encodeURIComponent(null != (i = t[e]) ? i : '');
-      }).replace(/\/+$/, '') : this.template;
-    }, r(t, [{
-      key: 'template',
+    return h.compact(o);
+  },
+      I = /*#__PURE__*/function () {
+    function t(t, r, n) {
+      var e, o;
+      this.name = t, this.definition = r, this.bindings = null != (e = r.bindings) ? e : {}, this.wheres = null != (o = r.wheres) ? o : {}, this.config = n;
+    }
+
+    var r = t.prototype;
+    return r.matchesUrl = function (t) {
+      var r = this;
+      if (!this.definition.methods.includes("GET")) return !1;
+      var n = this.template.replace(/(\/?){([^}?]*)(\??)}/g, function (t, n, e, o) {
+        var i,
+            u = "(?<" + e + ">" + ((null == (i = r.wheres[e]) ? void 0 : i.replace(/(^\^)|(\$$)/g, "")) || "[^/?]+") + ")";
+        return o ? "(" + n + u + ")?" : "" + n + u;
+      }).replace(/^\w+:\/\//, ""),
+          e = t.replace(/^\w+:\/\//, "").split("?"),
+          o = e[0],
+          i = e[1],
+          u = new RegExp("^" + n + "/?$").exec(o);
+      return !!u && {
+        params: u.groups,
+        query: A(i)
+      };
+    }, r.compile = function (t) {
+      var r = this,
+          n = this.parameterSegments;
+      return n.length ? this.template.replace(/{([^}?]+)(\??)}/g, function (e, o, i) {
+        var u, f, a;
+        if (!i && [null, void 0].includes(t[o])) throw new Error("Ziggy error: '" + o + "' parameter is required for route '" + r.name + "'.");
+        if (n[n.length - 1].name === o && ".*" === r.wheres[o]) return encodeURIComponent(null != (a = t[o]) ? a : "").replace(/%2F/g, "/");
+        if (r.wheres[o] && !new RegExp("^" + (i ? "(" + r.wheres[o] + ")?" : r.wheres[o]) + "$").test(null != (u = t[o]) ? u : "")) throw new Error("Ziggy error: '" + o + "' parameter does not match required format '" + r.wheres[o] + "' for route '" + r.name + "'.");
+        return encodeURIComponent(null != (f = t[o]) ? f : "");
+      }).replace(/\/+$/, "") : this.template;
+    }, n(t, [{
+      key: "template",
       get: function get() {
-        return ((this.config.absolute ? this.definition.domain ? '' + this.config.url.match(/^\w+:\/\//)[0] + this.definition.domain + (this.config.port ? ':' + this.config.port : '') : this.config.url : '') + '/' + this.definition.uri).replace(/\/+$/, '');
+        return ((this.config.absolute ? this.definition.domain ? "" + this.config.url.match(/^\w+:\/\//)[0] + this.definition.domain + (this.config.port ? ":" + this.config.port : "") : this.config.url : "") + "/" + this.definition.uri).replace(/\/+$/, "");
       }
     }, {
-      key: 'parameterSegments',
+      key: "parameterSegments",
       get: function get() {
-        var t, n;
-        return null != (t = null == (n = this.template.match(/{[^}?]+\??}/g)) ? void 0 : n.map(function (t) {
+        var t, r;
+        return null != (t = null == (r = this.template.match(/{[^}?]+\??}/g)) ? void 0 : r.map(function (t) {
           return {
-            name: t.replace(/{|\??}/g, ''),
+            name: t.replace(/{|\??}/g, ""),
             required: !/\?}$/.test(t)
           };
         })) ? t : [];
       }
     }]), t;
   }(),
-      B = /*#__PURE__*/function (t) {
-    var n, i;
+      P = /*#__PURE__*/function (t) {
+    var r, o;
 
-    function u(n, r, i, o) {
+    function u(r, n, o, i) {
       var u;
 
-      if (void 0 === i && (i = !0), (u = t.call(this) || this).t = null != o ? o : 'undefined' != typeof Ziggy ? Ziggy : null == globalThis ? void 0 : globalThis.Ziggy, u.t = e({}, u.t, {
-        absolute: i
-      }), n) {
-        if (!u.t.routes[n]) throw new Error('Ziggy error: route \'' + n + '\' is not in the route list.');
-        u.i = new A(n, u.t.routes[n], u.t), u.u = u.l(r);
+      if (void 0 === o && (o = !0), (u = t.call(this) || this).t = null != i ? i : "undefined" != typeof Ziggy ? Ziggy : null == globalThis ? void 0 : globalThis.Ziggy, u.t = e({}, u.t, {
+        absolute: o
+      }), r) {
+        if (!u.t.routes[r]) throw new Error("Ziggy error: route '" + r + "' is not in the route list.");
+        u.i = new I(r, u.t.routes[r], u.t), u.u = u.l(n);
       }
 
       return u;
     }
 
-    i = t, (n = u).prototype = Object.create(i.prototype), n.prototype.constructor = n, o(n, i);
+    o = t, (r = u).prototype = Object.create(o.prototype), r.prototype.constructor = r, i(r, o);
     var f = u.prototype;
     return f.toString = function () {
       var t = this,
-          n = Object.keys(this.u).filter(function (n) {
+          r = Object.keys(this.u).filter(function (r) {
         return !t.i.parameterSegments.some(function (t) {
-          return t.name === n;
+          return t.name === r;
         });
       }).filter(function (t) {
-        return '_query' !== t;
-      }).reduce(function (n, r) {
-        var i;
-        return e({}, n, ((i = {})[r] = t.u[r], i));
+        return "_query" !== t;
+      }).reduce(function (r, n) {
+        var o;
+        return e({}, r, ((o = {})[n] = t.u[n], o));
       }, {});
-      return this.i.compile(this.u) + function (t, n) {
-        var r,
+      return this.i.compile(this.u) + function (t, r) {
+        var n,
             e = t,
-            i = function (t) {
-          if (!t) return k;
-          if (null != t.encoder && 'function' != typeof t.encoder) throw new TypeError('Encoder has to be a function.');
-          var n = t.charset || k.charset;
-          if (void 0 !== t.charset && 'utf-8' !== t.charset && 'iso-8859-1' !== t.charset) throw new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined');
-          var r = v["default"];
+            o = function (t) {
+          if (!t) return x;
+          if (null != t.encoder && "function" != typeof t.encoder) throw new TypeError("Encoder has to be a function.");
+          var r = t.charset || x.charset;
+          if (void 0 !== t.charset && "utf-8" !== t.charset && "iso-8859-1" !== t.charset) throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
+          var n = p["default"];
 
           if (void 0 !== t.format) {
-            if (!g.call(v.formatters, t.format)) throw new TypeError('Unknown format option provided.');
-            r = t.format;
+            if (!m.call(p.formatters, t.format)) throw new TypeError("Unknown format option provided.");
+            n = t.format;
           }
 
-          var e = v.formatters[r],
-              i = k.filter;
-          return ('function' == typeof t.filter || j(t.filter)) && (i = t.filter), {
-            addQueryPrefix: 'boolean' == typeof t.addQueryPrefix ? t.addQueryPrefix : k.addQueryPrefix,
-            allowDots: void 0 === t.allowDots ? k.allowDots : !!t.allowDots,
-            charset: n,
-            charsetSentinel: 'boolean' == typeof t.charsetSentinel ? t.charsetSentinel : k.charsetSentinel,
-            delimiter: void 0 === t.delimiter ? k.delimiter : t.delimiter,
-            encode: 'boolean' == typeof t.encode ? t.encode : k.encode,
-            encoder: 'function' == typeof t.encoder ? t.encoder : k.encoder,
-            encodeValuesOnly: 'boolean' == typeof t.encodeValuesOnly ? t.encodeValuesOnly : k.encodeValuesOnly,
-            filter: i,
-            format: r,
+          var e = p.formatters[n],
+              o = x.filter;
+          return ("function" == typeof t.filter || j(t.filter)) && (o = t.filter), {
+            addQueryPrefix: "boolean" == typeof t.addQueryPrefix ? t.addQueryPrefix : x.addQueryPrefix,
+            allowDots: void 0 === t.allowDots ? x.allowDots : !!t.allowDots,
+            charset: r,
+            charsetSentinel: "boolean" == typeof t.charsetSentinel ? t.charsetSentinel : x.charsetSentinel,
+            delimiter: void 0 === t.delimiter ? x.delimiter : t.delimiter,
+            encode: "boolean" == typeof t.encode ? t.encode : x.encode,
+            encoder: "function" == typeof t.encoder ? t.encoder : x.encoder,
+            encodeValuesOnly: "boolean" == typeof t.encodeValuesOnly ? t.encodeValuesOnly : x.encodeValuesOnly,
+            filter: o,
+            format: n,
             formatter: e,
-            serializeDate: 'function' == typeof t.serializeDate ? t.serializeDate : k.serializeDate,
-            skipNulls: 'boolean' == typeof t.skipNulls ? t.skipNulls : k.skipNulls,
-            sort: 'function' == typeof t.sort ? t.sort : null,
-            strictNullHandling: 'boolean' == typeof t.strictNullHandling ? t.strictNullHandling : k.strictNullHandling
+            serializeDate: "function" == typeof t.serializeDate ? t.serializeDate : x.serializeDate,
+            skipNulls: "boolean" == typeof t.skipNulls ? t.skipNulls : x.skipNulls,
+            sort: "function" == typeof t.sort ? t.sort : null,
+            strictNullHandling: "boolean" == typeof t.strictNullHandling ? t.strictNullHandling : x.strictNullHandling
           };
-        }(n);
+        }(r);
 
-        'function' == typeof i.filter ? e = (0, i.filter)('', e) : j(i.filter) && (r = i.filter);
-        var o = [];
-        if ('object' != _typeof(e) || null === e) return '';
-        var u = m[n && n.arrayFormat in m ? n.arrayFormat : n && 'indices' in n ? n.indices ? 'indices' : 'repeat' : 'indices'];
-        r || (r = Object.keys(e)), i.sort && r.sort(i.sort);
+        "function" == typeof o.filter ? e = (0, o.filter)("", e) : j(o.filter) && (n = o.filter);
+        var i = [];
+        if ("object" != _typeof(e) || null === e) return "";
+        var u = g[r && r.arrayFormat in g ? r.arrayFormat : r && "indices" in r ? r.indices ? "indices" : "repeat" : "indices"];
+        n || (n = Object.keys(e)), o.sort && n.sort(o.sort);
 
-        for (var f = 0; f < r.length; ++f) {
-          var c = r[f];
-          i.skipNulls && null === e[c] || R(o, x(e[c], c, u, i.strictNullHandling, i.skipNulls, i.encode ? i.encoder : null, i.filter, i.sort, i.allowDots, i.serializeDate, i.format, i.formatter, i.encodeValuesOnly, i.charset));
+        for (var f = 0; f < n.length; ++f) {
+          var a = n[f];
+          o.skipNulls && null === e[a] || E(i, T(e[a], a, u, o.strictNullHandling, o.skipNulls, o.encode ? o.encoder : null, o.filter, o.sort, o.allowDots, o.serializeDate, o.format, o.formatter, o.encodeValuesOnly, o.charset));
         }
 
-        var a = o.join(i.delimiter),
-            l = !0 === i.addQueryPrefix ? '?' : '';
-        return i.charsetSentinel && (l += 'iso-8859-1' === i.charset ? 'utf8=%26%2310003%3B&' : 'utf8=%E2%9C%93&'), a.length > 0 ? l + a : '';
-      }(e({}, n, this.u._query), {
+        var c = i.join(o.delimiter),
+            l = !0 === o.addQueryPrefix ? "?" : "";
+        return o.charsetSentinel && (l += "iso-8859-1" === o.charset ? "utf8=%26%2310003%3B&" : "utf8=%E2%9C%93&"), c.length > 0 ? l + c : "";
+      }(e({}, r, this.u._query), {
         addQueryPrefix: !0,
-        arrayFormat: 'indices',
+        arrayFormat: "indices",
         encodeValuesOnly: !0,
         skipNulls: !0,
-        encoder: function encoder(t, n) {
-          return 'boolean' == typeof t ? Number(t) : n(t);
+        encoder: function encoder(t, r) {
+          return "boolean" == typeof t ? Number(t) : r(t);
         }
       });
-    }, f.current = function (t, n) {
-      var r = this,
-          e = this.t.absolute ? this.v().host + this.v().pathname : this.v().pathname.replace(this.t.url.replace(/^\w*:\/\/[^/]+/, ''), '').replace(/^\/+/, '/'),
-          i = Object.entries(this.t.routes).find(function (n) {
-        return new A(t, n[1], r.t).matchesUrl(e);
-      }) || [void 0, void 0],
-          o = i[0],
-          u = i[1];
+    }, f.p = function (t) {
+      var r = this;
+      t ? this.t.absolute && t.startsWith("/") && (t = this.v().host + t) : t = this.h();
+      var n = {},
+          o = Object.entries(this.t.routes).find(function (e) {
+        return n = new I(e[0], e[1], r.t).matchesUrl(t);
+      }) || [void 0, void 0];
+      return e({
+        name: o[0]
+      }, n, {
+        route: o[1]
+      });
+    }, f.h = function () {
+      var t = this.v(),
+          r = t.pathname,
+          n = t.search;
+      return (this.t.absolute ? t.host + r : r.replace(this.t.url.replace(/^\w*:\/\/[^/]+/, ""), "").replace(/^\/+/, "/")) + n;
+    }, f.current = function (t, r) {
+      var n = this.p(),
+          o = n.name,
+          i = n.params,
+          u = n.query,
+          f = n.route;
       if (!t) return o;
-      var f = new RegExp('^' + t.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$').test(o);
-      if ([null, void 0].includes(n) || !f) return f;
-      var c = new A(o, u, this.t);
-      n = this.l(n, c);
-      var a = this.p(u);
-      return !(!Object.values(n).every(function (t) {
+      var a = new RegExp("^" + t.replace(/\./g, "\\.").replace(/\*/g, ".*") + "$").test(o);
+      if ([null, void 0].includes(r) || !a) return a;
+      var c = new I(o, f, this.t);
+      r = this.l(r, c);
+      var l = e({}, i, u);
+      return !(!Object.values(r).every(function (t) {
         return !t;
-      }) || Object.values(a).length) || Object.entries(n).every(function (t) {
-        return a[t[0]] == t[1];
+      }) || Object.values(l).some(function (t) {
+        return void 0 !== t;
+      })) || Object.entries(r).every(function (t) {
+        return l[t[0]] == t[1];
       });
     }, f.v = function () {
       var t,
-          n,
           r,
+          n,
           e,
-          i,
           o,
-          u = 'undefined' != typeof window ? window.location : {},
+          i,
+          u = "undefined" != typeof window ? window.location : {},
           f = u.host,
-          c = u.pathname,
-          a = u.search;
+          a = u.pathname,
+          c = u.search;
       return {
-        host: null != (t = null == (n = this.t.location) ? void 0 : n.host) ? t : void 0 === f ? '' : f,
-        pathname: null != (r = null == (e = this.t.location) ? void 0 : e.pathname) ? r : void 0 === c ? '' : c,
-        search: null != (i = null == (o = this.t.location) ? void 0 : o.search) ? i : void 0 === a ? '' : a
+        host: null != (t = null == (r = this.t.location) ? void 0 : r.host) ? t : void 0 === f ? "" : f,
+        pathname: null != (n = null == (e = this.t.location) ? void 0 : e.pathname) ? n : void 0 === a ? "" : a,
+        search: null != (o = null == (i = this.t.location) ? void 0 : i.search) ? o : void 0 === c ? "" : c
       };
     }, f.has = function (t) {
       return Object.keys(this.t.routes).includes(t);
-    }, f.l = function (t, n) {
-      var r = this;
-      void 0 === t && (t = {}), void 0 === n && (n = this.i), t = ['string', 'number'].includes(_typeof(t)) ? [t] : t;
-      var i = n.parameterSegments.filter(function (t) {
-        return !r.t.defaults[t.name];
-      });
-      if (Array.isArray(t)) t = t.reduce(function (t, n, r) {
-        var o, u;
-        return e({}, t, i[r] ? ((o = {})[i[r].name] = n, o) : ((u = {})[n] = '', u));
-      }, {});else if (1 === i.length && !t[i[0].name] && (t.hasOwnProperty(Object.values(n.bindings)[0]) || t.hasOwnProperty('id'))) {
-        var o;
-        (o = {})[i[0].name] = t, t = o;
-      }
-      return e({}, this.h(n), this.g(t, n));
-    }, f.h = function (t) {
+    }, f.l = function (t, r) {
       var n = this;
+      void 0 === t && (t = {}), void 0 === r && (r = this.i), t = ["string", "number"].includes(_typeof(t)) ? [t] : t;
+      var o = r.parameterSegments.filter(function (t) {
+        return !n.t.defaults[t.name];
+      });
+      if (Array.isArray(t)) t = t.reduce(function (t, r, n) {
+        var i, u;
+        return e({}, t, o[n] ? ((i = {})[o[n].name] = r, i) : "object" == _typeof(r) ? r : ((u = {})[r] = "", u));
+      }, {});else if (1 === o.length && !t[o[0].name] && (t.hasOwnProperty(Object.values(r.bindings)[0]) || t.hasOwnProperty("id"))) {
+        var i;
+        (i = {})[o[0].name] = t, t = i;
+      }
+      return e({}, this.m(r), this.g(t, r));
+    }, f.m = function (t) {
+      var r = this;
       return t.parameterSegments.filter(function (t) {
-        return n.t.defaults[t.name];
-      }).reduce(function (t, r, i) {
-        var o,
-            u = r.name;
-        return e({}, t, ((o = {})[u] = n.t.defaults[u], o));
+        return r.t.defaults[t.name];
+      }).reduce(function (t, n, o) {
+        var i,
+            u = n.name;
+        return e({}, t, ((i = {})[u] = r.t.defaults[u], i));
       }, {});
-    }, f.g = function (t, n) {
-      var r = n.bindings,
-          i = n.parameterSegments;
-      return Object.entries(t).reduce(function (t, n) {
-        var o,
+    }, f.g = function (t, r) {
+      var n = r.bindings,
+          o = r.parameterSegments;
+      return Object.entries(t).reduce(function (t, r) {
+        var i,
             u,
-            f = n[0],
-            c = n[1];
-        if (!c || 'object' != _typeof(c) || Array.isArray(c) || !i.some(function (t) {
+            f = r[0],
+            a = r[1];
+        if (!a || "object" != _typeof(a) || Array.isArray(a) || !o.some(function (t) {
           return t.name === f;
-        })) return e({}, t, ((u = {})[f] = c, u));
+        })) return e({}, t, ((u = {})[f] = a, u));
 
-        if (!c.hasOwnProperty(r[f])) {
-          if (!c.hasOwnProperty('id')) throw new Error('Ziggy error: object passed as \'' + f + '\' parameter is missing route model binding key \'' + r[f] + '\'.');
-          r[f] = 'id';
+        if (!a.hasOwnProperty(n[f])) {
+          if (!a.hasOwnProperty("id")) throw new Error("Ziggy error: object passed as '" + f + "' parameter is missing route model binding key '" + n[f] + "'.");
+          n[f] = "id";
         }
 
-        return e({}, t, ((o = {})[f] = c[r[f]], o));
+        return e({}, t, ((i = {})[f] = a[n[f]], i));
       }, {});
-    }, f.p = function (t) {
-      var n,
-          r = this.v().pathname.replace(this.t.url.replace(/^\w*:\/\/[^/]+/, ''), '').replace(/^\/+/, ''),
-          i = function i(t, n, r) {
-        void 0 === n && (n = '');
-        var i = [t, n].map(function (t) {
-          return t.split(r);
-        }),
-            o = i[0];
-        return i[1].reduce(function (t, n, r) {
-          var i;
-          return /{[^}?]+\??}/.test(n) && o[r] ? e({}, t, ((i = {})[n.replace(/.*{|\??}.*/g, '')] = o[r].replace(n.match(/^[^{]*/g), '').replace(n.match(/[^}]*$/g), ''), i)) : t;
-        }, {});
-      };
-
-      return e({}, i(this.v().host, t.domain, '.'), i(r, t.uri, '/'), function (t, n) {
-        var r = N;
-        if ('' === t || null == t) return r.plainObjects ? Object.create(null) : {};
-
-        for (var e = 'string' == typeof t ? function (t, n) {
-          var r,
-              e = {},
-              i = (n.ignoreQueryPrefix ? t.replace(/^\?/, '') : t).split(n.delimiter, Infinity === n.parameterLimit ? void 0 : n.parameterLimit),
-              o = -1,
-              u = n.charset;
-          if (n.charsetSentinel) for (r = 0; r < i.length; ++r) {
-            0 === i[r].indexOf('utf8=') && ('utf8=%E2%9C%93' === i[r] ? u = 'utf-8' : 'utf8=%26%2310003%3B' === i[r] && (u = 'iso-8859-1'), o = r, r = i.length);
-          }
-
-          for (r = 0; r < i.length; ++r) {
-            if (r !== o) {
-              var f,
-                  c,
-                  a = i[r],
-                  l = a.indexOf(']='),
-                  s = -1 === l ? a.indexOf('=') : l + 1;
-              -1 === s ? (f = n.decoder(a, N.decoder, u, 'key'), c = n.strictNullHandling ? null : '') : (f = n.decoder(a.slice(0, s), N.decoder, u, 'key'), c = b.maybeMap(D(a.slice(s + 1), n), function (t) {
-                return n.decoder(t, N.decoder, u, 'value');
-              })), c && n.interpretNumericEntities && 'iso-8859-1' === u && (c = F(c)), a.indexOf('[]=') > -1 && (c = C(c) ? [c] : c), e[f] = T.call(e, f) ? b.combine(e[f], c) : c;
-            }
-          }
-
-          return e;
-        }(t, r) : t, i = r.plainObjects ? Object.create(null) : {}, o = Object.keys(e), u = 0; u < o.length; ++u) {
-          var f = o[u],
-              c = $(f, e[f], r, 'string' == typeof t);
-          i = b.merge(i, c, r);
-        }
-
-        return b.compact(i);
-      }(null == (n = this.v().search) ? void 0 : n.replace(/^\?/, '')));
     }, f.valueOf = function () {
       return this.toString();
     }, f.check = function (t) {
       return this.has(t);
-    }, r(u, [{
-      key: 'params',
+    }, n(u, [{
+      key: "params",
       get: function get() {
-        return this.p(this.t.routes[this.current()]);
+        var t = this.p();
+        return e({}, t.params, t.query);
       }
     }]), u;
-  }( /*#__PURE__*/c(String));
+  }( /*#__PURE__*/a(String));
 
   t.ZiggyVue = {
-    install: function install(t, n) {
-      return t.mixin({
+    install: function install(t, r) {
+      var n = function n(t, _n, e, o) {
+        return void 0 === o && (o = r), function (t, r, n, e) {
+          var o = new P(t, r, n, e);
+          return t ? o.toString() : o;
+        }(t, _n, e, o);
+      };
+
+      t.mixin({
         methods: {
-          route: function route(t, r, e, i) {
-            return void 0 === i && (i = n), function (t, n, r, e) {
-              var i = new B(t, n, r, e);
-              return t ? i.toString() : i;
-            }(t, r, e, i);
-          }
+          route: n
         }
-      });
+      }), parseInt(t.version) > 2 && t.provide("route", n);
     }
   };
 });
@@ -27407,6 +27648,60 @@ ___CSS_LOADER_EXPORT___.push([module.id, "\n.ongoing-card[data-v-21eb22e0] {\n  
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/cssWithMappingToString.js */ "./node_modules/css-loader/dist/runtime/cssWithMappingToString.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n.poster[data-v-432dbea6] {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n.poster img[data-v-432dbea6] {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n.poster button[data-v-432dbea6] {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n.poster-text-box[data-v-432dbea6] {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n.poster-text-box p[data-v-432dbea6] {\n    font-weight: 500;\n    font-size: 14px;\n}\n.backdrop[data-v-432dbea6] {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);\n    z-index: 100;\n}\n", "",{"version":3,"sources":["webpack://./resources/js/components/RecommendedPoster.vue"],"names":[],"mappings":";AA+BA;IACI,gBAAgB;IAChB,kBAAkB;IAClB,eAAe;AACnB;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,OAAO;IACP,MAAM;AACV;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,YAAY;AAChB;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,UAAU;IACV,YAAY;IACZ,YAAY;AAChB;AAEA;IACI,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,kBAAkB;IAClB,OAAO;IACP,MAAM;IACN,WAAW;IACX,YAAY;IACZ,gFAAgF;IAChF,YAAY;AAChB","sourcesContent":["<template>\n    <InertiaLink\n        :href=\"route('film.show', item.film.id)\"\n        as=\"div\"\n        class=\"poster\">\n        <img\n            :src=\"item.film.poster\"\n            :alt=\"item.film.title\"\n        >\n        <div class=\"poster-text-box\">\n            <h3>{{ item.film.title }}</h3>\n            <p>{{ item.film.description }}...</p>\n        </div>\n        <BaseButton>Смотреть</BaseButton>\n        <div class=\"backdrop\"/>\n    </InertiaLink>\n</template>\n\n<script>\nexport default {\n    name: 'RecommendedPoster',\n    props: {\n        item: {\n            type: Object,\n            required: true,\n        }\n    }\n};\n</script>\n\n<style scoped>\n.poster {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n\n.poster img {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n\n.poster button {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n\n.poster-text-box {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n\n.poster-text-box p {\n    font-weight: 500;\n    font-size: 14px;\n}\n\n.backdrop {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);\n    z-index: 100;\n}\n</style>\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/cssWithMappingToString.js */ "./node_modules/css-loader/dist/runtime/cssWithMappingToString.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n.poster-small[data-v-3478a30a] {\n    background: #0F0F0F;\n    display: flex;\n    flex-direction: row;\n    cursor: pointer;\n}\n.poster-small img[data-v-3478a30a] {\n    width: 160px;\n    margin-right: 20px;\n    -o-object-fit: scale-down;\n       object-fit: scale-down;\n}\n.poster-info[data-v-3478a30a] {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    margin-right: 10px;\n}\n.poster-title[data-v-3478a30a] {\n    font-weight: bold;\n    font-size: 16px;\n    margin-bottom: 10px;\n}\n.poster-description[data-v-3478a30a] {\n    overflow: hidden;\n    font-size: 14px;\n    color: #B7B7B7;\n    text-overflow: ellipsis;\n}\n", "",{"version":3,"sources":["webpack://./resources/js/components/RecommendedPosterSmall.vue"],"names":[],"mappings":";AAuCA;IACI,mBAAmB;IACnB,aAAa;IACb,mBAAmB;IACnB,eAAe;AACnB;AAEA;IACI,YAAY;IACZ,kBAAkB;IAClB,yBAAsB;OAAtB,sBAAsB;AAC1B;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,uBAAuB;IACvB,kBAAkB;AACtB;AAEA;IACI,iBAAiB;IACjB,eAAe;IACf,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,uBAAuB;AAC3B","sourcesContent":["<template>\n    <InertiaLink\n        :href=\"route('film.show', item.film.id)\"\n        as=\"div\"\n        class=\"poster-small\">\n        <img\n            :src=\"item.film.poster\"\n            :alt=\"item.film.title\"\n        >\n        <div class=\"poster-info\">\n            <p class=\"poster-title\">\n                {{ item.film.title }}\n            </p>\n            <p class=\"poster-description\">\n                {{ description }} ...\n            </p>\n        </div>\n    </InertiaLink>\n</template>\n\n<script>\n//text-overflow: ellipsis;\nexport default {\n    name: 'RecommendedPosterSmall',\n    props: {\n        item: {\n            type: Object,\n            required: true,\n        }\n    },\n    computed: {\n        description() {\n            return this.item.film.description;\n        }\n    }\n};\n</script>\n\n<style scoped>\n.poster-small {\n    background: #0F0F0F;\n    display: flex;\n    flex-direction: row;\n    cursor: pointer;\n}\n\n.poster-small img {\n    width: 160px;\n    margin-right: 20px;\n    object-fit: scale-down;\n}\n\n.poster-info {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    margin-right: 10px;\n}\n\n.poster-title {\n    font-weight: bold;\n    font-size: 16px;\n    margin-bottom: 10px;\n}\n\n.poster-description {\n    overflow: hidden;\n    font-size: 14px;\n    color: #B7B7B7;\n    text-overflow: ellipsis;\n}\n</style>\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/TheFooter.vue?vue&type=style&index=0&id=2a04c4de&scoped=true&lang=css":
 /*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/TheFooter.vue?vue&type=style&index=0&id=2a04c4de&scoped=true&lang=css ***!
@@ -27515,6 +27810,33 @@ ___CSS_LOADER_EXPORT___.push([module.id, "\n.input-label[data-v-3f697d63] {\n   
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/cssWithMappingToString.js */ "./node_modules/css-loader/dist/runtime/cssWithMappingToString.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n.copyright-head[data-v-3fb14d3d] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-top: 100px;\n    margin-bottom: 26px;\n}\n.copyright-head h3[data-v-3fb14d3d] {\n    font-weight: 700;\n    font-size: 19px;\n    border-bottom: 2px solid var(--main-color);\n    margin-right: 5px;\n}\n.copyright-head p[data-v-3fb14d3d] {\n    color: #808080;\n    font-weight: 500;\n    font-size: 16px;\n}\n.copyright-title[data-v-3fb14d3d] {\n    font-weight: 500;\n    font-size: 32px;\n    margin-bottom: 20px;\n}\n.copyright-subtitle[data-v-3fb14d3d] {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 20px;\n}\n.copyright-body p[data-v-3fb14d3d] {\n    margin-bottom: 10px;\n}\n.copyright-body ul[data-v-3fb14d3d] {\n    list-style-type: disc;\n    max-width: none;\n    margin: 10px 0 10px 40px;\n}\n.copyright-body li[data-v-3fb14d3d] {\n    margin: 0;\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/pages/CopyrightPage.vue"],"names":[],"mappings":";AA0DA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,0CAA0C;IAC1C,iBAAiB;AACrB;AAEA;IACI,cAAc;IACd,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,mBAAmB;AACvB;AAEA;IACI,qBAAqB;IACrB,eAAe;IACf,wBAAwB;AAC5B;AAEA;IACI,SAAS;AACb","sourcesContent":["<template>\n    <div class=\"copyright-container\">\n        <div class=\"copyright-head\">\n            <h3>Anime Zero</h3>\n            <p>/ Для правообладателей</p>\n        </div>\n        <h2 class=\"copyright-title\">\n            Информация для правообладателей\n        </h2>\n        <p class=\"copyright-subtitle\">\n            Деятельность сайта AnimeZero осуществляется в соответствии с законодательством РФ в области защиты\n            информации и авторских прав на предоставляемый контент.\n        </p>\n        <div class=\"copyright-body\">\n            <p>\n                Все размещенные на нашем ресурсе материалы находятся в свободном доступе и могут быть бесплатно скачаны\n                из интернета. Сбор информации в сети и размещение контента производится в автоматическом режиме.\n            </p>\n            <p>\n                Публикация нелицензионного, похищенного контента и материалов, защищенных авторским правом, не\n                допускается. Администрация размещает только любительские русскоязычные материалы из свободных источников\n                при использовании автоматической системы.\n            </p>\n            <p>\n                Администрация ресурса предлагает сотрудничество с правообладателями контента. В случае нарушения прав\n                собственности сайт обязуется убрать неправомерно размещенный материал или предложить выгодные условия\n                сотрудничества правообладателю. Если вы обнаружили материал, представленный на нашем сайте, который\n                нарушает ваши авторские права, или же дискредитирует Вашу компанию, предоставляя неверную или искаженную\n                информацию, пожалуйста свяжитесь с нами для решения этого вопроса.\n            </p>\n            <p>\n                Для этого вы можете обратиться в поддержку или отправить сообщение на нашу корпоративную почту\n                admin@animezero.ru со следующим содержанием:\n            </p>\n            <ul>\n                <li>Контактные данные</li>\n                <li>Реквизиты вашей компании</li>\n                <li>Прямую ссылку (ссылки) на материал, который вы считаете спорным</li>\n                <li>\n                    Заверенные сканированные копии документов, подтверждающих ваше эксклюзивное право на материал (или\n                    копии документов на посреднические услуги)\n                </li>\n            </ul>\n            <p>\n                После проверки всей информации, администрация сайта свяжется с вами для урегулирования спорного\n                вопроса.\n            </p>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'CopyrightPage'\n};\n</script>\n\n<style scoped>\n.copyright-head {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-top: 100px;\n    margin-bottom: 26px;\n}\n\n.copyright-head h3 {\n    font-weight: 700;\n    font-size: 19px;\n    border-bottom: 2px solid var(--main-color);\n    margin-right: 5px;\n}\n\n.copyright-head p {\n    color: #808080;\n    font-weight: 500;\n    font-size: 16px;\n}\n\n.copyright-title {\n    font-weight: 500;\n    font-size: 32px;\n    margin-bottom: 20px;\n}\n\n.copyright-subtitle {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 20px;\n}\n\n.copyright-body p {\n    margin-bottom: 10px;\n}\n\n.copyright-body ul {\n    list-style-type: disc;\n    max-width: none;\n    margin: 10px 0 10px 40px;\n}\n\n.copyright-body li {\n    margin: 0;\n}\n\n</style>\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/FilmPage.vue?vue&type=style&index=0&id=25dd233c&scoped=true&lang=css":
 /*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/FilmPage.vue?vue&type=style&index=0&id=25dd233c&scoped=true&lang=css ***!
@@ -27616,7 +27938,34 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.main-poster-block[data-v-04c29797] {\n    width: 100%;\n    height: 100%;\n    max-height: 650px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    z-index: 10;\n    overflow: hidden;\n}\n.main-poster-info[data-v-04c29797] {\n    display: flex;\n    flex-direction: column;\n}\n.main-poster-section-title[data-v-04c29797] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 20px;\n}\n.main-poster-section-title h3[data-v-04c29797] {\n    font-size: 20px;\n    border-bottom: 2px solid var(--main-color);\n    color: white;\n}\n.main-poster-section-title p[data-v-04c29797] {\n    font-size: 16px;\n    color: #808080;\n    margin: 0 0 0 6px;\n}\n.main-poster-title[data-v-04c29797] {\n    font-size: 32px;\n    font-weight: 500;\n    margin-bottom: 30px;\n}\n.main-poster-title span[data-v-04c29797] {\n    color: var(--main-color);\n}\n.main-poster-description[data-v-04c29797] {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 27px;\n}\n.main-poster-grid[data-v-04c29797] {\n    display: grid;\n    grid-template-rows: repeat(3, 222px);\n    grid-template-columns: repeat(3, 160px);\n    gap: 60px 30px;\n    margin-left: auto;\n    transform: rotate(335deg);\n}\n.image-block[data-v-04c29797] {\n    border-radius: 10px;\n    overflow: hidden;\n    transition: 0.5s;\n    cursor: pointer;\n}\n.image-block[data-v-04c29797]:nth-child(2), .image-block[data-v-04c29797]:nth-child(5), .image-block[data-v-04c29797]:nth-child(8) {\n    transform: translateY(-55%);\n}\n.main-films-block[data-v-04c29797] {\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    padding: 32px 53px 53px 53px;\n    background: #0F0F0F;\n    margin-bottom: 8px;\n}\n.main-films-block[data-v-04c29797]:nth-child(2n + 1) {\n    background: none;\n}\n.films-block-head[data-v-04c29797], .films-block-title[data-v-04c29797] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n.films-block-title i[data-v-04c29797] {\n    height: 38px;\n    width: 38px;\n    background: var(--main-color);\n    border-radius: 5px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    margin-right: 10px;\n}\n.films-block-title i img[data-v-04c29797] {\n    width: 16px;\n    height: 16px;\n}\n.films-block-head button[data-v-04c29797] {\n    margin-left: auto;\n}\n.films-block-body[data-v-04c29797] {\n    margin-top: 40px;\n    display: grid;\n    grid-template-columns: repeat(6, 1fr);\n    grid-template-rows: 1fr;\n    grid-auto-flow: row;\n    justify-content: space-between;\n    gap: 0 20px;\n}\n.films-block-body-big[data-v-04c29797] {\n    grid-template-rows: repeat(2, 250px);\n    grid-template-areas:\n        \"first first first first second second\"\n        \"first first first first third third\";\n    gap: 36px;\n}\n.first[data-v-04c29797] {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n.first img[data-v-04c29797] {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n.first button[data-v-04c29797] {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n.first-text-box[data-v-04c29797] {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n.backdrop[data-v-04c29797] {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);\n    z-index: 100;\n}\n.first-text-box p[data-v-04c29797] {\n    font-weight: 500;\n    font-size: 14px;\n}\n.second[data-v-04c29797], .third[data-v-04c29797] {\n    grid-area: second;\n    background: #0F0F0F;\n    display: flex;\n    flex-direction: row;\n    cursor: pointer;\n}\n.second img[data-v-04c29797], .third img[data-v-04c29797] {\n    width: 160px;\n    margin-right: 20px;\n    -o-object-fit: scale-down;\n       object-fit: scale-down;\n}\n.second-info[data-v-04c29797], .third-info[data-v-04c29797] {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n}\n.third-info[data-v-04c29797] {\n    margin-right: 10px;\n}\n.second-info-title[data-v-04c29797], .third-info-title[data-v-04c29797] {\n    font-weight: bold;\n    font-size: 16px;\n    margin-bottom: 10px;\n}\n.second-info-description[data-v-04c29797], .third-info-description[data-v-04c29797] {\n    font-size: 14px;\n    color: #B7B7B7;\n}\n.third[data-v-04c29797] {\n    grid-area: third;\n    background: #0F0F0F;\n}\n.main-films-block-big[data-v-04c29797] {\n    padding-left: 0;\n    padding-right: 0;\n}\n.main-films-block-big .films-block-head[data-v-04c29797] {\n    margin: 0 53px 0 53px;\n}\n.ongoing-block[data-v-04c29797] {\n    grid-template-rows: repeat(2, 240px);\n    grid-template-columns: repeat(2, 500px);\n    gap: 25px 60px;\n    grid-auto-flow: row;\n    justify-content: space-between;\n}\n.selected-poster[data-v-04c29797] {\n    border: 6px solid var(--main-color);\n    transition: 0.5s;\n}\n.flickity[data-v-04c29797] {\n    display: none;\n}\n@media (max-width: 550px) {\n.main-poster-block[data-v-04c29797] {\n        flex-direction: column;\n}\n.main-poster-grid[data-v-04c29797] {\n        display: none;\n}\n.main-poster-info[data-v-04c29797] {\n        padding: 0 20px;\n        margin-top: 20px;\n}\n.flickity[data-v-04c29797] {\n        display: block;\n        width: 100%;\n        height: 150px;\n        margin: 10px 0 20px 0;\n}\n.flickity-films[data-v-04c29797] {\n        height: 290px;\n}\n.carousel-cell[data-v-04c29797] {\n        width: 120px;\n        margin-right: 18px;\n}\n.carousel-cell-films[data-v-04c29797] {\n        width: 180px;\n}\n.main-poster-info[data-v-04c29797] {\n        width: 100%;\n        margin-bottom: 20px;\n}\n.main-films-block[data-v-04c29797] {\n        padding: 40px 20px;\n}\n.films-block-body[data-v-04c29797] {\n        display: none;\n}\n.films-block-body.mobile[data-v-04c29797] {\n        display: block;\n}\n.films-block-body.films-block-body-big[data-v-04c29797] {\n        display: grid;\n        grid-template-columns: 1fr;\n        grid-template-rows: repeat(3, 1fr);\n        grid-template-areas:\n                            \"first\"\n                            \"second\"\n                            \"third\";\n}\n.films-block-head[data-v-04c29797] {\n        margin: 0 !important;\n        width: 100%;\n}\n.first-text-box p[data-v-04c29797] {\n        display: none;\n}\n.second-info[data-v-04c29797], .third-info[data-v-04c29797] {\n        padding-right: 20px;\n}\n.first h3[data-v-04c29797] {\n        font-size: 14px;\n}\n.ti-btn[data-v-04c29797] {\n        font-size: 12px;\n}\n.main-poster-section-title[data-v-04c29797], .main-poster-buttons[data-v-04c29797], .films-block-head .ti-btn[data-v-04c29797] {\n        display: none;\n}\n.ongoing-block[data-v-04c29797] {\n        display: none !important;\n}\n.main-poster-title[data-v-04c29797] {\n        margin-bottom: 5px;\n}\n.main-poster-description[data-v-04c29797] {\n        margin-bottom: 10px;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/pages/HomePage.vue"],"names":[],"mappings":";AAuPA;IACI,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,WAAW;IACX,gBAAgB;AACpB;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,eAAe;IACf,0CAA0C;IAC1C,YAAY;AAChB;AAEA;IACI,eAAe;IACf,cAAc;IACd,iBAAiB;AACrB;AAEA;IACI,eAAe;IACf,gBAAgB;IAChB,mBAAmB;AACvB;AAEA;IACI,wBAAwB;AAC5B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,oCAAoC;IACpC,uCAAuC;IACvC,cAAc;IACd,iBAAiB;IACjB,yBAAyB;AAC7B;AAEA;IACI,mBAAmB;IACnB,gBAAgB;IAChB,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,2BAA2B;AAC/B;AAEA;IACI,WAAW;IACX,aAAa;IACb,sBAAsB;IACtB,4BAA4B;IAC5B,mBAAmB;IACnB,kBAAkB;AACtB;AAEA;IACI,gBAAgB;AACpB;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,YAAY;IACZ,WAAW;IACX,6BAA6B;IAC7B,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,uBAAuB;IACvB,kBAAkB;AACtB;AAEA;IACI,WAAW;IACX,YAAY;AAChB;AAEA;IACI,iBAAiB;AACrB;AAEA;IACI,gBAAgB;IAChB,aAAa;IACb,qCAAqC;IACrC,uBAAuB;IACvB,mBAAmB;IACnB,8BAA8B;IAC9B,WAAW;AACf;AAEA;IACI,oCAAoC;IACpC;;6CAEyC;IACzC,SAAS;AACb;AAEA;IACI,gBAAgB;IAChB,kBAAkB;IAClB,eAAe;AACnB;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,OAAO;IACP,MAAM;AACV;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,YAAY;AAChB;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,UAAU;IACV,YAAY;IACZ,YAAY;AAChB;AAEA;IACI,kBAAkB;IAClB,OAAO;IACP,MAAM;IACN,WAAW;IACX,YAAY;IACZ,gFAAgF;IAChF,YAAY;AAChB;AAEA;IACI,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,iBAAiB;IACjB,mBAAmB;IACnB,aAAa;IACb,mBAAmB;IACnB,eAAe;AACnB;AAEA;IACI,YAAY;IACZ,kBAAkB;IAClB,yBAAsB;OAAtB,sBAAsB;AAC1B;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,uBAAuB;AAC3B;AAEA;IACI,kBAAkB;AACtB;AAEA;IACI,iBAAiB;IACjB,eAAe;IACf,mBAAmB;AACvB;AAEA;IACI,eAAe;IACf,cAAc;AAClB;AAEA;IACI,gBAAgB;IAChB,mBAAmB;AACvB;AAEA;IACI,eAAe;IACf,gBAAgB;AACpB;AAEA;IACI,qBAAqB;AACzB;AAEA;IACI,oCAAoC;IACpC,uCAAuC;IACvC,cAAc;IACd,mBAAmB;IACnB,8BAA8B;AAClC;AAEA;IACI,mCAAmC;IACnC,gBAAgB;AACpB;AAEA;IACI,aAAa;AACjB;AAEA;AACI;QACI,sBAAsB;AAC1B;AAEA;QACI,aAAa;AACjB;AAEA;QACI,eAAe;QACf,gBAAgB;AACpB;AAEA;QACI,cAAc;QACd,WAAW;QACX,aAAa;QACb,qBAAqB;AACzB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,YAAY;QACZ,kBAAkB;AACtB;AAEA;QACI,YAAY;AAChB;AAEA;QACI,WAAW;QACX,mBAAmB;AACvB;AAEA;QACI,kBAAkB;AACtB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,cAAc;AAClB;AAEA;QACI,aAAa;QACb,0BAA0B;QAC1B,kCAAkC;QAClC;;;mCAG2B;AAC/B;AAGA;QACI,oBAAoB;QACpB,WAAW;AACf;AAEA;QACI,aAAa;AACjB;AAEA;QACI,mBAAmB;AACvB;AAEA;QACI,eAAe;AACnB;AAEA;QACI,eAAe;AACnB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,wBAAwB;AAC5B;AAEA;QACI,kBAAkB;AACtB;AAEA;QACI,mBAAmB;AACvB;AAEJ","sourcesContent":["<template>\n    <div class=\"main-poster-block\">\n        <div class=\"main-poster-info\">\n            <div class=\"main-poster-section-title\">\n                <h3>Anime Zero</h3>\n                <p>/ Каталог</p>\n            </div>\n            <h2 class=\"main-poster-title\">\n                Смотрите онлайн<br> фильмы на Anime<span>Zero</span>\n            </h2>\n            <p class=\"main-poster-description\">\n                Смотрите фильмы в хорошем качестве<br> только у нас !\n            </p>\n            <div class=\"main-poster-buttons\">\n                <BaseButton @click=\"watchFilm\">\n                    <i class=\"fal fa-play\"/>Перейти к просмотру\n                </BaseButton>\n            </div>\n        </div>\n        <Flickity\n            v-if=\"films.best.length\"\n            ref=\"flickity\"\n            :options=\"flickity.bestFilmSlider\"\n            class=\"flickity\"\n        >\n            <div\n                v-for=\"best in films.best\"\n                :key=\"best.id\"\n                class=\"carousel-cell\"\n            >\n                <InertiaLink\n                    :href=\"route('film.show', best.id)\"\n                    as=\"img\"\n                    class=\"gallery-cell-img\"\n                    :src=\"best.poster\"\n                    :alt=\"best.title\"\n                />\n            </div>\n        </Flickity>\n        <div class=\"main-poster-grid\">\n            <div\n                v-for=\"(best, index) in films.best\"\n                :key=\"best.id\"\n                class=\"image-block\"\n                :class=\"{'selected-poster': index === selected_poster}\"\n                @click=\"selectPoster(index)\"\n            >\n                <img\n                    :src=\"best.poster\"\n                    :alt=\"best.title\"\n                >\n            </div>\n        </div>\n    </div>\n    <div class=\"main-films-block\">\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i class=\"fal fa-chart-bar\"/>\n                <h4>Новинки</h4>\n            </div>\n            <BaseButton @click=\"$inertia.visit(route('films', {years: '2021-2022'}))\">\n                Показать все\n            </BaseButton>\n        </div>\n        <div class=\"films-block-body\">\n            <FilmCard\n                v-for=\"film in films.newest\"\n                :key=\"film.id\"\n                :item=\"film\"\n            />\n        </div>\n        <div class=\"films-block-body mobile\">\n            <Flickity\n                v-if=\"films.newest.length\"\n                ref=\"flickity\"\n                class=\"flickity flickity-films\"\n                :options=\"flickity.filmsSlider\"\n            >\n                <div\n                    v-for=\"film in films.newest\"\n                    :key=\"film.id\"\n                    class=\"carousel-cell carousel-cell-films\"\n                >\n                    <FilmCard :item=\"film\"/>\n                </div>\n            </Flickity>\n        </div>\n    </div>\n    <div\n        v-if=\"films.recommended.length > 2\"\n        class=\"main-films-block main-films-block-big\"\n    >\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i class=\"fal fa-star\"/>\n                <h4>Мы рекомендуем</h4>\n            </div>\n        </div>\n        <div class=\"films-block-body films-block-body-big\">\n            <InertiaLink\n                :href=\"route('film.show', films.recommended[0].id)\"\n                as=\"div\"\n                class=\"first\">\n                <img\n                    :src=\"films.recommended[0].poster\"\n                    :alt=\"films.recommended[0].title\"\n                >\n                <div class=\"first-text-box\">\n                    <h3>{{ films.recommended[0].title }}</h3>\n                    <p>{{ films.recommended[0].description.slice(0, 200) }}...</p>\n                </div>\n                <BaseButton>Смотреть</BaseButton>\n                <div class=\"backdrop\"/>\n            </InertiaLink>\n            <InertiaLink\n                :href=\"route('film.show', films.recommended[1].id)\"\n                as=\"div\"\n                class=\"second\">\n                <img\n                    :src=\"films.recommended[1].poster\"\n                    :alt=\"films.recommended[1].title\"\n                >\n                <div class=\"second-info\">\n                    <p class=\"second-info-title\">\n                        {{ films.recommended[1].title }}\n                    </p>\n                    <p class=\"second-info-description\">\n                        {{ films.recommended[1].description.slice(0, 150) }} ...\n                    </p>\n                </div>\n            </InertiaLink>\n            <InertiaLink\n                :href=\"route('film.show', films.recommended[2].id)\"\n                as=\"div\"\n                class=\"third\">\n                <img\n                    :src=\"films.recommended[2].poster\"\n                    :alt=\"films.recommended[2].title\"\n                >\n                <div class=\"third-info\">\n                    <p class=\"third-info-title\">\n                        {{ films.recommended[2].title }}\n                    </p>\n                    <p class=\"third-info-description\">\n                        {{ films.recommended[2].description.slice(0, 150) }} ...\n                    </p>\n                </div>\n            </InertiaLink>\n        </div>\n    </div>\n    <div class=\"main-films-block\">\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i><img\n                    src=\"/img/ongoing-icon.svg\"\n                    alt=\"ongoing\"\n                ></i>\n                <h4>Скоро выйдет</h4>\n            </div>\n            <BaseButton @click=\"$inertia.visit(route('films', {statuses: 'Онгоинг'}))\">\n                Показать все\n            </BaseButton>\n        </div>\n        <div class=\"films-block-body ongoing-block mobile\">\n            <OngoingCard\n                v-for=\"ongoing in films.ongoing\"\n                :key=\"ongoing.id\"\n                :item=\"ongoing\"\n            />\n        </div>\n        <Flickity\n            v-if=\"films.ongoing.length\"\n            ref=\"flickity\"\n            :options=\"flickity.filmsSlider\"\n            class=\"flickity flickity-films\"\n        >\n            <div\n                v-for=\"ongoing in films.ongoing\"\n                :key=\"ongoing.id\"\n                class=\"carousel-cell carousel-cell-films\"\n            >\n                <FilmCard :item=\"ongoing\"/>\n            </div>\n        </Flickity>\n    </div>\n</template>\n\n<script>\nimport FilmCard from '../components/FilmCard';\nimport OngoingCard from '../components/OngoingCard';\nimport Flickity from 'vue-flickity';\n\nexport default {\n    name: 'HomePage',\n    components: {OngoingCard, FilmCard, Flickity},\n    props: {\n        films: {\n            type: Object,\n            required: true,\n        },\n    },\n    data() {\n        return {\n            selected_poster: -1,\n            flickity: {\n                bestFilmSlider: {\n                    initialIndex: 3,\n                    prevNextButtons: false,\n                    pageDots: false,\n                    wrapAround: true\n                },\n                filmsSlider: {\n                    initialIndex: 1,\n                    prevNextButtons: false,\n                    pageDots: false,\n                    wrapAround: true\n                }\n            }\n        };\n    },\n    mounted() {\n        if (this.$page.props.flash.message === 'email-verification-required') {\n            this.$root.setModalState(this.$root.modal.enum.EMAIL_VERIFY);\n            this.$root.openModal();\n        }\n\n        if (this.$page.props.flash.message === 'auth-required') {\n            this.$root.setModalState(this.$root.modal.enum.LOGIN);\n            this.$root.openModal();\n        }\n    },\n    methods: {\n        selectPoster(id) {\n            this.selected_poster = id;\n        },\n        watchFilm() {\n            if (this.selected_poster === -1)\n                return;\n\n            this.$inertia.get(this.route('film.show', this.films.best[this.selected_poster].id));\n        }\n    }\n};\n</script>\n\n<style scoped>\n\n.main-poster-block {\n    width: 100%;\n    height: 100%;\n    max-height: 650px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    z-index: 10;\n    overflow: hidden;\n}\n\n.main-poster-info {\n    display: flex;\n    flex-direction: column;\n}\n\n.main-poster-section-title {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 20px;\n}\n\n.main-poster-section-title h3 {\n    font-size: 20px;\n    border-bottom: 2px solid var(--main-color);\n    color: white;\n}\n\n.main-poster-section-title p {\n    font-size: 16px;\n    color: #808080;\n    margin: 0 0 0 6px;\n}\n\n.main-poster-title {\n    font-size: 32px;\n    font-weight: 500;\n    margin-bottom: 30px;\n}\n\n.main-poster-title span {\n    color: var(--main-color);\n}\n\n.main-poster-description {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 27px;\n}\n\n.main-poster-grid {\n    display: grid;\n    grid-template-rows: repeat(3, 222px);\n    grid-template-columns: repeat(3, 160px);\n    gap: 60px 30px;\n    margin-left: auto;\n    transform: rotate(335deg);\n}\n\n.image-block {\n    border-radius: 10px;\n    overflow: hidden;\n    transition: 0.5s;\n    cursor: pointer;\n}\n\n.image-block:nth-child(2), .image-block:nth-child(5), .image-block:nth-child(8) {\n    transform: translateY(-55%);\n}\n\n.main-films-block {\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    padding: 32px 53px 53px 53px;\n    background: #0F0F0F;\n    margin-bottom: 8px;\n}\n\n.main-films-block:nth-child(2n + 1) {\n    background: none;\n}\n\n.films-block-head, .films-block-title {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n\n.films-block-title i {\n    height: 38px;\n    width: 38px;\n    background: var(--main-color);\n    border-radius: 5px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    margin-right: 10px;\n}\n\n.films-block-title i img {\n    width: 16px;\n    height: 16px;\n}\n\n.films-block-head button {\n    margin-left: auto;\n}\n\n.films-block-body {\n    margin-top: 40px;\n    display: grid;\n    grid-template-columns: repeat(6, 1fr);\n    grid-template-rows: 1fr;\n    grid-auto-flow: row;\n    justify-content: space-between;\n    gap: 0 20px;\n}\n\n.films-block-body-big {\n    grid-template-rows: repeat(2, 250px);\n    grid-template-areas:\n        \"first first first first second second\"\n        \"first first first first third third\";\n    gap: 36px;\n}\n\n.first {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n\n.first img {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n\n.first button {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n\n.first-text-box {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n\n.backdrop {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);\n    z-index: 100;\n}\n\n.first-text-box p {\n    font-weight: 500;\n    font-size: 14px;\n}\n\n.second, .third {\n    grid-area: second;\n    background: #0F0F0F;\n    display: flex;\n    flex-direction: row;\n    cursor: pointer;\n}\n\n.second img, .third img {\n    width: 160px;\n    margin-right: 20px;\n    object-fit: scale-down;\n}\n\n.second-info, .third-info {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n}\n\n.third-info {\n    margin-right: 10px;\n}\n\n.second-info-title, .third-info-title {\n    font-weight: bold;\n    font-size: 16px;\n    margin-bottom: 10px;\n}\n\n.second-info-description, .third-info-description {\n    font-size: 14px;\n    color: #B7B7B7;\n}\n\n.third {\n    grid-area: third;\n    background: #0F0F0F;\n}\n\n.main-films-block-big {\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.main-films-block-big .films-block-head {\n    margin: 0 53px 0 53px;\n}\n\n.ongoing-block {\n    grid-template-rows: repeat(2, 240px);\n    grid-template-columns: repeat(2, 500px);\n    gap: 25px 60px;\n    grid-auto-flow: row;\n    justify-content: space-between;\n}\n\n.selected-poster {\n    border: 6px solid var(--main-color);\n    transition: 0.5s;\n}\n\n.flickity {\n    display: none;\n}\n\n@media (max-width: 550px) {\n    .main-poster-block {\n        flex-direction: column;\n    }\n\n    .main-poster-grid {\n        display: none;\n    }\n\n    .main-poster-info {\n        padding: 0 20px;\n        margin-top: 20px;\n    }\n\n    .flickity {\n        display: block;\n        width: 100%;\n        height: 150px;\n        margin: 10px 0 20px 0;\n    }\n\n    .flickity-films {\n        height: 290px;\n    }\n\n    .carousel-cell {\n        width: 120px;\n        margin-right: 18px;\n    }\n\n    .carousel-cell-films {\n        width: 180px;\n    }\n\n    .main-poster-info {\n        width: 100%;\n        margin-bottom: 20px;\n    }\n\n    .main-films-block {\n        padding: 40px 20px;\n    }\n\n    .films-block-body {\n        display: none;\n    }\n\n    .films-block-body.mobile {\n        display: block;\n    }\n\n    .films-block-body.films-block-body-big {\n        display: grid;\n        grid-template-columns: 1fr;\n        grid-template-rows: repeat(3, 1fr);\n        grid-template-areas:\n                            \"first\"\n                            \"second\"\n                            \"third\";\n    }\n\n\n    .films-block-head {\n        margin: 0 !important;\n        width: 100%;\n    }\n\n    .first-text-box p {\n        display: none;\n    }\n\n    .second-info, .third-info {\n        padding-right: 20px;\n    }\n\n    .first h3 {\n        font-size: 14px;\n    }\n\n    .ti-btn {\n        font-size: 12px;\n    }\n\n    .main-poster-section-title, .main-poster-buttons, .films-block-head .ti-btn {\n        display: none;\n    }\n\n    .ongoing-block {\n        display: none !important;\n    }\n\n    .main-poster-title {\n        margin-bottom: 5px;\n    }\n\n    .main-poster-description {\n        margin-bottom: 10px;\n    }\n\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.main-poster-block[data-v-04c29797] {\n    width: 100%;\n    height: 100%;\n    max-height: 650px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    z-index: 10;\n    overflow: hidden;\n}\n.main-poster-info[data-v-04c29797] {\n    display: flex;\n    flex-direction: column;\n}\n.main-poster-section-title[data-v-04c29797] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 20px;\n}\n.main-poster-section-title h3[data-v-04c29797] {\n    font-size: 20px;\n    border-bottom: 2px solid var(--main-color);\n    color: white;\n}\n.main-poster-section-title p[data-v-04c29797] {\n    font-size: 16px;\n    color: #808080;\n    margin: 0 0 0 6px;\n}\n.main-poster-title[data-v-04c29797] {\n    font-size: 32px;\n    font-weight: 500;\n    margin-bottom: 30px;\n}\n.main-poster-title span[data-v-04c29797] {\n    color: var(--main-color);\n}\n.main-poster-description[data-v-04c29797] {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 27px;\n}\n.main-poster-grid[data-v-04c29797] {\n    display: grid;\n    grid-template-rows: repeat(3, 222px);\n    grid-template-columns: repeat(3, 160px);\n    gap: 60px 30px;\n    margin-left: auto;\n    transform: rotate(335deg);\n}\n.image-block[data-v-04c29797] {\n    border-radius: 10px;\n    overflow: hidden;\n    transition: 0.5s;\n    cursor: pointer;\n}\n.image-block[data-v-04c29797]:nth-child(2), .image-block[data-v-04c29797]:nth-child(5), .image-block[data-v-04c29797]:nth-child(8) {\n    transform: translateY(-55%);\n}\n.main-films-block[data-v-04c29797] {\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    padding: 32px 53px 53px 53px;\n    background: #0F0F0F;\n    margin-bottom: 8px;\n}\n.main-films-block[data-v-04c29797]:nth-child(2n + 1) {\n    background: none;\n}\n.films-block-head[data-v-04c29797], .films-block-title[data-v-04c29797] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n.films-block-title i[data-v-04c29797] {\n    height: 38px;\n    width: 38px;\n    background: var(--main-color);\n    border-radius: 5px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    margin-right: 10px;\n}\n.films-block-title i img[data-v-04c29797] {\n    width: 16px;\n    height: 16px;\n}\n.films-block-head button[data-v-04c29797] {\n    margin-left: auto;\n}\n.films-block-body[data-v-04c29797] {\n    margin-top: 40px;\n    display: grid;\n    grid-template-columns: repeat(6, 1fr);\n    grid-template-rows: 1fr;\n    grid-auto-flow: row;\n    justify-content: space-between;\n    gap: 0 20px;\n}\n.films-block-body-big[data-v-04c29797] {\n    grid-template-rows: repeat(2, 250px);\n    grid-template-areas:\n        \"first first first first second second\"\n        \"first first first first third third\";\n    gap: 36px;\n}\n.first[data-v-04c29797] {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n.first img[data-v-04c29797] {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n.first button[data-v-04c29797] {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n.first-text-box[data-v-04c29797] {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n.main-films-block-big[data-v-04c29797] {\n    padding-left: 0;\n    padding-right: 0;\n}\n.main-films-block-big .films-block-head[data-v-04c29797] {\n    margin: 0 53px 0 53px;\n}\n.ongoing-block[data-v-04c29797] {\n    grid-template-rows: repeat(2, 240px);\n    grid-template-columns: repeat(2, 500px);\n    gap: 25px 60px;\n    grid-auto-flow: row;\n    justify-content: space-between;\n}\n.selected-poster[data-v-04c29797] {\n    border: 6px solid var(--main-color);\n    transition: 0.5s;\n}\n.flickity[data-v-04c29797] {\n    display: none;\n}\n@media (max-width: 550px) {\n.main-poster-block[data-v-04c29797] {\n        flex-direction: column;\n}\n.main-poster-grid[data-v-04c29797] {\n        display: none;\n}\n.main-poster-info[data-v-04c29797] {\n        padding: 0 20px;\n        margin-top: 20px;\n}\n.flickity[data-v-04c29797] {\n        display: block;\n        width: 100%;\n        height: 150px;\n        margin: 10px 0 20px 0;\n}\n.flickity-films[data-v-04c29797] {\n        height: 290px;\n}\n.carousel-cell[data-v-04c29797] {\n        width: 120px;\n        margin-right: 18px;\n}\n.carousel-cell-films[data-v-04c29797] {\n        width: 180px;\n}\n.main-poster-info[data-v-04c29797] {\n        width: 100%;\n        margin-bottom: 20px;\n}\n.main-films-block[data-v-04c29797] {\n        padding: 40px 20px;\n}\n.films-block-body[data-v-04c29797] {\n        display: none;\n}\n.films-block-body.mobile[data-v-04c29797] {\n        display: block;\n}\n.films-block-body.films-block-body-big[data-v-04c29797] {\n        display: grid;\n        grid-template-columns: 1fr;\n        grid-template-rows: repeat(3, 1fr);\n        grid-template-areas:\n                            \"first\"\n                            \"second\"\n                            \"third\";\n}\n.films-block-head[data-v-04c29797] {\n        margin: 0 !important;\n        width: 100%;\n}\n.first-text-box p[data-v-04c29797] {\n        display: none;\n}\n.second-info[data-v-04c29797], .third-info[data-v-04c29797] {\n        padding-right: 20px;\n}\n.first h3[data-v-04c29797] {\n        font-size: 14px;\n}\n.ti-btn[data-v-04c29797] {\n        font-size: 12px;\n}\n.main-poster-section-title[data-v-04c29797], .main-poster-buttons[data-v-04c29797], .films-block-head .ti-btn[data-v-04c29797] {\n        display: none;\n}\n.ongoing-block[data-v-04c29797] {\n        display: none !important;\n}\n.main-poster-title[data-v-04c29797] {\n        margin-bottom: 5px;\n}\n.main-poster-description[data-v-04c29797] {\n        margin-bottom: 10px;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/pages/HomePage.vue"],"names":[],"mappings":";AAiNA;IACI,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,WAAW;IACX,gBAAgB;AACpB;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,eAAe;IACf,0CAA0C;IAC1C,YAAY;AAChB;AAEA;IACI,eAAe;IACf,cAAc;IACd,iBAAiB;AACrB;AAEA;IACI,eAAe;IACf,gBAAgB;IAChB,mBAAmB;AACvB;AAEA;IACI,wBAAwB;AAC5B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,oCAAoC;IACpC,uCAAuC;IACvC,cAAc;IACd,iBAAiB;IACjB,yBAAyB;AAC7B;AAEA;IACI,mBAAmB;IACnB,gBAAgB;IAChB,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,2BAA2B;AAC/B;AAEA;IACI,WAAW;IACX,aAAa;IACb,sBAAsB;IACtB,4BAA4B;IAC5B,mBAAmB;IACnB,kBAAkB;AACtB;AAEA;IACI,gBAAgB;AACpB;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,YAAY;IACZ,WAAW;IACX,6BAA6B;IAC7B,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,uBAAuB;IACvB,kBAAkB;AACtB;AAEA;IACI,WAAW;IACX,YAAY;AAChB;AAEA;IACI,iBAAiB;AACrB;AAEA;IACI,gBAAgB;IAChB,aAAa;IACb,qCAAqC;IACrC,uBAAuB;IACvB,mBAAmB;IACnB,8BAA8B;IAC9B,WAAW;AACf;AAEA;IACI,oCAAoC;IACpC;;6CAEyC;IACzC,SAAS;AACb;AAEA;IACI,gBAAgB;IAChB,kBAAkB;IAClB,eAAe;AACnB;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,OAAO;IACP,MAAM;AACV;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,YAAY;AAChB;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,UAAU;IACV,YAAY;IACZ,YAAY;AAChB;AAEA;IACI,eAAe;IACf,gBAAgB;AACpB;AAEA;IACI,qBAAqB;AACzB;AAEA;IACI,oCAAoC;IACpC,uCAAuC;IACvC,cAAc;IACd,mBAAmB;IACnB,8BAA8B;AAClC;AAEA;IACI,mCAAmC;IACnC,gBAAgB;AACpB;AAEA;IACI,aAAa;AACjB;AAEA;AACI;QACI,sBAAsB;AAC1B;AAEA;QACI,aAAa;AACjB;AAEA;QACI,eAAe;QACf,gBAAgB;AACpB;AAEA;QACI,cAAc;QACd,WAAW;QACX,aAAa;QACb,qBAAqB;AACzB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,YAAY;QACZ,kBAAkB;AACtB;AAEA;QACI,YAAY;AAChB;AAEA;QACI,WAAW;QACX,mBAAmB;AACvB;AAEA;QACI,kBAAkB;AACtB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,cAAc;AAClB;AAEA;QACI,aAAa;QACb,0BAA0B;QAC1B,kCAAkC;QAClC;;;mCAG2B;AAC/B;AAGA;QACI,oBAAoB;QACpB,WAAW;AACf;AAEA;QACI,aAAa;AACjB;AAEA;QACI,mBAAmB;AACvB;AAEA;QACI,eAAe;AACnB;AAEA;QACI,eAAe;AACnB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,wBAAwB;AAC5B;AAEA;QACI,kBAAkB;AACtB;AAEA;QACI,mBAAmB;AACvB;AAEJ","sourcesContent":["<template>\n    <div class=\"main-poster-block\">\n        <div class=\"main-poster-info\">\n            <div class=\"main-poster-section-title\">\n                <h3>Anime Zero</h3>\n                <p>/ Каталог</p>\n            </div>\n            <h2 class=\"main-poster-title\">\n                Смотрите онлайн<br> фильмы на Anime<span>Zero</span>\n            </h2>\n            <p class=\"main-poster-description\">\n                Смотрите фильмы в хорошем качестве<br> только у нас !\n            </p>\n            <div class=\"main-poster-buttons\">\n                <BaseButton @click=\"watchFilm\">\n                    <i class=\"fal fa-play\"/>Перейти к просмотру\n                </BaseButton>\n            </div>\n        </div>\n        <Flickity\n            v-if=\"films.best.length\"\n            ref=\"flickity\"\n            :options=\"flickity.bestFilmSlider\"\n            class=\"flickity\"\n        >\n            <div\n                v-for=\"best in films.best\"\n                :key=\"best.id\"\n                class=\"carousel-cell\"\n            >\n                <InertiaLink\n                    :href=\"route('film.show', best.id)\"\n                    as=\"img\"\n                    class=\"gallery-cell-img\"\n                    :src=\"best.poster\"\n                    :alt=\"best.title\"\n                />\n            </div>\n        </Flickity>\n        <div class=\"main-poster-grid\">\n            <div\n                v-for=\"(best, index) in films.best\"\n                :key=\"best.id\"\n                class=\"image-block\"\n                :class=\"{'selected-poster': index === selected_poster}\"\n                @click=\"selectPoster(index)\"\n            >\n                <img\n                    :src=\"best.poster\"\n                    :alt=\"best.title\"\n                >\n            </div>\n        </div>\n    </div>\n    <div class=\"main-films-block\">\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i class=\"fal fa-chart-bar\"/>\n                <h4>Новинки</h4>\n            </div>\n            <BaseButton @click=\"$inertia.visit(route('films', {years: '2021-2022'}))\">\n                Показать все\n            </BaseButton>\n        </div>\n        <div class=\"films-block-body\">\n            <FilmCard\n                v-for=\"film in films.newest\"\n                :key=\"film.id\"\n                :item=\"film\"\n            />\n        </div>\n        <div class=\"films-block-body mobile\">\n            <Flickity\n                v-if=\"films.newest.length\"\n                ref=\"flickity\"\n                class=\"flickity flickity-films\"\n                :options=\"flickity.filmsSlider\"\n            >\n                <div\n                    v-for=\"film in films.newest\"\n                    :key=\"film.id\"\n                    class=\"carousel-cell carousel-cell-films\"\n                >\n                    <FilmCard :item=\"film\"/>\n                </div>\n            </Flickity>\n        </div>\n    </div>\n    <div\n        v-if=\"films.recommended.length > 2\"\n        class=\"main-films-block main-films-block-big\"\n    >\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i class=\"fal fa-star\"/>\n                <h4>Мы рекомендуем</h4>\n            </div>\n        </div>\n        <div class=\"films-block-body films-block-body-big\">\n            <RecommendedPoster\n:item=\"films.recommended[0]\"\nstyle=\"grid-area: first\"/>\n            <RecommendedPosterSmall\n                :item=\"films.recommended[1]\"\n                style=\"grid-area: second\"/>\n            <RecommendedPosterSmall\n                :item=\"films.recommended[2]\"\n                style=\"grid-area: third\"/>\n        </div>\n    </div>\n    <div class=\"main-films-block\">\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i><img\n                    src=\"/img/ongoing-icon.svg\"\n                    alt=\"ongoing\"\n                ></i>\n                <h4>Скоро выйдет</h4>\n            </div>\n            <BaseButton @click=\"$inertia.visit(route('films', {statuses: 'Онгоинг'}))\">\n                Показать все\n            </BaseButton>\n        </div>\n        <div class=\"films-block-body ongoing-block mobile\">\n            <OngoingCard\n                v-for=\"ongoing in films.ongoing\"\n                :key=\"ongoing.id\"\n                :item=\"ongoing\"\n            />\n        </div>\n        <Flickity\n            v-if=\"films.ongoing.length\"\n            ref=\"flickity\"\n            :options=\"flickity.filmsSlider\"\n            class=\"flickity flickity-films\"\n        >\n            <div\n                v-for=\"ongoing in films.ongoing\"\n                :key=\"ongoing.id\"\n                class=\"carousel-cell carousel-cell-films\"\n            >\n                <FilmCard :item=\"ongoing\"/>\n            </div>\n        </Flickity>\n    </div>\n</template>\n\n<script>\nimport FilmCard from '../components/FilmCard';\nimport OngoingCard from '../components/OngoingCard';\nimport Flickity from 'vue-flickity';\nimport RecommendedPosterSmall from '../components/RecommendedPosterSmall';\nimport RecommendedPoster from '../components/RecommendedPoster';\n\nexport default {\n    name: 'HomePage',\n    components: {RecommendedPoster, RecommendedPosterSmall, OngoingCard, FilmCard, Flickity},\n    props: {\n        films: {\n            type: Object,\n            required: true,\n        },\n    },\n    data() {\n        return {\n            selected_poster: -1,\n            flickity: {\n                bestFilmSlider: {\n                    initialIndex: 3,\n                    prevNextButtons: false,\n                    pageDots: false,\n                    wrapAround: true\n                },\n                filmsSlider: {\n                    initialIndex: 1,\n                    prevNextButtons: false,\n                    pageDots: false,\n                    wrapAround: true\n                }\n            }\n        };\n    },\n    mounted() {\n        if (this.$page.props.flash.message === 'email-verification-required') {\n            this.$root.setModalState(this.$root.modal.enum.EMAIL_VERIFY);\n            this.$root.openModal();\n        }\n\n        if (this.$page.props.flash.message === 'auth-required') {\n            this.$root.setModalState(this.$root.modal.enum.LOGIN);\n            this.$root.openModal();\n        }\n    },\n    methods: {\n        selectPoster(id) {\n            this.selected_poster = id;\n        },\n        watchFilm() {\n            if (this.selected_poster === -1)\n                return this.$inertia.get(this.route('films'));\n\n            this.$inertia.get(this.route('film.show', this.films.best[this.selected_poster].id));\n        }\n    }\n};\n</script>\n\n<style scoped>\n\n.main-poster-block {\n    width: 100%;\n    height: 100%;\n    max-height: 650px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    z-index: 10;\n    overflow: hidden;\n}\n\n.main-poster-info {\n    display: flex;\n    flex-direction: column;\n}\n\n.main-poster-section-title {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 20px;\n}\n\n.main-poster-section-title h3 {\n    font-size: 20px;\n    border-bottom: 2px solid var(--main-color);\n    color: white;\n}\n\n.main-poster-section-title p {\n    font-size: 16px;\n    color: #808080;\n    margin: 0 0 0 6px;\n}\n\n.main-poster-title {\n    font-size: 32px;\n    font-weight: 500;\n    margin-bottom: 30px;\n}\n\n.main-poster-title span {\n    color: var(--main-color);\n}\n\n.main-poster-description {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 27px;\n}\n\n.main-poster-grid {\n    display: grid;\n    grid-template-rows: repeat(3, 222px);\n    grid-template-columns: repeat(3, 160px);\n    gap: 60px 30px;\n    margin-left: auto;\n    transform: rotate(335deg);\n}\n\n.image-block {\n    border-radius: 10px;\n    overflow: hidden;\n    transition: 0.5s;\n    cursor: pointer;\n}\n\n.image-block:nth-child(2), .image-block:nth-child(5), .image-block:nth-child(8) {\n    transform: translateY(-55%);\n}\n\n.main-films-block {\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    padding: 32px 53px 53px 53px;\n    background: #0F0F0F;\n    margin-bottom: 8px;\n}\n\n.main-films-block:nth-child(2n + 1) {\n    background: none;\n}\n\n.films-block-head, .films-block-title {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n\n.films-block-title i {\n    height: 38px;\n    width: 38px;\n    background: var(--main-color);\n    border-radius: 5px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    margin-right: 10px;\n}\n\n.films-block-title i img {\n    width: 16px;\n    height: 16px;\n}\n\n.films-block-head button {\n    margin-left: auto;\n}\n\n.films-block-body {\n    margin-top: 40px;\n    display: grid;\n    grid-template-columns: repeat(6, 1fr);\n    grid-template-rows: 1fr;\n    grid-auto-flow: row;\n    justify-content: space-between;\n    gap: 0 20px;\n}\n\n.films-block-body-big {\n    grid-template-rows: repeat(2, 250px);\n    grid-template-areas:\n        \"first first first first second second\"\n        \"first first first first third third\";\n    gap: 36px;\n}\n\n.first {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n\n.first img {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n\n.first button {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n\n.first-text-box {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n\n.main-films-block-big {\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.main-films-block-big .films-block-head {\n    margin: 0 53px 0 53px;\n}\n\n.ongoing-block {\n    grid-template-rows: repeat(2, 240px);\n    grid-template-columns: repeat(2, 500px);\n    gap: 25px 60px;\n    grid-auto-flow: row;\n    justify-content: space-between;\n}\n\n.selected-poster {\n    border: 6px solid var(--main-color);\n    transition: 0.5s;\n}\n\n.flickity {\n    display: none;\n}\n\n@media (max-width: 550px) {\n    .main-poster-block {\n        flex-direction: column;\n    }\n\n    .main-poster-grid {\n        display: none;\n    }\n\n    .main-poster-info {\n        padding: 0 20px;\n        margin-top: 20px;\n    }\n\n    .flickity {\n        display: block;\n        width: 100%;\n        height: 150px;\n        margin: 10px 0 20px 0;\n    }\n\n    .flickity-films {\n        height: 290px;\n    }\n\n    .carousel-cell {\n        width: 120px;\n        margin-right: 18px;\n    }\n\n    .carousel-cell-films {\n        width: 180px;\n    }\n\n    .main-poster-info {\n        width: 100%;\n        margin-bottom: 20px;\n    }\n\n    .main-films-block {\n        padding: 40px 20px;\n    }\n\n    .films-block-body {\n        display: none;\n    }\n\n    .films-block-body.mobile {\n        display: block;\n    }\n\n    .films-block-body.films-block-body-big {\n        display: grid;\n        grid-template-columns: 1fr;\n        grid-template-rows: repeat(3, 1fr);\n        grid-template-areas:\n                            \"first\"\n                            \"second\"\n                            \"third\";\n    }\n\n\n    .films-block-head {\n        margin: 0 !important;\n        width: 100%;\n    }\n\n    .first-text-box p {\n        display: none;\n    }\n\n    .second-info, .third-info {\n        padding-right: 20px;\n    }\n\n    .first h3 {\n        font-size: 14px;\n    }\n\n    .ti-btn {\n        font-size: 12px;\n    }\n\n    .main-poster-section-title, .main-poster-buttons, .films-block-head .ti-btn {\n        display: none;\n    }\n\n    .ongoing-block {\n        display: none !important;\n    }\n\n    .main-poster-title {\n        margin-bottom: 5px;\n    }\n\n    .main-poster-description {\n        margin-bottom: 10px;\n    }\n\n}\n\n</style>\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/cssWithMappingToString.js */ "./node_modules/css-loader/dist/runtime/cssWithMappingToString.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n.privacy-head[data-v-244915d0] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-top: 100px;\n    margin-bottom: 26px;\n}\n.privacy-head h3[data-v-244915d0] {\n    font-weight: 700;\n    font-size: 19px;\n    border-bottom: 2px solid var(--main-color);\n    margin-right: 5px;\n}\n.privacy-head p[data-v-244915d0] {\n    color: #808080;\n    font-weight: 500;\n    font-size: 16px;\n}\n.privacy-title[data-v-244915d0] {\n    font-weight: 500;\n    font-size: 32px;\n    margin-bottom: 20px;\n}\n.privacy-subtitle[data-v-244915d0] {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 20px;\n}\n.privacy-block[data-v-244915d0] {\n    display: flex;\n    flex-direction: column;\n    font-weight: 500;\n    font-size: 14px;\n}\n.privacy-block h3[data-v-244915d0] {\n    font-weight: 700;\n    font-size: 18px;\n    color: #FFFFFF;\n    margin-bottom: 10px;\n}\n.privacy-block p[data-v-244915d0] {\n    margin-bottom: 10px;\n}\n.privacy-block ul[data-v-244915d0] {\n    margin: 0 0 10px 0;\n    padding-left: 20px;\n    width: 100%;\n    max-width: unset;\n}\n.privacy-block li[data-v-244915d0] {\n    margin: 0;\n}\n.privacy-block a[data-v-244915d0] {\n    color: var(--main-color);\n    text-decoration: none;\n    font-weight: 600;\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/pages/PrivacyPolicyPage.vue"],"names":[],"mappings":";AA+gBA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,0CAA0C;IAC1C,iBAAiB;AACrB;AAEA;IACI,cAAc;IACd,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,mBAAmB;AACvB;AAEA;IACI,kBAAkB;IAClB,kBAAkB;IAClB,WAAW;IACX,gBAAgB;AACpB;AAEA;IACI,SAAS;AACb;AAEA;IACI,wBAAwB;IACxB,qBAAqB;IACrB,gBAAgB;AACpB","sourcesContent":["<template>\n    <div class=\"privacy-container\">\n        <div class=\"privacy-head\">\n            <h3>Anime Zero</h3>\n            <p>/ Политика конфиденциальности</p>\n        </div>\n        <h2 class=\"privacy-title\">\n            Политика конфиденциальности\n        </h2>\n        <p class=\"privacy-subtitle\">\n            Мы уверяем вас, что данные, оставленные на нашем сайте не будут подвергаться\n            распространению.\n        </p>\n        <div class=\"privacy-block\">\n            <h3>1. Общие положения</h3>\n            <p>\n                Настоящая политика обработки персональных данных составлена в соответствии с требованиями Федерального\n                закона от 27.07.2006. №152-ФЗ «О персональных данных» (далее - Закон о персональных данных) и определяет\n                порядок обработки персональных данных и меры по обеспечению безопасности персональных данных,\n                предпринимаемые ООО «AnimeZero» (далее – Оператор).\n            </p>\n            <ul>\n                <li>\n                    1.1. Оператор ставит своей важнейшей целью и условием осуществления своей деятельности соблюдение\n                    прав и свобод человека и гражданина при обработке его персональных данных, в том числе защиты прав\n                    на неприкосновенность частной жизни, личную и семейную тайну.\n                </li>\n                <li>\n                    1.2. Настоящая политика Оператора в отношении обработки персональных данных (далее – Политика)\n                    применяется ко всей информации, которую Оператор может получить о посетителях веб-сайта\n                    <a href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>2. Основные понятия, используемые в Политике</h3>\n            <ul>\n                <li>\n                    2.1. Автоматизированная обработка персональных данных – обработка персональных данных с помощью\n                    средств вычислительной техники.\n                </li>\n                <li>\n                    2.2. Блокирование персональных данных – временное прекращение обработки персональных данных (за\n                    исключением случаев, если обработка необходима для уточнения персональных данных).\n                </li>\n                <li>\n                    2.3. Веб-сайт – совокупность графических и информационных материалов, а также программ для ЭВМ и баз\n                    данных, обеспечивающих их доступность в сети интернет по сетевому адресу <a\n                    href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    2.4. Информационная система персональных данных — совокупность содержащихся в базах данных\n                    персональных данных, и обеспечивающих их обработку информационных технологий и технических средств.\n                </li>\n                <li>\n                    2.5. Обезличивание персональных данных — действия, в результате которых невозможно определить без\n                    использования дополнительной информации принадлежность персональных данных конкретному Пользователю\n                    или иному субъекту персональных данных.\n                </li>\n                <li>\n                    2.6. Обработка персональных данных – любое действие (операция) или совокупность действий (операций),\n                    совершаемых с использованием средств автоматизации или без использования таких средств с\n                    персональными данными, включая сбор, запись, систематизацию, накопление, хранение, уточнение\n                    (обновление, изменение), извлечение, использование, передачу (распространение, предоставление,\n                    доступ), обезличивание, блокирование, удаление, уничтожение персональных данных.\n                </li>\n                <li>\n                    2.7. Оператор – государственный орган, муниципальный орган, юридическое или физическое лицо,\n                    самостоятельно или совместно с другими лицами организующие и (или) осуществляющие обработку\n                    персональных данных, а также определяющие цели обработки персональных данных, состав персональных\n                    данных, подлежащих обработке, действия (операции), совершаемые с персональными данными.\n                </li>\n                <li>\n                    2.8. Персональные данные – любая информация, относящаяся прямо или косвенно к определенному или\n                    определяемому Пользователю веб-сайта <a href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    2.9. Персональные данные, разрешенные субъектом персональных данных для распространения, -\n                    персональные данные, доступ неограниченного круга лиц к которым предоставлен субъектом персональных\n                    данных путем дачи согласия на обработку персональных данных, разрешенных субъектом персональных\n                    данных для распространения в порядке, предусмотренном Законом о персональных данных (далее -\n                    персональные данные, разрешенные для распространения).\n                </li>\n                <li>\n                    2.10. Пользователь – любой посетитель веб-сайта <a\n                    href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    2.11. Предоставление персональных данных – действия, направленные на раскрытие персональных данных\n                    определенному лицу или определенному кругу лиц.\n                </li>\n                <li>\n                    2.12. Распространение персональных данных – любые действия, направленные на раскрытие персональных\n                    данных неопределенному кругу лиц (передача персональных данных) или на ознакомление с персональными\n                    данными неограниченного круга лиц, в том числе обнародование персональных данных в средствах\n                    массовой информации, размещение в информационно-телекоммуникационных сетях или предоставление\n                    доступа к персональным данным каким-либо иным способом.\n                </li>\n                <li>\n                    2.13. Трансграничная передача персональных данных – передача персональных данных на территорию\n                    иностранного государства органу власти иностранного государства, иностранному физическому или\n                    иностранному юридическому лицу.\n                </li>\n                <li>\n                    2.14. Уничтожение персональных данных – любые действия, в результате которых персональные данные\n                    уничтожаются безвозвратно с невозможностью дальнейшего восстановления содержания персональных данных\n                    в информационной системе персональных данных и (или) уничтожаются материальные носители персональных\n                    данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>3. Основные права и обязанности Оператора</h3>\n            <ul>\n                <li>\n                    3.1. Оператор имеет право:<br>\n                    – получать от субъекта персональных данных достоверные информацию и/или документы, содержащие\n                    персональные данные;<br>\n                    – в случае отзыва субъектом персональных данных согласия на обработку персональных данных Оператор\n                    вправе продолжить обработку персональных данных без согласия субъекта персональных данных при\n                    наличии оснований, указанных в Законе о персональных данных;<br>\n                    – самостоятельно определять состав и перечень мер, необходимых и достаточных для обеспечения\n                    выполнения обязанностей, предусмотренных Законом о персональных данных и принятыми в соответствии с\n                    ним нормативными правовыми актами, если иное не предусмотрено Законом о персональных данных или\n                    другими федеральными законами.\n                </li>\n                <li>\n                    3.2. Оператор обязан:<br>\n                    – предоставлять субъекту персональных данных по его просьбе информацию, касающуюся обработки его\n                    персональных данных;<br>\n                    – организовывать обработку персональных данных в порядке, установленном действующим\n                    законодательством РФ;<br>\n                    – отвечать на обращения и запросы субъектов персональных данных и их законных представителей в\n                    соответствии с требованиями Закона о персональных данных;<br>\n                    – сообщать в уполномоченный орган по защите прав субъектов персональных данных по запросу этого\n                    органа необходимую информацию в течение 30 дней с даты получения такого запроса;<br>\n                    – публиковать или иным образом обеспечивать неограниченный доступ к настоящей Политике в отношении\n                    обработки персональных данных;<br>\n                    – принимать правовые, организационные и технические меры для защиты персональных данных от\n                    неправомерного или случайного доступа к ним, уничтожения, изменения, блокирования, копирования,\n                    предоставления, распространения персональных данных, а также от иных неправомерных действий в\n                    отношении персональных данных;<br>\n                    – прекратить передачу (распространение, предоставление, доступ) персональных данных, прекратить\n                    обработку и уничтожить персональные данные в порядке и случаях, предусмотренных Законом о\n                    персональных данных;<br>\n                    – исполнять иные обязанности, предусмотренные Законом о персональных данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>4. Основные права и обязанности субъектов персональных данных</h3>\n            <ul>\n                <li>\n                    4.1. Субъекты персональных данных имеют право:<br>\n                    – получать информацию, касающуюся обработки его персональных данных, за исключением случаев,\n                    предусмотренных федеральными законами. Сведения предоставляются субъекту персональных данных\n                    Оператором в доступной форме, и в них не должны содержаться персональные данные, относящиеся к\n                    другим субъектам персональных данных, за исключением случаев, когда имеются законные основания для\n                    раскрытия таких персональных данных. Перечень информации и порядок ее получения установлен Законом о\n                    персональных данных;<br>\n                    – требовать от оператора уточнения его персональных данных, их блокирования или уничтожения в\n                    случае, если персональные данные являются неполными, устаревшими, неточными, незаконно полученными\n                    или не являются необходимыми для заявленной цели обработки, а также принимать предусмотренные\n                    законом меры по защите своих прав;<br>\n                    – выдвигать условие предварительного согласия при обработке персональных данных в целях продвижения\n                    на рынке товаров, работ и услуг;<br>\n                    – на отзыв согласия на обработку персональных данных;<br>\n                    – обжаловать в уполномоченный орган по защите прав субъектов персональных данных или в судебном\n                    порядке неправомерные действия или бездействие Оператора при обработке его персональных данных;<br>\n                    – на осуществление иных прав, предусмотренных законодательством РФ.<br>\n                </li>\n                <li>\n                    4.2. Субъекты персональных данных обязаны:\n                    – предоставлять Оператору достоверные данные о себе;<br>\n                    – сообщать Оператору об уточнении (обновлении, изменении) своих персональных данных.<br>\n                </li>\n                <li>\n                    4.3. Лица, передавшие Оператору недостоверные сведения о себе, либо сведения о другом субъекте\n                    персональных данных без согласия последнего, несут ответственность в соответствии с\n                    законодательством РФ.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>5. Оператор может обрабатывать следующие персональные данные Пользователя</h3>\n            <ul>\n                <li>5.1. Электронный адрес.</li>\n                <li>\n                    5.2. Также на сайте происходит сбор и обработка обезличенных данных о посетителях (в т.ч. файлов\n                    «cookie») с помощью сервисов интернет-статистики (Яндекс Метрика и Гугл Аналитика и других).\n                </li>\n                <li>\n                    5.3. Вышеперечисленные данные далее по тексту Политики объединены общим понятием Персональные\n                    данные.\n                </li>\n                <li>\n                    5.4. Обработка специальных категорий персональных данных, касающихся расовой, национальной\n                    принадлежности, политических взглядов, религиозных или философских убеждений, интимной жизни,\n                    Оператором\n                    не осуществляется.\n                </li>\n                <li>\n                    5.5. Обработка персональных данных, разрешенных для распространения, из числа специальных категорий\n                    персональных данных, указанных в ч. 1 ст. 10 Закона о персональных данных, допускается, если\n                    соблюдаются\n                    запреты и условия, предусмотренные ст. 10.1 Закона о персональных данных.\n                </li>\n                <li>\n                    5.6. Согласие Пользователя на обработку персональных данных, разрешенных для распространения,\n                    оформляется отдельно от других согласий на обработку его персональных данных. При этом соблюдаются\n                    условия, предусмотренные, в частности, ст. 10.1 Закона о персональных данных. Требования к\n                    содержанию\n                    такого согласия устанавливаются уполномоченным органом по защите прав субъектов персональных данных.\n                </li>\n                <ul>\n                    <li>\n                        5.6.1 Согласие на обработку персональных данных, разрешенных для распространения,\n                        Пользователь\n                        предоставляет Оператору непосредственно.\n                    </li>\n                    <li>\n                        5.6.2 Оператор обязан в срок не позднее трех рабочих дней с момента получения указанного\n                        согласия\n                        Пользователя опубликовать информацию об условиях обработки, о наличии запретов и условий на\n                        обработку\n                        неограниченным кругом лиц персональных данных, разрешенных для распространения.\n                    </li>\n                    <li>\n                        5.6.3 Передача (распространение, предоставление, доступ) персональных данных, разрешенных\n                        субъектом\n                        персональных данных для распространения, должна быть прекращена в любое время по требованию\n                        субъекта\n                        персональных данных. Данное требование должно включать в себя фамилию, имя, отчество (при\n                        наличии),\n                        контактную информацию (номер телефона, адрес электронной почты или почтовый адрес) субъекта\n                        персональных\n                        данных, а также перечень персональных данных, обработка которых подлежит прекращению.\n                        Указанные в данном\n                        требовании персональные данные могут обрабатываться только Оператором, которому оно\n                        направлено.\n                    </li>\n                    <li>\n                        5.6.4 Согласие на обработку персональных данных, разрешенных для распространения, прекращает\n                        свое\n                        действие с момента поступления Оператору требования, указанного в п. 5.6.3 настоящей\n                        Политики в\n                        отношении обработки персональных данных.\n                    </li>\n                </ul>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>6. Принципы обработки персональных данных</h3>\n            <ul>\n                <li>6.1. Обработка персональных данных осуществляется на законной и справедливой основе.</li>\n                <li>\n                    6.2. Обработка персональных данных ограничивается достижением конкретных, заранее определенных и\n                    законных целей. Не допускается обработка персональных данных, несовместимая с целями сбора\n                    персональных\n                    данных.\n                </li>\n                <li>\n                    6.3. Не допускается объединение баз данных, содержащих персональные данные, обработка которых\n                    осуществляется в целях, несовместимых между собой.\n                </li>\n                <li>6.4. Обработке подлежат только персональные данные, которые отвечают целям их обработки.</li>\n                <li>\n                    6.5. Содержание и объем обрабатываемых персональных данных соответствуют заявленным целям обработки.\n                    Не\n                    допускается избыточность обрабатываемых персональных данных по отношению к заявленным целям их\n                    обработки.\n                </li>\n                <li>\n                    6.6. При обработке персональных данных обеспечивается точность персональных данных, их\n                    достаточность, а\n                    в необходимых случаях и актуальность по отношению к целям обработки персональных данных. Оператор\n                    принимает необходимые меры и/или обеспечивает их принятие по удалению или уточнению неполных или\n                    неточных данных.\n                </li>\n                <li>\n                    6.7. Хранение персональных данных осуществляется в форме, позволяющей определить субъекта\n                    персональных\n                    данных, не дольше, чем этого требуют цели обработки персональных данных, если срок хранения\n                    персональных\n                    данных не установлен федеральным законом, договором, стороной которого, выгодоприобретателем или\n                    поручителем по которому является субъект персональных данных. Обрабатываемые персональные данные\n                    уничтожаются либо обезличиваются по достижении целей обработки или в случае утраты необходимости в\n                    достижении этих целей, если иное не предусмотрено федеральным законом.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>7. Цели обработки персональных данных</h3>\n            <ul>\n                <li>\n                    7.1. Цель обработки персональных данных Пользователя:<br>\n                    – информирование Пользователя посредством отправки электронных писем;<br>\n                    – предоставление доступа Пользователю к сервисам, информации и/или материалам, содержащимся на\n                    веб-сайте\n                    <a href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    7.2. Также Оператор имеет право направлять Пользователю уведомления о новых продуктах и услугах,\n                    специальных предложениях и различных событиях. Пользователь всегда может отказаться от получения\n                    информационных сообщений, направив Оператору письмо на адрес электронной почты <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> с\n                    пометкой «Отказ от уведомлений о новых продуктах и услугах и специальных предложениях».\n                </li>\n                <li>\n                    7.3. Обезличенные данные Пользователей, собираемые с помощью сервисов интернет-статистики, служат\n                    для\n                    сбора информации о действиях Пользователей на сайте, улучшения качества сайта и его содержания.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>8. Правовые основания обработки персональных данных</h3>\n            <ul>\n                <li>\n                    8.1. Правовыми основаниями обработки персональных данных Оператором являются:<br>\n                    – перечислите нормативно-правовые акты, регулирующие отношения, связанные с вашей деятельностью,\n                    например, если ваша деятельность связана с информационными технологиями, в частности с созданием\n                    сайтов,\n                    то здесь можно указать Федеральный закон \"Об информации, информационных технологиях и о защите\n                    информации\" от 27.07.2006 N 149-ФЗ;<br>\n                    – уставные документы Оператора;<br>\n                    – договоры, заключаемые между оператором и субъектом персональных данных;<br>\n                    – федеральные законы, иные нормативно-правовые акты в сфере защиты персональных данных;<br>\n                    – согласия Пользователей на обработку их персональных данных, на обработку персональных данных,\n                    разрешенных для распространения.\n                </li>\n                <li>\n                    8.2. Оператор обрабатывает персональные данные Пользователя только в случае их заполнения и/или\n                    отправки\n                    Пользователем самостоятельно через специальные формы, расположенные на сайте https://animezero.ru\n                    или\n                    направленные Оператору посредством электронной почты. Заполняя соответствующие формы и/или отправляя\n                    свои персональные данные Оператору, Пользователь выражает свое согласие с данной Политикой.\n                </li>\n                <li>\n                    8.3. Оператор обрабатывает обезличенные данные о Пользователе в случае, если это разрешено в\n                    настройках\n                    браузера Пользователя (включено сохранение файлов «cookie» и использование технологии JavaScript).\n                </li>\n                <li>\n                    8.4. Субъект персональных данных самостоятельно принимает решение о предоставлении его персональных\n                    данных и дает согласие свободно, своей волей и в своем интересе.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>9. Условия обработки персональных данных</h3>\n            <ul>\n                <li>\n                    9.1. Обработка персональных данных осуществляется с согласия субъекта персональных данных на\n                    обработку его персональных данных.\n                </li>\n                <li>\n                    9.2. Обработка персональных данных необходима для достижения целей, предусмотренных международным\n                    договором Российской Федерации или законом, для осуществления возложенных законодательством\n                    Российской Федерации на оператора функций, полномочий и обязанностей.\n                </li>\n                <li>\n                    9.3. Обработка персональных данных необходима для осуществления правосудия, исполнения судебного\n                    акта, акта другого органа или должностного лица, подлежащих исполнению в соответствии с\n                    законодательством Российской Федерации об исполнительном производстве.\n                </li>\n                <li>\n                    9.4. Обработка персональных данных необходима для исполнения договора, стороной которого либо\n                    выгодоприобретателем или поручителем по которому является субъект персональных данных, а также для\n                    заключения договора по инициативе субъекта персональных данных или договора, по которому субъект\n                    персональных данных будет являться выгодоприобретателем или поручителем.\n                </li>\n                <li>\n                    9.5. Обработка персональных данных необходима для осуществления прав и законных интересов оператора\n                    или третьих лиц либо для достижения общественно значимых целей при условии, что при этом не\n                    нарушаются права и свободы субъекта персональных данных.\n                </li>\n                <li>\n                    9.6. Осуществляется обработка персональных данных, доступ неограниченного круга лиц к которым\n                    предоставлен субъектом персональных данных либо по его просьбе (далее – общедоступные персональные\n                    данные).\n                </li>\n                <li>\n                    9.7. Осуществляется обработка персональных данных, подлежащих опубликованию или обязательному\n                    раскрытию в соответствии с федеральным законом.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>10. Порядок сбора, хранения, передачи и других видов обработки персональных данных</h3>\n            <p>\n                Безопасность персональных данных, которые обрабатываются Оператором, обеспечивается путем реализации\n                правовых, организационных и технических мер, необходимых для выполнения в полном объеме требований\n                действующего законодательства в области защиты персональных данных.\n            </p>\n            <ul>\n                <li>\n                    10.1. Оператор обеспечивает сохранность персональных данных и принимает все возможные меры,\n                    исключающие\n                    доступ к персональным данным неуполномоченных лиц.\n                </li>\n                <li>\n                    10.2. Персональные данные Пользователя никогда, ни при каких условиях не будут переданы третьим\n                    лицам,\n                    за исключением случаев, связанных с исполнением действующего законодательства либо в случае, если\n                    субъектом персональных данных дано согласие Оператору на передачу данных третьему лицу для\n                    исполнения\n                    обязательств по гражданско-правовому договору.\n                </li>\n                <li>\n                    10.3. В случае выявления неточностей в персональных данных, Пользователь может актуализировать их\n                    самостоятельно, путем направления Оператору уведомление на адрес электронной почты Оператора\n                    <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> с пометкой «Актуализация персональных данных».\n                </li>\n                <li>\n                    10.4. Срок обработки персональных данных определяется достижением целей, для которых были собраны\n                    персональные данные, если иной срок не предусмотрен договором или действующим законодательством.\n                    Пользователь может в любой момент отозвать свое согласие на обработку персональных данных, направив\n                    Оператору уведомление посредством электронной почты на электронный адрес Оператора\n                    <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> с\n                    пометкой «Отзыв согласия на обработку персональных данных».\n                </li>\n                <li>\n                    10.5. Вся информация, которая собирается сторонними сервисами, в том числе платежными системами,\n                    средствами связи и другими поставщиками услуг, хранится и обрабатывается указанными лицами\n                    (Операторами)\n                    в соответствии с их Пользовательским соглашением и Политикой конфиденциальности. Субъект\n                    персональных\n                    данных и/или Пользователь обязан самостоятельно своевременно ознакомиться с указанными документами.\n                    Оператор не несет ответственность за действия третьих лиц, в том числе указанных в настоящем пункте\n                    поставщиков услуг.\n                </li>\n                <li>\n                    10.6. Установленные субъектом персональных данных запреты на передачу (кроме предоставления\n                    доступа), а\n                    также на обработку или условия обработки (кроме получения доступа) персональных данных, разрешенных\n                    для\n                    распространения, не действуют в случаях обработки персональных данных в государственных,\n                    общественных и\n                    иных публичных интересах, определенных законодательством РФ.\n                </li>\n                <li>\n                    10.7. Оператор при обработке персональных данных обеспечивает конфиденциальность персональных\n                    данных.\n                </li>\n                <li>\n                    10.8. Оператор осуществляет хранение персональных данных в форме, позволяющей определить субъекта\n                    персональных данных, не дольше, чем этого требуют цели обработки персональных данных, если срок\n                    хранения\n                    персональных данных не установлен федеральным законом, договором, стороной которого,\n                    выгодоприобретателем или поручителем по которому является субъект персональных данных.\n                </li>\n                <li>\n                    10.9. Условием прекращения обработки персональных данных может являться достижение целей обработки\n                    персональных данных, истечение срока действия согласия субъекта персональных данных или отзыв\n                    согласия\n                    субъектом персональных данных, а также выявление неправомерной обработки персональных данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>11. Перечень действий, производимых Оператором с полученными персональными данными</h3>\n            <ul>\n                <li>\n                    11.1. Оператор осуществляет сбор, запись, систематизацию, накопление, хранение, уточнение\n                    (обновление,\n                    изменение), извлечение, использование, передачу (распространение, предоставление, доступ),\n                    обезличивание, блокирование, удаление и уничтожение персональных данных.\n                </li>\n                <li>\n                    11.2. Оператор осуществляет автоматизированную обработку персональных данных с получением и/или\n                    передачей полученной информации по информационно-телекоммуникационным сетям или без таковой.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>12. Трансграничная передача персональных данных</h3>\n            <ul>\n                <li>\n                    12.1. Оператор до начала осуществления трансграничной передачи персональных данных обязан убедиться\n                    в\n                    том, что иностранным государством, на территорию которого предполагается осуществлять передачу\n                    персональных данных, обеспечивается надежная защита прав субъектов персональных данных.\n                </li>\n                12.2. Трансграничная передача персональных данных на территории иностранных государств, не отвечающих\n                <li>\n                    вышеуказанным требованиям, может осуществляться только в случае наличия согласия в письменной форме\n                    субъекта персональных данных на трансграничную передачу его персональных данных и/или исполнения\n                    договора, стороной которого является субъект персональных данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>13. Конфиденциальность персональных данных</h3>\n            <p>\n                Оператор и иные лица, получившие доступ к персональным данным, обязаны не раскрывать третьим лицам и не\n                распространять персональные данные без согласия субъекта персональных данных, если иное не предусмотрено\n                федеральным законом.\n            </p>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>14. Заключительные положения</h3>\n            <ul>\n                <li>\n                    14.1. Пользователь может получить любые разъяснения по интересующим вопросам, касающимся обработки\n                    его персональных данных, обратившись к Оператору с помощью электронной почты <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a>.\n                </li>\n                <li>\n                    14.2. В данном документе будут отражены любые изменения политики обработки персональных данных\n                    Оператором. Политика действует бессрочно до замены ее новой версией.\n                </li>\n                <li>\n                    14.3. Актуальная версия Политики в свободном доступе расположена в сети Интернет по адресу\n                    <a href=\"https://animezero.ru/privacy\">https://animezero.ru/privacy</a>.\n                </li>\n            </ul>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'PrivacyPolicyPage'\n};\n</script>\n\n<style scoped>\n.privacy-head {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-top: 100px;\n    margin-bottom: 26px;\n}\n\n.privacy-head h3 {\n    font-weight: 700;\n    font-size: 19px;\n    border-bottom: 2px solid var(--main-color);\n    margin-right: 5px;\n}\n\n.privacy-head p {\n    color: #808080;\n    font-weight: 500;\n    font-size: 16px;\n}\n\n.privacy-title {\n    font-weight: 500;\n    font-size: 32px;\n    margin-bottom: 20px;\n}\n\n.privacy-subtitle {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 20px;\n}\n\n.privacy-block {\n    display: flex;\n    flex-direction: column;\n    font-weight: 500;\n    font-size: 14px;\n}\n\n.privacy-block h3 {\n    font-weight: 700;\n    font-size: 18px;\n    color: #FFFFFF;\n    margin-bottom: 10px;\n}\n\n.privacy-block p {\n    margin-bottom: 10px;\n}\n\n.privacy-block ul {\n    margin: 0 0 10px 0;\n    padding-left: 20px;\n    width: 100%;\n    max-width: unset;\n}\n\n.privacy-block li {\n    margin: 0;\n}\n\n.privacy-block a {\n    color: var(--main-color);\n    text-decoration: none;\n    font-weight: 600;\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -54672,6 +55021,66 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPoster_vue_vue_type_style_index_0_id_432dbea6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPoster_vue_vue_type_style_index_0_id_432dbea6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPoster_vue_vue_type_style_index_0_id_432dbea6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPosterSmall_vue_vue_type_style_index_0_id_3478a30a_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPosterSmall_vue_vue_type_style_index_0_id_3478a30a_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPosterSmall_vue_vue_type_style_index_0_id_3478a30a_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/TheFooter.vue?vue&type=style&index=0&id=2a04c4de&scoped=true&lang=css":
 /*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/TheFooter.vue?vue&type=style&index=0&id=2a04c4de&scoped=true&lang=css ***!
@@ -54792,6 +55201,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_CopyrightPage_vue_vue_type_style_index_0_id_3fb14d3d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_CopyrightPage_vue_vue_type_style_index_0_id_3fb14d3d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_CopyrightPage_vue_vue_type_style_index_0_id_3fb14d3d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/FilmPage.vue?vue&type=style&index=0&id=25dd233c&scoped=true&lang=css":
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/FilmPage.vue?vue&type=style&index=0&id=25dd233c&scoped=true&lang=css ***!
@@ -54909,6 +55348,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_HomePage_vue_vue_type_style_index_0_id_04c29797_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_PrivacyPolicyPage_vue_vue_type_style_index_0_id_244915d0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_PrivacyPolicyPage_vue_vue_type_style_index_0_id_244915d0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_PrivacyPolicyPage_vue_vue_type_style_index_0_id_244915d0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 
@@ -55829,7 +56298,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _flickity_vue_vue_type_template_id_2af8bc48__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./flickity.vue?vue&type=template&id=2af8bc48 */ "./node_modules/vue-flickity/src/flickity.vue?vue&type=template&id=2af8bc48");
 /* harmony import */ var _flickity_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./flickity.vue?vue&type=script&lang=js */ "./node_modules/vue-flickity/src/flickity.vue?vue&type=script&lang=js");
 /* harmony import */ var flickity_dist_flickity_css_vue_type_style_index_0_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! flickity/dist/flickity.css?vue&type=style&index=0&lang=css */ "./node_modules/flickity/dist/flickity.css?vue&type=style&index=0&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -55837,7 +56306,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_flickity_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_flickity_vue_vue_type_template_id_2af8bc48__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"node_modules/vue-flickity/src/flickity.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_flickity_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_flickity_vue_vue_type_template_id_2af8bc48__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"node_modules/vue-flickity/src/flickity.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56192,13 +56661,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _TheLayout_vue_vue_type_template_id_1e21b0cd__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TheLayout.vue?vue&type=template&id=1e21b0cd */ "./resources/js/TheLayout.vue?vue&type=template&id=1e21b0cd");
 /* harmony import */ var _TheLayout_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TheLayout.vue?vue&type=script&lang=js */ "./resources/js/TheLayout.vue?vue&type=script&lang=js");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
 
 ;
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_TheLayout_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_TheLayout_vue_vue_type_template_id_1e21b0cd__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"resources/js/TheLayout.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_TheLayout_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_TheLayout_vue_vue_type_template_id_1e21b0cd__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"resources/js/TheLayout.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56221,7 +56690,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AccountFilmCard_vue_vue_type_template_id_332d17e6_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AccountFilmCard.vue?vue&type=template&id=332d17e6&scoped=true */ "./resources/js/components/AccountFilmCard.vue?vue&type=template&id=332d17e6&scoped=true");
 /* harmony import */ var _AccountFilmCard_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AccountFilmCard.vue?vue&type=script&lang=js */ "./resources/js/components/AccountFilmCard.vue?vue&type=script&lang=js");
 /* harmony import */ var _AccountFilmCard_vue_vue_type_style_index_0_id_332d17e6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AccountFilmCard.vue?vue&type=style&index=0&id=332d17e6&scoped=true&lang=css */ "./resources/js/components/AccountFilmCard.vue?vue&type=style&index=0&id=332d17e6&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56229,7 +56698,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AccountFilmCard_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AccountFilmCard_vue_vue_type_template_id_332d17e6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-332d17e6"],['__file',"resources/js/components/AccountFilmCard.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AccountFilmCard_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AccountFilmCard_vue_vue_type_template_id_332d17e6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-332d17e6"],['__file',"resources/js/components/AccountFilmCard.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56252,7 +56721,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AccountFilms_vue_vue_type_template_id_6428cfa6_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AccountFilms.vue?vue&type=template&id=6428cfa6&scoped=true */ "./resources/js/components/AccountFilms.vue?vue&type=template&id=6428cfa6&scoped=true");
 /* harmony import */ var _AccountFilms_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AccountFilms.vue?vue&type=script&lang=js */ "./resources/js/components/AccountFilms.vue?vue&type=script&lang=js");
 /* harmony import */ var _AccountFilms_vue_vue_type_style_index_0_id_6428cfa6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AccountFilms.vue?vue&type=style&index=0&id=6428cfa6&scoped=true&lang=css */ "./resources/js/components/AccountFilms.vue?vue&type=style&index=0&id=6428cfa6&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56260,7 +56729,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AccountFilms_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AccountFilms_vue_vue_type_template_id_6428cfa6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-6428cfa6"],['__file',"resources/js/components/AccountFilms.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AccountFilms_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AccountFilms_vue_vue_type_template_id_6428cfa6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-6428cfa6"],['__file',"resources/js/components/AccountFilms.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56283,7 +56752,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AccountProfileBar_vue_vue_type_template_id_01e3195c_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AccountProfileBar.vue?vue&type=template&id=01e3195c&scoped=true */ "./resources/js/components/AccountProfileBar.vue?vue&type=template&id=01e3195c&scoped=true");
 /* harmony import */ var _AccountProfileBar_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AccountProfileBar.vue?vue&type=script&lang=js */ "./resources/js/components/AccountProfileBar.vue?vue&type=script&lang=js");
 /* harmony import */ var _AccountProfileBar_vue_vue_type_style_index_0_id_01e3195c_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AccountProfileBar.vue?vue&type=style&index=0&id=01e3195c&scoped=true&lang=css */ "./resources/js/components/AccountProfileBar.vue?vue&type=style&index=0&id=01e3195c&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56291,7 +56760,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AccountProfileBar_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AccountProfileBar_vue_vue_type_template_id_01e3195c_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-01e3195c"],['__file',"resources/js/components/AccountProfileBar.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AccountProfileBar_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AccountProfileBar_vue_vue_type_template_id_01e3195c_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-01e3195c"],['__file',"resources/js/components/AccountProfileBar.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56314,7 +56783,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AuthModal_vue_vue_type_template_id_8062b4ec_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AuthModal.vue?vue&type=template&id=8062b4ec&scoped=true */ "./resources/js/components/AuthModal.vue?vue&type=template&id=8062b4ec&scoped=true");
 /* harmony import */ var _AuthModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AuthModal.vue?vue&type=script&lang=js */ "./resources/js/components/AuthModal.vue?vue&type=script&lang=js");
 /* harmony import */ var _AuthModal_vue_vue_type_style_index_0_id_8062b4ec_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AuthModal.vue?vue&type=style&index=0&id=8062b4ec&scoped=true&lang=css */ "./resources/js/components/AuthModal.vue?vue&type=style&index=0&id=8062b4ec&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56322,7 +56791,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AuthModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AuthModal_vue_vue_type_template_id_8062b4ec_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-8062b4ec"],['__file',"resources/js/components/AuthModal.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AuthModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AuthModal_vue_vue_type_template_id_8062b4ec_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-8062b4ec"],['__file',"resources/js/components/AuthModal.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56345,7 +56814,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _BaseButton_vue_vue_type_template_id_21673c8e_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseButton.vue?vue&type=template&id=21673c8e&scoped=true */ "./resources/js/components/BaseButton.vue?vue&type=template&id=21673c8e&scoped=true");
 /* harmony import */ var _BaseButton_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./BaseButton.vue?vue&type=script&lang=js */ "./resources/js/components/BaseButton.vue?vue&type=script&lang=js");
 /* harmony import */ var _BaseButton_vue_vue_type_style_index_0_id_21673c8e_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./BaseButton.vue?vue&type=style&index=0&id=21673c8e&scoped=true&lang=css */ "./resources/js/components/BaseButton.vue?vue&type=style&index=0&id=21673c8e&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56353,7 +56822,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_BaseButton_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_BaseButton_vue_vue_type_template_id_21673c8e_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-21673c8e"],['__file',"resources/js/components/BaseButton.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_BaseButton_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_BaseButton_vue_vue_type_template_id_21673c8e_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-21673c8e"],['__file',"resources/js/components/BaseButton.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56376,7 +56845,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _BasePagination_vue_vue_type_template_id_e8875214_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BasePagination.vue?vue&type=template&id=e8875214&scoped=true */ "./resources/js/components/BasePagination.vue?vue&type=template&id=e8875214&scoped=true");
 /* harmony import */ var _BasePagination_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./BasePagination.vue?vue&type=script&lang=js */ "./resources/js/components/BasePagination.vue?vue&type=script&lang=js");
 /* harmony import */ var _BasePagination_vue_vue_type_style_index_0_id_e8875214_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./BasePagination.vue?vue&type=style&index=0&id=e8875214&scoped=true&lang=css */ "./resources/js/components/BasePagination.vue?vue&type=style&index=0&id=e8875214&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56384,7 +56853,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_BasePagination_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_BasePagination_vue_vue_type_template_id_e8875214_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-e8875214"],['__file',"resources/js/components/BasePagination.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_BasePagination_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_BasePagination_vue_vue_type_template_id_e8875214_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-e8875214"],['__file',"resources/js/components/BasePagination.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56407,7 +56876,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _BaseSelect_vue_vue_type_template_id_ad575550_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseSelect.vue?vue&type=template&id=ad575550&scoped=true */ "./resources/js/components/BaseSelect.vue?vue&type=template&id=ad575550&scoped=true");
 /* harmony import */ var _BaseSelect_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./BaseSelect.vue?vue&type=script&lang=js */ "./resources/js/components/BaseSelect.vue?vue&type=script&lang=js");
 /* harmony import */ var _BaseSelect_vue_vue_type_style_index_0_id_ad575550_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./BaseSelect.vue?vue&type=style&index=0&id=ad575550&scoped=true&lang=css */ "./resources/js/components/BaseSelect.vue?vue&type=style&index=0&id=ad575550&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56415,7 +56884,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_BaseSelect_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_BaseSelect_vue_vue_type_template_id_ad575550_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-ad575550"],['__file',"resources/js/components/BaseSelect.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_BaseSelect_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_BaseSelect_vue_vue_type_template_id_ad575550_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-ad575550"],['__file',"resources/js/components/BaseSelect.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56438,7 +56907,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _FilmCard_vue_vue_type_template_id_70401e1f_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FilmCard.vue?vue&type=template&id=70401e1f&scoped=true */ "./resources/js/components/FilmCard.vue?vue&type=template&id=70401e1f&scoped=true");
 /* harmony import */ var _FilmCard_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FilmCard.vue?vue&type=script&lang=js */ "./resources/js/components/FilmCard.vue?vue&type=script&lang=js");
 /* harmony import */ var _FilmCard_vue_vue_type_style_index_0_id_70401e1f_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FilmCard.vue?vue&type=style&index=0&id=70401e1f&scoped=true&lang=css */ "./resources/js/components/FilmCard.vue?vue&type=style&index=0&id=70401e1f&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56446,7 +56915,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_FilmCard_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_FilmCard_vue_vue_type_template_id_70401e1f_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-70401e1f"],['__file',"resources/js/components/FilmCard.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_FilmCard_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_FilmCard_vue_vue_type_template_id_70401e1f_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-70401e1f"],['__file',"resources/js/components/FilmCard.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56469,7 +56938,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _LoadingAnimation_vue_vue_type_template_id_643507da_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LoadingAnimation.vue?vue&type=template&id=643507da&scoped=true */ "./resources/js/components/LoadingAnimation.vue?vue&type=template&id=643507da&scoped=true");
 /* harmony import */ var _LoadingAnimation_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LoadingAnimation.vue?vue&type=script&lang=js */ "./resources/js/components/LoadingAnimation.vue?vue&type=script&lang=js");
 /* harmony import */ var _LoadingAnimation_vue_vue_type_style_index_0_id_643507da_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./LoadingAnimation.vue?vue&type=style&index=0&id=643507da&scoped=true&lang=css */ "./resources/js/components/LoadingAnimation.vue?vue&type=style&index=0&id=643507da&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56477,7 +56946,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_LoadingAnimation_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_LoadingAnimation_vue_vue_type_template_id_643507da_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-643507da"],['__file',"resources/js/components/LoadingAnimation.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_LoadingAnimation_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_LoadingAnimation_vue_vue_type_template_id_643507da_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-643507da"],['__file',"resources/js/components/LoadingAnimation.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56500,7 +56969,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _MobileBurger_vue_vue_type_template_id_a07e6fbc_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MobileBurger.vue?vue&type=template&id=a07e6fbc&scoped=true */ "./resources/js/components/MobileBurger.vue?vue&type=template&id=a07e6fbc&scoped=true");
 /* harmony import */ var _MobileBurger_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MobileBurger.vue?vue&type=script&lang=js */ "./resources/js/components/MobileBurger.vue?vue&type=script&lang=js");
 /* harmony import */ var _MobileBurger_vue_vue_type_style_index_0_id_a07e6fbc_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MobileBurger.vue?vue&type=style&index=0&id=a07e6fbc&scoped=true&lang=css */ "./resources/js/components/MobileBurger.vue?vue&type=style&index=0&id=a07e6fbc&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56508,7 +56977,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_MobileBurger_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_MobileBurger_vue_vue_type_template_id_a07e6fbc_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-a07e6fbc"],['__file',"resources/js/components/MobileBurger.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_MobileBurger_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_MobileBurger_vue_vue_type_template_id_a07e6fbc_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-a07e6fbc"],['__file',"resources/js/components/MobileBurger.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56531,7 +57000,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _MobileSearch_vue_vue_type_template_id_00544fd5_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MobileSearch.vue?vue&type=template&id=00544fd5&scoped=true */ "./resources/js/components/MobileSearch.vue?vue&type=template&id=00544fd5&scoped=true");
 /* harmony import */ var _MobileSearch_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MobileSearch.vue?vue&type=script&lang=js */ "./resources/js/components/MobileSearch.vue?vue&type=script&lang=js");
 /* harmony import */ var _MobileSearch_vue_vue_type_style_index_0_id_00544fd5_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MobileSearch.vue?vue&type=style&index=0&id=00544fd5&scoped=true&lang=css */ "./resources/js/components/MobileSearch.vue?vue&type=style&index=0&id=00544fd5&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56539,7 +57008,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_MobileSearch_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_MobileSearch_vue_vue_type_template_id_00544fd5_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-00544fd5"],['__file',"resources/js/components/MobileSearch.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_MobileSearch_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_MobileSearch_vue_vue_type_template_id_00544fd5_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-00544fd5"],['__file',"resources/js/components/MobileSearch.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56562,7 +57031,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _OngoingCard_vue_vue_type_template_id_21eb22e0_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./OngoingCard.vue?vue&type=template&id=21eb22e0&scoped=true */ "./resources/js/components/OngoingCard.vue?vue&type=template&id=21eb22e0&scoped=true");
 /* harmony import */ var _OngoingCard_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./OngoingCard.vue?vue&type=script&lang=js */ "./resources/js/components/OngoingCard.vue?vue&type=script&lang=js");
 /* harmony import */ var _OngoingCard_vue_vue_type_style_index_0_id_21eb22e0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./OngoingCard.vue?vue&type=style&index=0&id=21eb22e0&scoped=true&lang=css */ "./resources/js/components/OngoingCard.vue?vue&type=style&index=0&id=21eb22e0&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56570,7 +57039,69 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_OngoingCard_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_OngoingCard_vue_vue_type_template_id_21eb22e0_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-21eb22e0"],['__file',"resources/js/components/OngoingCard.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_OngoingCard_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_OngoingCard_vue_vue_type_template_id_21eb22e0_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-21eb22e0"],['__file',"resources/js/components/OngoingCard.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./resources/js/components/RecommendedPoster.vue":
+/*!*******************************************************!*\
+  !*** ./resources/js/components/RecommendedPoster.vue ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _RecommendedPoster_vue_vue_type_template_id_432dbea6_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RecommendedPoster.vue?vue&type=template&id=432dbea6&scoped=true */ "./resources/js/components/RecommendedPoster.vue?vue&type=template&id=432dbea6&scoped=true");
+/* harmony import */ var _RecommendedPoster_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./RecommendedPoster.vue?vue&type=script&lang=js */ "./resources/js/components/RecommendedPoster.vue?vue&type=script&lang=js");
+/* harmony import */ var _RecommendedPoster_vue_vue_type_style_index_0_id_432dbea6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css */ "./resources/js/components/RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_RecommendedPoster_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_RecommendedPoster_vue_vue_type_template_id_432dbea6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-432dbea6"],['__file',"resources/js/components/RecommendedPoster.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./resources/js/components/RecommendedPosterSmall.vue":
+/*!************************************************************!*\
+  !*** ./resources/js/components/RecommendedPosterSmall.vue ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _RecommendedPosterSmall_vue_vue_type_template_id_3478a30a_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RecommendedPosterSmall.vue?vue&type=template&id=3478a30a&scoped=true */ "./resources/js/components/RecommendedPosterSmall.vue?vue&type=template&id=3478a30a&scoped=true");
+/* harmony import */ var _RecommendedPosterSmall_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./RecommendedPosterSmall.vue?vue&type=script&lang=js */ "./resources/js/components/RecommendedPosterSmall.vue?vue&type=script&lang=js");
+/* harmony import */ var _RecommendedPosterSmall_vue_vue_type_style_index_0_id_3478a30a_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css */ "./resources/js/components/RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_RecommendedPosterSmall_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_RecommendedPosterSmall_vue_vue_type_template_id_3478a30a_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-3478a30a"],['__file',"resources/js/components/RecommendedPosterSmall.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56593,7 +57124,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _TheFooter_vue_vue_type_template_id_2a04c4de_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TheFooter.vue?vue&type=template&id=2a04c4de&scoped=true */ "./resources/js/components/TheFooter.vue?vue&type=template&id=2a04c4de&scoped=true");
 /* harmony import */ var _TheFooter_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TheFooter.vue?vue&type=script&lang=js */ "./resources/js/components/TheFooter.vue?vue&type=script&lang=js");
 /* harmony import */ var _TheFooter_vue_vue_type_style_index_0_id_2a04c4de_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TheFooter.vue?vue&type=style&index=0&id=2a04c4de&scoped=true&lang=css */ "./resources/js/components/TheFooter.vue?vue&type=style&index=0&id=2a04c4de&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56601,7 +57132,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_TheFooter_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_TheFooter_vue_vue_type_template_id_2a04c4de_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-2a04c4de"],['__file',"resources/js/components/TheFooter.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_TheFooter_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_TheFooter_vue_vue_type_template_id_2a04c4de_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-2a04c4de"],['__file',"resources/js/components/TheFooter.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56624,7 +57155,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _TheHeader_vue_vue_type_template_id_0c300183_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TheHeader.vue?vue&type=template&id=0c300183&scoped=true */ "./resources/js/components/TheHeader.vue?vue&type=template&id=0c300183&scoped=true");
 /* harmony import */ var _TheHeader_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TheHeader.vue?vue&type=script&lang=js */ "./resources/js/components/TheHeader.vue?vue&type=script&lang=js");
 /* harmony import */ var _TheHeader_vue_vue_type_style_index_0_id_0c300183_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TheHeader.vue?vue&type=style&index=0&id=0c300183&scoped=true&lang=css */ "./resources/js/components/TheHeader.vue?vue&type=style&index=0&id=0c300183&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56632,7 +57163,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_TheHeader_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_TheHeader_vue_vue_type_template_id_0c300183_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-0c300183"],['__file',"resources/js/components/TheHeader.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_TheHeader_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_TheHeader_vue_vue_type_template_id_0c300183_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-0c300183"],['__file',"resources/js/components/TheHeader.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56655,7 +57186,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _TheHeaderNav_vue_vue_type_template_id_812f2160_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TheHeaderNav.vue?vue&type=template&id=812f2160&scoped=true */ "./resources/js/components/TheHeaderNav.vue?vue&type=template&id=812f2160&scoped=true");
 /* harmony import */ var _TheHeaderNav_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TheHeaderNav.vue?vue&type=script&lang=js */ "./resources/js/components/TheHeaderNav.vue?vue&type=script&lang=js");
 /* harmony import */ var _TheHeaderNav_vue_vue_type_style_index_0_id_812f2160_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TheHeaderNav.vue?vue&type=style&index=0&id=812f2160&scoped=true&lang=css */ "./resources/js/components/TheHeaderNav.vue?vue&type=style&index=0&id=812f2160&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56663,7 +57194,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_TheHeaderNav_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_TheHeaderNav_vue_vue_type_template_id_812f2160_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-812f2160"],['__file',"resources/js/components/TheHeaderNav.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_TheHeaderNav_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_TheHeaderNav_vue_vue_type_template_id_812f2160_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-812f2160"],['__file',"resources/js/components/TheHeaderNav.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56685,13 +57216,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _AccountFilmsPage_vue_vue_type_template_id_4b92b80c__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AccountFilmsPage.vue?vue&type=template&id=4b92b80c */ "./resources/js/pages/AccountFilmsPage.vue?vue&type=template&id=4b92b80c");
 /* harmony import */ var _AccountFilmsPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AccountFilmsPage.vue?vue&type=script&lang=js */ "./resources/js/pages/AccountFilmsPage.vue?vue&type=script&lang=js");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
 
 ;
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_AccountFilmsPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AccountFilmsPage_vue_vue_type_template_id_4b92b80c__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"resources/js/pages/AccountFilmsPage.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_AccountFilmsPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AccountFilmsPage_vue_vue_type_template_id_4b92b80c__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"resources/js/pages/AccountFilmsPage.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56714,7 +57245,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AccountPage_vue_vue_type_template_id_3f697d63_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AccountPage.vue?vue&type=template&id=3f697d63&scoped=true */ "./resources/js/pages/AccountPage.vue?vue&type=template&id=3f697d63&scoped=true");
 /* harmony import */ var _AccountPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AccountPage.vue?vue&type=script&lang=js */ "./resources/js/pages/AccountPage.vue?vue&type=script&lang=js");
 /* harmony import */ var _AccountPage_vue_vue_type_style_index_0_id_3f697d63_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AccountPage.vue?vue&type=style&index=0&id=3f697d63&scoped=true&lang=css */ "./resources/js/pages/AccountPage.vue?vue&type=style&index=0&id=3f697d63&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56722,7 +57253,38 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AccountPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AccountPage_vue_vue_type_template_id_3f697d63_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-3f697d63"],['__file',"resources/js/pages/AccountPage.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AccountPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AccountPage_vue_vue_type_template_id_3f697d63_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-3f697d63"],['__file',"resources/js/pages/AccountPage.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./resources/js/pages/CopyrightPage.vue":
+/*!**********************************************!*\
+  !*** ./resources/js/pages/CopyrightPage.vue ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _CopyrightPage_vue_vue_type_template_id_3fb14d3d_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CopyrightPage.vue?vue&type=template&id=3fb14d3d&scoped=true */ "./resources/js/pages/CopyrightPage.vue?vue&type=template&id=3fb14d3d&scoped=true");
+/* harmony import */ var _CopyrightPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CopyrightPage.vue?vue&type=script&lang=js */ "./resources/js/pages/CopyrightPage.vue?vue&type=script&lang=js");
+/* harmony import */ var _CopyrightPage_vue_vue_type_style_index_0_id_3fb14d3d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css */ "./resources/js/pages/CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_CopyrightPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_CopyrightPage_vue_vue_type_template_id_3fb14d3d_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-3fb14d3d"],['__file',"resources/js/pages/CopyrightPage.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56745,7 +57307,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _FilmPage_vue_vue_type_template_id_25dd233c_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FilmPage.vue?vue&type=template&id=25dd233c&scoped=true */ "./resources/js/pages/FilmPage.vue?vue&type=template&id=25dd233c&scoped=true");
 /* harmony import */ var _FilmPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FilmPage.vue?vue&type=script&lang=js */ "./resources/js/pages/FilmPage.vue?vue&type=script&lang=js");
 /* harmony import */ var _FilmPage_vue_vue_type_style_index_0_id_25dd233c_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FilmPage.vue?vue&type=style&index=0&id=25dd233c&scoped=true&lang=css */ "./resources/js/pages/FilmPage.vue?vue&type=style&index=0&id=25dd233c&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56753,7 +57315,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_FilmPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_FilmPage_vue_vue_type_template_id_25dd233c_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-25dd233c"],['__file',"resources/js/pages/FilmPage.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_FilmPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_FilmPage_vue_vue_type_template_id_25dd233c_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-25dd233c"],['__file',"resources/js/pages/FilmPage.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56776,7 +57338,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _FilmSearch_vue_vue_type_template_id_29f63ed6_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FilmSearch.vue?vue&type=template&id=29f63ed6&scoped=true */ "./resources/js/pages/FilmSearch.vue?vue&type=template&id=29f63ed6&scoped=true");
 /* harmony import */ var _FilmSearch_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FilmSearch.vue?vue&type=script&lang=js */ "./resources/js/pages/FilmSearch.vue?vue&type=script&lang=js");
 /* harmony import */ var _FilmSearch_vue_vue_type_style_index_0_id_29f63ed6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FilmSearch.vue?vue&type=style&index=0&id=29f63ed6&scoped=true&lang=css */ "./resources/js/pages/FilmSearch.vue?vue&type=style&index=0&id=29f63ed6&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56784,7 +57346,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_FilmSearch_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_FilmSearch_vue_vue_type_template_id_29f63ed6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-29f63ed6"],['__file',"resources/js/pages/FilmSearch.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_FilmSearch_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_FilmSearch_vue_vue_type_template_id_29f63ed6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-29f63ed6"],['__file',"resources/js/pages/FilmSearch.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56807,7 +57369,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _FilmsPage_vue_vue_type_template_id_83cdc736_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FilmsPage.vue?vue&type=template&id=83cdc736&scoped=true */ "./resources/js/pages/FilmsPage.vue?vue&type=template&id=83cdc736&scoped=true");
 /* harmony import */ var _FilmsPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FilmsPage.vue?vue&type=script&lang=js */ "./resources/js/pages/FilmsPage.vue?vue&type=script&lang=js");
 /* harmony import */ var _FilmsPage_vue_vue_type_style_index_0_id_83cdc736_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FilmsPage.vue?vue&type=style&index=0&id=83cdc736&scoped=true&lang=css */ "./resources/js/pages/FilmsPage.vue?vue&type=style&index=0&id=83cdc736&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56815,7 +57377,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_FilmsPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_FilmsPage_vue_vue_type_template_id_83cdc736_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-83cdc736"],['__file',"resources/js/pages/FilmsPage.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_FilmsPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_FilmsPage_vue_vue_type_template_id_83cdc736_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-83cdc736"],['__file',"resources/js/pages/FilmsPage.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -56838,7 +57400,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _HomePage_vue_vue_type_template_id_04c29797_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./HomePage.vue?vue&type=template&id=04c29797&scoped=true */ "./resources/js/pages/HomePage.vue?vue&type=template&id=04c29797&scoped=true");
 /* harmony import */ var _HomePage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./HomePage.vue?vue&type=script&lang=js */ "./resources/js/pages/HomePage.vue?vue&type=script&lang=js");
 /* harmony import */ var _HomePage_vue_vue_type_style_index_0_id_04c29797_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./HomePage.vue?vue&type=style&index=0&id=04c29797&scoped=true&lang=css */ "./resources/js/pages/HomePage.vue?vue&type=style&index=0&id=04c29797&scoped=true&lang=css");
-/* harmony import */ var C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
@@ -56846,7 +57408,38 @@ __webpack_require__.r(__webpack_exports__);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,C_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_HomePage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_HomePage_vue_vue_type_template_id_04c29797_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-04c29797"],['__file',"resources/js/pages/HomePage.vue"]])
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_HomePage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_HomePage_vue_vue_type_template_id_04c29797_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-04c29797"],['__file',"resources/js/pages/HomePage.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./resources/js/pages/PrivacyPolicyPage.vue":
+/*!**************************************************!*\
+  !*** ./resources/js/pages/PrivacyPolicyPage.vue ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _PrivacyPolicyPage_vue_vue_type_template_id_244915d0_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PrivacyPolicyPage.vue?vue&type=template&id=244915d0&scoped=true */ "./resources/js/pages/PrivacyPolicyPage.vue?vue&type=template&id=244915d0&scoped=true");
+/* harmony import */ var _PrivacyPolicyPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PrivacyPolicyPage.vue?vue&type=script&lang=js */ "./resources/js/pages/PrivacyPolicyPage.vue?vue&type=script&lang=js");
+/* harmony import */ var _PrivacyPolicyPage_vue_vue_type_style_index_0_id_244915d0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css */ "./resources/js/pages/PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css");
+/* harmony import */ var C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,C_Users_storm_Desktop_OpenServer_domains_anime_zero_recode_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_PrivacyPolicyPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_PrivacyPolicyPage_vue_vue_type_template_id_244915d0_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-244915d0"],['__file',"resources/js/pages/PrivacyPolicyPage.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -57063,6 +57656,38 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/RecommendedPoster.vue?vue&type=script&lang=js":
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/RecommendedPoster.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPoster_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPoster_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./RecommendedPoster.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
+/***/ "./resources/js/components/RecommendedPosterSmall.vue?vue&type=script&lang=js":
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/RecommendedPosterSmall.vue?vue&type=script&lang=js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPosterSmall_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPosterSmall_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./RecommendedPosterSmall.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
 /***/ "./resources/js/components/TheFooter.vue?vue&type=script&lang=js":
 /*!***********************************************************************!*\
   !*** ./resources/js/components/TheFooter.vue?vue&type=script&lang=js ***!
@@ -57143,6 +57768,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/pages/CopyrightPage.vue?vue&type=script&lang=js":
+/*!**********************************************************************!*\
+  !*** ./resources/js/pages/CopyrightPage.vue?vue&type=script&lang=js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_CopyrightPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_CopyrightPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CopyrightPage.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
 /***/ "./resources/js/pages/FilmPage.vue?vue&type=script&lang=js":
 /*!*****************************************************************!*\
   !*** ./resources/js/pages/FilmPage.vue?vue&type=script&lang=js ***!
@@ -57203,6 +57844,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_HomePage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_HomePage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./HomePage.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/HomePage.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
+/***/ "./resources/js/pages/PrivacyPolicyPage.vue?vue&type=script&lang=js":
+/*!**************************************************************************!*\
+  !*** ./resources/js/pages/PrivacyPolicyPage.vue?vue&type=script&lang=js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_PrivacyPolicyPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_PrivacyPolicyPage_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./PrivacyPolicyPage.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=script&lang=js");
  
 
 /***/ }),
@@ -57415,6 +58072,38 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/RecommendedPoster.vue?vue&type=template&id=432dbea6&scoped=true":
+/*!*************************************************************************************************!*\
+  !*** ./resources/js/components/RecommendedPoster.vue?vue&type=template&id=432dbea6&scoped=true ***!
+  \*************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPoster_vue_vue_type_template_id_432dbea6_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPoster_vue_vue_type_template_id_432dbea6_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./RecommendedPoster.vue?vue&type=template&id=432dbea6&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=template&id=432dbea6&scoped=true");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/RecommendedPosterSmall.vue?vue&type=template&id=3478a30a&scoped=true":
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/RecommendedPosterSmall.vue?vue&type=template&id=3478a30a&scoped=true ***!
+  \******************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPosterSmall_vue_vue_type_template_id_3478a30a_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPosterSmall_vue_vue_type_template_id_3478a30a_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./RecommendedPosterSmall.vue?vue&type=template&id=3478a30a&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=template&id=3478a30a&scoped=true");
+
+
+/***/ }),
+
 /***/ "./resources/js/components/TheFooter.vue?vue&type=template&id=2a04c4de&scoped=true":
 /*!*****************************************************************************************!*\
   !*** ./resources/js/components/TheFooter.vue?vue&type=template&id=2a04c4de&scoped=true ***!
@@ -57495,6 +58184,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/pages/CopyrightPage.vue?vue&type=template&id=3fb14d3d&scoped=true":
+/*!****************************************************************************************!*\
+  !*** ./resources/js/pages/CopyrightPage.vue?vue&type=template&id=3fb14d3d&scoped=true ***!
+  \****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_CopyrightPage_vue_vue_type_template_id_3fb14d3d_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_CopyrightPage_vue_vue_type_template_id_3fb14d3d_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CopyrightPage.vue?vue&type=template&id=3fb14d3d&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=template&id=3fb14d3d&scoped=true");
+
+
+/***/ }),
+
 /***/ "./resources/js/pages/FilmPage.vue?vue&type=template&id=25dd233c&scoped=true":
 /*!***********************************************************************************!*\
   !*** ./resources/js/pages/FilmPage.vue?vue&type=template&id=25dd233c&scoped=true ***!
@@ -57555,6 +58260,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "render": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_HomePage_vue_vue_type_template_id_04c29797_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_HomePage_vue_vue_type_template_id_04c29797_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./HomePage.vue?vue&type=template&id=04c29797&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/HomePage.vue?vue&type=template&id=04c29797&scoped=true");
+
+
+/***/ }),
+
+/***/ "./resources/js/pages/PrivacyPolicyPage.vue?vue&type=template&id=244915d0&scoped=true":
+/*!********************************************************************************************!*\
+  !*** ./resources/js/pages/PrivacyPolicyPage.vue?vue&type=template&id=244915d0&scoped=true ***!
+  \********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_PrivacyPolicyPage_vue_vue_type_template_id_244915d0_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_PrivacyPolicyPage_vue_vue_type_template_id_244915d0_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./PrivacyPolicyPage.vue?vue&type=template&id=244915d0&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=template&id=244915d0&scoped=true");
 
 
 /***/ }),
@@ -57728,6 +58449,32 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css":
+/*!***************************************************************************************************************!*\
+  !*** ./resources/js/components/RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css ***!
+  \***************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPoster_vue_vue_type_style_index_0_id_432dbea6_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPoster.vue?vue&type=style&index=0&id=432dbea6&scoped=true&lang=css");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css":
+/*!********************************************************************************************************************!*\
+  !*** ./resources/js/components/RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css ***!
+  \********************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_RecommendedPosterSmall_vue_vue_type_style_index_0_id_3478a30a_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/RecommendedPosterSmall.vue?vue&type=style&index=0&id=3478a30a&scoped=true&lang=css");
+
+
+/***/ }),
+
 /***/ "./resources/js/components/TheFooter.vue?vue&type=style&index=0&id=2a04c4de&scoped=true&lang=css":
 /*!*******************************************************************************************************!*\
   !*** ./resources/js/components/TheFooter.vue?vue&type=style&index=0&id=2a04c4de&scoped=true&lang=css ***!
@@ -57780,6 +58527,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/pages/CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css":
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/pages/CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css ***!
+  \******************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_CopyrightPage_vue_vue_type_style_index_0_id_3fb14d3d_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/CopyrightPage.vue?vue&type=style&index=0&id=3fb14d3d&scoped=true&lang=css");
+
+
+/***/ }),
+
 /***/ "./resources/js/pages/FilmPage.vue?vue&type=style&index=0&id=25dd233c&scoped=true&lang=css":
 /*!*************************************************************************************************!*\
   !*** ./resources/js/pages/FilmPage.vue?vue&type=style&index=0&id=25dd233c&scoped=true&lang=css ***!
@@ -57828,6 +58588,19 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_HomePage_vue_vue_type_style_index_0_id_04c29797_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./HomePage.vue?vue&type=style&index=0&id=04c29797&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/HomePage.vue?vue&type=style&index=0&id=04c29797&scoped=true&lang=css");
+
+
+/***/ }),
+
+/***/ "./resources/js/pages/PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css":
+/*!**********************************************************************************************************!*\
+  !*** ./resources/js/pages/PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css ***!
+  \**********************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_PrivacyPolicyPage_vue_vue_type_style_index_0_id_244915d0_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/pages/PrivacyPolicyPage.vue?vue&type=style&index=0&id=244915d0&scoped=true&lang=css");
 
 
 /***/ }),
@@ -58127,6 +58900,8 @@ var map = {
 	"./AccountFilmsPage.vue": "./resources/js/pages/AccountFilmsPage.vue",
 	"./AccountPage": "./resources/js/pages/AccountPage.vue",
 	"./AccountPage.vue": "./resources/js/pages/AccountPage.vue",
+	"./CopyrightPage": "./resources/js/pages/CopyrightPage.vue",
+	"./CopyrightPage.vue": "./resources/js/pages/CopyrightPage.vue",
 	"./FilmPage": "./resources/js/pages/FilmPage.vue",
 	"./FilmPage.vue": "./resources/js/pages/FilmPage.vue",
 	"./FilmSearch": "./resources/js/pages/FilmSearch.vue",
@@ -58134,7 +58909,9 @@ var map = {
 	"./FilmsPage": "./resources/js/pages/FilmsPage.vue",
 	"./FilmsPage.vue": "./resources/js/pages/FilmsPage.vue",
 	"./HomePage": "./resources/js/pages/HomePage.vue",
-	"./HomePage.vue": "./resources/js/pages/HomePage.vue"
+	"./HomePage.vue": "./resources/js/pages/HomePage.vue",
+	"./PrivacyPolicyPage": "./resources/js/pages/PrivacyPolicyPage.vue",
+	"./PrivacyPolicyPage.vue": "./resources/js/pages/PrivacyPolicyPage.vue"
 };
 
 

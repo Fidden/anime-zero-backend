@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\FilmResource;
 use App\Models\Film;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class FilmSearchPageController extends Controller

@@ -97,55 +97,15 @@
             </div>
         </div>
         <div class="films-block-body films-block-body-big">
-            <InertiaLink
-                :href="route('film.show', films.recommended[0].id)"
-                as="div"
-                class="first">
-                <img
-                    :src="films.recommended[0].poster"
-                    :alt="films.recommended[0].title"
-                >
-                <div class="first-text-box">
-                    <h3>{{ films.recommended[0].title }}</h3>
-                    <p>{{ films.recommended[0].description.slice(0, 200) }}...</p>
-                </div>
-                <BaseButton>Смотреть</BaseButton>
-                <div class="backdrop"/>
-            </InertiaLink>
-            <InertiaLink
-                :href="route('film.show', films.recommended[1].id)"
-                as="div"
-                class="second">
-                <img
-                    :src="films.recommended[1].poster"
-                    :alt="films.recommended[1].title"
-                >
-                <div class="second-info">
-                    <p class="second-info-title">
-                        {{ films.recommended[1].title }}
-                    </p>
-                    <p class="second-info-description">
-                        {{ films.recommended[1].description.slice(0, 150) }} ...
-                    </p>
-                </div>
-            </InertiaLink>
-            <InertiaLink
-                :href="route('film.show', films.recommended[2].id)"
-                as="div"
-                class="third">
-                <img
-                    :src="films.recommended[2].poster"
-                    :alt="films.recommended[2].title"
-                >
-                <div class="third-info">
-                    <p class="third-info-title">
-                        {{ films.recommended[2].title }}
-                    </p>
-                    <p class="third-info-description">
-                        {{ films.recommended[2].description.slice(0, 150) }} ...
-                    </p>
-                </div>
-            </InertiaLink>
+            <RecommendedPoster
+:item="films.recommended[0]"
+style="grid-area: first"/>
+            <RecommendedPosterSmall
+                :item="films.recommended[1]"
+                style="grid-area: second"/>
+            <RecommendedPosterSmall
+                :item="films.recommended[2]"
+                style="grid-area: third"/>
         </div>
     </div>
     <div class="main-films-block">
@@ -189,10 +149,12 @@
 import FilmCard from '../components/FilmCard';
 import OngoingCard from '../components/OngoingCard';
 import Flickity from 'vue-flickity';
+import RecommendedPosterSmall from '../components/RecommendedPosterSmall';
+import RecommendedPoster from '../components/RecommendedPoster';
 
 export default {
     name: 'HomePage',
-    components: {OngoingCard, FilmCard, Flickity},
+    components: {RecommendedPoster, RecommendedPosterSmall, OngoingCard, FilmCard, Flickity},
     props: {
         films: {
             type: Object,
@@ -235,7 +197,7 @@ export default {
         },
         watchFilm() {
             if (this.selected_poster === -1)
-                return;
+                return this.$inertia.get(this.route('films'));
 
             this.$inertia.get(this.route('film.show', this.films.best[this.selected_poster].id));
         }
@@ -402,61 +364,6 @@ export default {
     left: 30px;
     bottom: 20px;
     z-index: 150;
-}
-
-.backdrop {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);
-    z-index: 100;
-}
-
-.first-text-box p {
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.second, .third {
-    grid-area: second;
-    background: #0F0F0F;
-    display: flex;
-    flex-direction: row;
-    cursor: pointer;
-}
-
-.second img, .third img {
-    width: 160px;
-    margin-right: 20px;
-    object-fit: scale-down;
-}
-
-.second-info, .third-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.third-info {
-    margin-right: 10px;
-}
-
-.second-info-title, .third-info-title {
-    font-weight: bold;
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.second-info-description, .third-info-description {
-    font-size: 14px;
-    color: #B7B7B7;
-}
-
-.third {
-    grid-area: third;
-    background: #0F0F0F;
 }
 
 .main-films-block-big {

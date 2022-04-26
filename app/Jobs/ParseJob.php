@@ -98,6 +98,31 @@ class ParseJob implements ShouldQueue
         return json_decode(file_get_contents($url), true);
     }
 
+    public function getKodikData(array $result): array|null
+    {
+        try {
+            if (Arr::exists($result, 'kinopoisk_id'))
+                $kinopoisk_data = $this->request("https://kodikapi.com/search?token={$this->kodik_token}&with_material_data=true&kinopoisk_id={$result['kinopoisk_id']}");
+
+            if (Arr::exists($result, 'imdb_id'))
+                $imdb_data = $this->request("https://kodikapi.com/search?token={$this->kodik_token}&with_material_data=true&imdb_id={$result['imdb_id']}");
+
+            if (Arr::exists($result, 'worldart_id'))
+                $worldart_data = $this->request("https://kodikapi.com/search?token={$this->kodik_token}&with_material_data=true&worldart_animation_id={$result['worldart_id']}");
+
+            if ($kinopoisk_data['total'] > 0)
+                return $kinopoisk_data['results'][0];
+            else if ($imdb_data['total'] > 0)
+                return $imdb_data['results'][0];
+            else if ($worldart_data['total'] > 0)
+                return $worldart_data['results'][0];
+        } catch (\Exception $e) {
+            return [];
+        }
+
+        return [];
+    }
+
     public function isKodikDataValid(array $result): bool
     {
         if (!Arr::exists($result, 'title'))
@@ -135,29 +160,15 @@ class ParseJob implements ShouldQueue
         return true;
     }
 
-    public function getKodikData(array $result): array|null
+    public function getFilmStatus(array $kodik_data): array
     {
-        try {
-            if (Arr::exists($result, 'kinopoisk_id'))
-                $kinopoisk_data = $this->request("https://kodikapi.com/search?token={$this->kodik_token}&with_material_data=true&kinopoisk_id={$result['kinopoisk_id']}");
-
-            if (Arr::exists($result, 'imdb_id'))
-                $imdb_data = $this->request("https://kodikapi.com/search?token={$this->kodik_token}&with_material_data=true&imdb_id={$result['imdb_id']}");
-
-            if (Arr::exists($result, 'worldart_id'))
-                $worldart_data = $this->request("https://kodikapi.com/search?token={$this->kodik_token}&with_material_data=true&worldart_animation_id={$result['worldart_id']}");
-
-            if ($kinopoisk_data['total'] > 0)
-                return $kinopoisk_data['results'][0];
-            else if ($imdb_data['total'] > 0)
-                return $imdb_data['results'][0];
-            else if ($worldart_data['total'] > 0)
-                return $worldart_data['results'][0];
-        } catch (\Exception $e) {
-            return [];
-        }
-
-        return [];
+        $status = $this->getProperty($kodik_data['material_data'], 'all_status');
+        return match ($status) {
+            'ongoing' => ['Онгоинг', 'ONGOING'],
+            'released' => ['Вышел', 'RELEASED'],
+            'anons' => ['Анонсирован', 'ANNOUNCED'],
+            default => ['Без статуса', 'UNKNOWN'],
+        };
     }
 
     public function getProperty(array $array, string $property, mixed $default = null)
@@ -174,21 +185,10 @@ class ParseJob implements ShouldQueue
             $this->getProperty($result['material_data'], 'shikimori_rating', 0)
         ];
 
-        $non_zero = array_filter($ratings, function ($key) use ($ratings) {
-            return $ratings[$key] > 0;
+        $non_zero = array_filter($ratings, function ($item) use ($ratings) {
+            return $item > 0;
         });
 
-        return array_sum($non_zero) / count($non_zero);
-    }
-
-    public function getFilmStatus(array $kodik_data): array
-    {
-        $status = $this->getProperty($kodik_data['material_data'], 'all_status');
-        return match ($status) {
-            'ongoing' => ['Онгоинг', 'ONGOING'],
-            'released' => ['Вышел', 'RELEASED'],
-            'anons' => ['Анонсирован', 'ANNOUNCED'],
-            default => ['Без статуса', 'UNKNOWN'],
-        };
+        return number_format((float)(array_sum($non_zero) / count($non_zero)), 1);
     }
 }
