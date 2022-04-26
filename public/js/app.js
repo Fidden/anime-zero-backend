@@ -8506,8 +8506,17 @@ function warn(msg, ...args) {
 let activeEffectScope;
 class EffectScope {
     constructor(detached = false) {
+        /**
+         * @internal
+         */
         this.active = true;
+        /**
+         * @internal
+         */
         this.effects = [];
+        /**
+         * @internal
+         */
         this.cleanups = [];
         if (!detached && activeEffectScope) {
             this.parent = activeEffectScope;
@@ -8517,21 +8526,30 @@ class EffectScope {
     }
     run(fn) {
         if (this.active) {
+            const currentEffectScope = activeEffectScope;
             try {
                 activeEffectScope = this;
                 return fn();
             }
             finally {
-                activeEffectScope = this.parent;
+                activeEffectScope = currentEffectScope;
             }
         }
         else if ((true)) {
             warn(`cannot run an inactive effect scope.`);
         }
     }
+    /**
+     * This should only be called on non-detached scopes
+     * @internal
+     */
     on() {
         activeEffectScope = this;
     }
+    /**
+     * This should only be called on non-detached scopes
+     * @internal
+     */
     off() {
         activeEffectScope = this.parent;
     }
@@ -8673,10 +8691,17 @@ class ReactiveEffect {
             activeEffect = this.parent;
             shouldTrack = lastShouldTrack;
             this.parent = undefined;
+            if (this.deferStop) {
+                this.stop();
+            }
         }
     }
     stop() {
-        if (this.active) {
+        // stopped while running itself - defer the cleanup
+        if (activeEffect === this) {
+            this.deferStop = true;
+        }
+        else if (this.active) {
             cleanupEffect(this);
             if (this.onStop) {
                 this.onStop();
@@ -8760,9 +8785,7 @@ function trackEffects(dep, debuggerEventExtraInfo) {
         dep.add(activeEffect);
         activeEffect.deps.push(dep);
         if (( true) && activeEffect.onTrack) {
-            activeEffect.onTrack(Object.assign({
-                effect: activeEffect
-            }, debuggerEventExtraInfo));
+            activeEffect.onTrack(Object.assign({ effect: activeEffect }, debuggerEventExtraInfo));
         }
     }
 }
@@ -8861,7 +8884,9 @@ function triggerEffects(dep, debuggerEventExtraInfo) {
 }
 
 const isNonTrackableKeys = /*#__PURE__*/ (0,_vue_shared__WEBPACK_IMPORTED_MODULE_0__.makeMap)(`__proto__,__v_isRef,__isVue`);
-const builtInSymbols = new Set(Object.getOwnPropertyNames(Symbol)
+const builtInSymbols = new Set(
+/*#__PURE__*/
+Object.getOwnPropertyNames(Symbol)
     .map(key => Symbol[key])
     .filter(_vue_shared__WEBPACK_IMPORTED_MODULE_0__.isSymbol));
 const get = /*#__PURE__*/ createGetter();
@@ -9013,13 +9038,13 @@ const readonlyHandlers = {
     get: readonlyGet,
     set(target, key) {
         if ((true)) {
-            console.warn(`Set operation on key "${String(key)}" failed: target is readonly.`, target);
+            warn(`Set operation on key "${String(key)}" failed: target is readonly.`, target);
         }
         return true;
     },
     deleteProperty(target, key) {
         if ((true)) {
-            console.warn(`Delete operation on key "${String(key)}" failed: target is readonly.`, target);
+            warn(`Delete operation on key "${String(key)}" failed: target is readonly.`, target);
         }
         return true;
     }
@@ -9622,7 +9647,7 @@ function computed(getterOrOptions, debugOptions, isSSR = false) {
 }
 
 var _a;
-const tick = Promise.resolve();
+const tick = /*#__PURE__*/ Promise.resolve();
 const queue = [];
 let queued = false;
 const scheduler = (fn) => {
@@ -10073,7 +10098,7 @@ let preFlushIndex = 0;
 const pendingPostFlushCbs = [];
 let activePostFlushCbs = null;
 let postFlushIndex = 0;
-const resolvedPromise = Promise.resolve();
+const resolvedPromise = /*#__PURE__*/ Promise.resolve();
 let currentFlushPromise = null;
 let currentPreFlushParentJob = null;
 const RECURSION_LIMIT = 100;
@@ -10492,6 +10517,8 @@ function devtoolsComponentEmit(component, event, params) {
 }
 
 function emit$1(instance, event, ...rawArgs) {
+    if (instance.isUnmounted)
+        return;
     const props = instance.vnode.props || _vue_shared__WEBPACK_IMPORTED_MODULE_1__.EMPTY_OBJ;
     if ((true)) {
         const { emitsOptions, propsOptions: [propsOptions] } = instance;
@@ -11481,13 +11508,11 @@ function watchEffect(effect, options) {
 }
 function watchPostEffect(effect, options) {
     return doWatch(effect, null, (( true)
-        ? Object.assign(options || {}, { flush: 'post' })
-        : 0));
+        ? Object.assign(Object.assign({}, options), { flush: 'post' }) : 0));
 }
 function watchSyncEffect(effect, options) {
     return doWatch(effect, null, (( true)
-        ? Object.assign(options || {}, { flush: 'sync' })
-        : 0));
+        ? Object.assign(Object.assign({}, options), { flush: 'sync' }) : 0));
 }
 // initial value for watchers to trigger on undefined initial values
 const INITIAL_WATCHER_VALUE = {};
@@ -11790,10 +11815,24 @@ const BaseTransitionImpl = {
             if (!children || !children.length) {
                 return;
             }
-            // warn multiple elements
-            if (( true) && children.length > 1) {
-                warn('<transition> can only be used on a single element or component. Use ' +
-                    '<transition-group> for lists.');
+            let child = children[0];
+            if (children.length > 1) {
+                let hasFound = false;
+                // locate first non-comment child
+                for (const c of children) {
+                    if (c.type !== Comment) {
+                        if (( true) && hasFound) {
+                            // warn more than one non-comment child
+                            warn('<transition> can only be used on a single element or component. ' +
+                                'Use <transition-group> for lists.');
+                            break;
+                        }
+                        child = c;
+                        hasFound = true;
+                        if (false)
+                            {}
+                    }
+                }
             }
             // there's no need to track reactivity for these props so use the raw
             // props for a bit better perf
@@ -11802,11 +11841,11 @@ const BaseTransitionImpl = {
             // check mode
             if (( true) &&
                 mode &&
-                mode !== 'in-out' && mode !== 'out-in' && mode !== 'default') {
+                mode !== 'in-out' &&
+                mode !== 'out-in' &&
+                mode !== 'default') {
                 warn(`invalid <transition> mode: ${mode}`);
             }
-            // at this point children has a guaranteed length of 1.
-            const child = children[0];
             if (state.isLeaving) {
                 return emptyPlaceholder(child);
             }
@@ -12029,20 +12068,24 @@ function setTransitionHooks(vnode, hooks) {
         vnode.transition = hooks;
     }
 }
-function getTransitionRawChildren(children, keepComment = false) {
+function getTransitionRawChildren(children, keepComment = false, parentKey) {
     let ret = [];
     let keyedFragmentCount = 0;
     for (let i = 0; i < children.length; i++) {
-        const child = children[i];
+        let child = children[i];
+        // #5360 inherit parent key in case of <template v-for>
+        const key = parentKey == null
+            ? child.key
+            : String(parentKey) + String(child.key != null ? child.key : i);
         // handle fragment children case, e.g. v-for
         if (child.type === Fragment) {
             if (child.patchFlag & 128 /* KEYED_FRAGMENT */)
                 keyedFragmentCount++;
-            ret = ret.concat(getTransitionRawChildren(child.children, keepComment));
+            ret = ret.concat(getTransitionRawChildren(child.children, keepComment, key));
         }
         // comment placeholders should be skipped, e.g. v-if
         else if (keepComment || child.type !== Comment) {
-            ret.push(child);
+            ret.push(key != null ? cloneVNode(child, { key }) : child);
         }
     }
     // #1126 if a transition children list contains multiple sub fragments, these
@@ -13012,6 +13055,10 @@ function updateProps(instance, rawProps, rawPrevProps, optimized) {
             const propsToUpdate = instance.vnode.dynamicProps;
             for (let i = 0; i < propsToUpdate.length; i++) {
                 let key = propsToUpdate[i];
+                // skip if the prop key is a declared emit event listener
+                if (isEmitListener(instance.emitsOptions, key)) {
+                    continue;
+                }
                 // PROPS flag guarantees rawProps to be non-null
                 const value = rawProps[key];
                 if (options) {
@@ -13537,7 +13584,8 @@ function withDirectives(vnode, directives) {
         ( true) && warn(`withDirectives can only be used inside render functions.`);
         return vnode;
     }
-    const instance = internalInstance.proxy;
+    const instance = getExposeProxy(internalInstance) ||
+        internalInstance.proxy;
     const bindings = vnode.dirs || (vnode.dirs = []);
     for (let i = 0; i < directives.length; i++) {
         let [dir, value, arg, modifiers = _vue_shared__WEBPACK_IMPORTED_MODULE_1__.EMPTY_OBJ] = directives[i];
@@ -13609,6 +13657,9 @@ function createAppContext() {
 let uid = 0;
 function createAppAPI(render, hydrate) {
     return function createApp(rootComponent, rootProps = null) {
+        if (!(0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isFunction)(rootComponent)) {
+            rootComponent = Object.assign({}, rootComponent);
+        }
         if (rootProps != null && !(0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isObject)(rootProps)) {
             ( true) && warn(`root props passed to app.mount() must be an object.`);
             rootProps = null;
@@ -13806,6 +13857,9 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
                         if (!(0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isArray)(existing)) {
                             if (_isString) {
                                 refs[ref] = [refValue];
+                                if ((0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.hasOwn)(setupState, ref)) {
+                                    setupState[ref] = refs[ref];
+                                }
                             }
                             else {
                                 ref.value = [refValue];
@@ -14182,7 +14236,7 @@ function startMeasure(instance, type) {
         perf.mark(`vue-${type}-${instance.uid}`);
     }
     if (true) {
-        devtoolsPerfStart(instance, type, supported ? perf.now() : Date.now());
+        devtoolsPerfStart(instance, type, isSupported() ? perf.now() : Date.now());
     }
 }
 function endMeasure(instance, type) {
@@ -14195,7 +14249,7 @@ function endMeasure(instance, type) {
         perf.clearMarks(endTag);
     }
     if (true) {
-        devtoolsPerfEnd(instance, type, supported ? perf.now() : Date.now());
+        devtoolsPerfEnd(instance, type, isSupported() ? perf.now() : Date.now());
     }
 }
 function isSupported() {
@@ -15350,7 +15404,23 @@ function baseCreateRenderer(options, createHydrationFns) {
     const remove = vnode => {
         const { type, el, anchor, transition } = vnode;
         if (type === Fragment) {
-            removeFragment(el, anchor);
+            if (( true) &&
+                vnode.patchFlag > 0 &&
+                vnode.patchFlag & 2048 /* DEV_ROOT_FRAGMENT */ &&
+                transition &&
+                !transition.persisted) {
+                vnode.children.forEach(child => {
+                    if (child.type === Comment) {
+                        hostRemove(child.el);
+                    }
+                    else {
+                        remove(child);
+                    }
+                });
+            }
+            else {
+                removeFragment(el, anchor);
+            }
             return;
         }
         if (type === Static) {
@@ -16374,7 +16444,10 @@ function renderSlot(slots, name, props = {},
 // this is not a user-facing function, so the fallback is always generated by
 // the compiler and guaranteed to be a function returning an array
 fallback, noSlotted) {
-    if (currentRenderingInstance.isCE) {
+    if (currentRenderingInstance.isCE ||
+        (currentRenderingInstance.parent &&
+            isAsyncWrapper(currentRenderingInstance.parent) &&
+            currentRenderingInstance.parent.isCE)) {
         return createVNode('slot', name === 'default' ? null : { name }, fallback && fallback());
     }
     let slot = slots[name];
@@ -16447,7 +16520,10 @@ const getPublicInstance = (i) => {
         return getExposeProxy(i) || i.proxy;
     return getPublicInstance(i.parent);
 };
-const publicPropertiesMap = (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.extend)(Object.create(null), {
+const publicPropertiesMap = 
+// Move PURE marker to new line to workaround compiler discarding it
+// due to type annotation
+/*#__PURE__*/ (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.extend)(Object.create(null), {
     $: i => i,
     $el: i => i.vnode.el,
     $data: i => i.data,
@@ -16620,9 +16696,10 @@ const PublicInstanceProxyHandlers = {
     },
     defineProperty(target, key, descriptor) {
         if (descriptor.get != null) {
-            this.set(target, key, descriptor.get(), null);
+            // invalidate key cache of a getter based property #5417
+            target._.accessCache[key] = 0;
         }
-        else if (descriptor.value != null) {
+        else if ((0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.hasOwn)(descriptor, 'value')) {
             this.set(target, key, descriptor.value, null);
         }
         return Reflect.defineProperty(target, key, descriptor);
@@ -16829,6 +16906,7 @@ function setupComponent(instance, isSSR = false) {
     return setupResult;
 }
 function setupStatefulComponent(instance, isSSR) {
+    var _a;
     const Component = instance.type;
     if ((true)) {
         if (Component.name) {
@@ -16886,6 +16964,13 @@ function setupStatefulComponent(instance, isSSR) {
                 // async setup returned Promise.
                 // bail here and wait for re-entry.
                 instance.asyncDep = setupResult;
+                if (( true) && !instance.suspense) {
+                    const name = (_a = Component.name) !== null && _a !== void 0 ? _a : 'Anonymous';
+                    warn(`Component <${name}>: setup function returned a promise, but no ` +
+                        `<Suspense> boundary was found in the parent component tree. ` +
+                        `A component with async setup() must be nested in a <Suspense> ` +
+                        `in order to be rendered.`);
+                }
             }
         }
         else {
@@ -17513,7 +17598,7 @@ function isMemoSame(cached, memo) {
 }
 
 // Core API ------------------------------------------------------------------
-const version = "3.2.31";
+const version = "3.2.33";
 const _ssrUtils = {
     createComponentInstance,
     setupComponent,
@@ -17704,7 +17789,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const svgNS = 'http://www.w3.org/2000/svg';
 const doc = (typeof document !== 'undefined' ? document : null);
-const templateContainer = doc && doc.createElement('template');
+const templateContainer = doc && /*#__PURE__*/ doc.createElement('template');
 const nodeOps = {
     insert: (child, parent, anchor) => {
         parent.insertBefore(child, anchor || null);
@@ -17855,6 +17940,8 @@ function setStyle(style, name, val) {
         val.forEach(v => setStyle(style, name, v));
     }
     else {
+        if (val == null)
+            val = '';
         if (name.startsWith('--')) {
             // custom property definition
             style.setProperty(name, val);
@@ -17949,31 +18036,28 @@ prevChildren, parentComponent, parentSuspense, unmountChildren) {
         }
         return;
     }
+    let needRemove = false;
     if (value === '' || value == null) {
         const type = typeof el[key];
         if (type === 'boolean') {
             // e.g. <select multiple> compiles to { multiple: '' }
-            el[key] = (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.includeBooleanAttr)(value);
-            return;
+            value = (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.includeBooleanAttr)(value);
         }
         else if (value == null && type === 'string') {
             // e.g. <div :id="null">
-            el[key] = '';
-            el.removeAttribute(key);
-            return;
+            value = '';
+            needRemove = true;
         }
         else if (type === 'number') {
             // e.g. <img :width="null">
             // the value of some IDL attr must be greater than 0, e.g. input.size = 0 -> error
-            try {
-                el[key] = 0;
-            }
-            catch (_a) { }
-            el.removeAttribute(key);
-            return;
+            value = 0;
+            needRemove = true;
         }
     }
-    // some properties perform value validation and throw
+    // some properties perform value validation and throw,
+    // some properties has getter, no setter, will error in 'use strict'
+    // eg. <select :type="null"></select> <select :willValidate="null"></select>
     try {
         el[key] = value;
     }
@@ -17983,31 +18067,35 @@ prevChildren, parentComponent, parentSuspense, unmountChildren) {
                 `value ${value} is invalid.`, e);
         }
     }
+    needRemove && el.removeAttribute(key);
 }
 
 // Async edge case fix requires storing an event listener's attach timestamp.
-let _getNow = Date.now;
-let skipTimestampCheck = false;
-if (typeof window !== 'undefined') {
-    // Determine what event timestamp the browser is using. Annoyingly, the
-    // timestamp can either be hi-res (relative to page load) or low-res
-    // (relative to UNIX epoch), so in order to compare time we have to use the
-    // same timestamp type when saving the flush timestamp.
-    if (_getNow() > document.createEvent('Event').timeStamp) {
-        // if the low-res timestamp which is bigger than the event timestamp
-        // (which is evaluated AFTER) it means the event is using a hi-res timestamp,
-        // and we need to use the hi-res version for event listeners as well.
-        _getNow = () => performance.now();
+const [_getNow, skipTimestampCheck] = /*#__PURE__*/ (() => {
+    let _getNow = Date.now;
+    let skipTimestampCheck = false;
+    if (typeof window !== 'undefined') {
+        // Determine what event timestamp the browser is using. Annoyingly, the
+        // timestamp can either be hi-res (relative to page load) or low-res
+        // (relative to UNIX epoch), so in order to compare time we have to use the
+        // same timestamp type when saving the flush timestamp.
+        if (Date.now() > document.createEvent('Event').timeStamp) {
+            // if the low-res timestamp which is bigger than the event timestamp
+            // (which is evaluated AFTER) it means the event is using a hi-res timestamp,
+            // and we need to use the hi-res version for event listeners as well.
+            _getNow = () => performance.now();
+        }
+        // #3485: Firefox <= 53 has incorrect Event.timeStamp implementation
+        // and does not fire microtasks in between event propagation, so safe to exclude.
+        const ffMatch = navigator.userAgent.match(/firefox\/(\d+)/i);
+        skipTimestampCheck = !!(ffMatch && Number(ffMatch[1]) <= 53);
     }
-    // #3485: Firefox <= 53 has incorrect Event.timeStamp implementation
-    // and does not fire microtasks in between event propagation, so safe to exclude.
-    const ffMatch = navigator.userAgent.match(/firefox\/(\d+)/i);
-    skipTimestampCheck = !!(ffMatch && Number(ffMatch[1]) <= 53);
-}
+    return [_getNow, skipTimestampCheck];
+})();
 // To avoid the overhead of repeatedly calling performance.now(), we cache
 // and use the same timestamp for all event listeners attached in the same tick.
 let cachedNow = 0;
-const p = Promise.resolve();
+const p = /*#__PURE__*/ Promise.resolve();
 const reset = () => {
     cachedNow = 0;
 };
@@ -18132,13 +18220,13 @@ function shouldSetAsProp(el, key, value, isSVG) {
         }
         return false;
     }
-    // spellcheck and draggable are numerated attrs, however their
-    // corresponding DOM properties are actually booleans - this leads to
-    // setting it with a string "false" value leading it to be coerced to
-    // `true`, so we need to always treat them as attributes.
+    // these are enumerated attrs, however their corresponding DOM properties
+    // are actually booleans - this leads to setting it with a string "false"
+    // value leading it to be coerced to `true`, so we need to always treat
+    // them as attributes.
     // Note that `contentEditable` doesn't have this problem: its DOM
     // property is also enumerated string values.
-    if (key === 'spellcheck' || key === 'draggable') {
+    if (key === 'spellcheck' || key === 'draggable' || key === 'translate') {
         return false;
     }
     // #1787, #2840 form property on form elements is readonly and must be set as
@@ -19243,7 +19331,7 @@ function initVShowForSSR() {
     };
 }
 
-const rendererOptions = (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.extend)({ patchProp }, nodeOps);
+const rendererOptions = /*#__PURE__*/ (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.extend)({ patchProp }, nodeOps);
 // lazy create the renderer - this makes core renderer logic tree-shakable
 // in case the user only imports reactivity utilities from Vue.
 let renderer;
@@ -23410,7 +23498,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_BaseButton__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/BaseButton */ "./resources/js/components/BaseButton.vue");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: 'Partners',
+  name: 'PartnersPage',
   components: {
     BaseButton: _components_BaseButton__WEBPACK_IMPORTED_MODULE_0__["default"]
   }
@@ -27486,7 +27574,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".vue-cropper[data-v-48aab112]{position:relative;width:100%;height:100%;box-sizing:border-box;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;direction:ltr;touch-action:none;text-align:left;background-image:url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC\")}.cropper-box-canvas[data-v-48aab112],.cropper-box[data-v-48aab112],.cropper-crop-box[data-v-48aab112],.cropper-drag-box[data-v-48aab112],.cropper-face[data-v-48aab112]{position:absolute;top:0;right:0;bottom:0;left:0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.cropper-box-canvas img[data-v-48aab112]{position:relative;text-align:left;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;transform:none;max-width:none;max-height:none}.cropper-box[data-v-48aab112]{overflow:hidden}.cropper-move[data-v-48aab112]{cursor:move}.cropper-crop[data-v-48aab112]{cursor:crosshair}.cropper-modal[data-v-48aab112]{background:rgba(0,0,0,.5)}.cropper-view-box[data-v-48aab112]{display:block;overflow:hidden;width:100%;height:100%;outline:1px solid #39f;outline-color:rgba(51,153,255,.75);-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.cropper-view-box img[data-v-48aab112]{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;text-align:left;max-width:none;max-height:none}.cropper-face[data-v-48aab112]{top:0;left:0;background-color:#fff;opacity:.1}.crop-info[data-v-48aab112]{position:absolute;left:0;min-width:65px;text-align:center;color:#fff;line-height:20px;background-color:rgba(0,0,0,.8);font-size:12px}.crop-line[data-v-48aab112]{position:absolute;display:block;width:100%;height:100%;opacity:.1}.line-w[data-v-48aab112]{top:-3px;left:0;height:5px;cursor:n-resize}.line-a[data-v-48aab112]{top:0;left:-3px;width:5px;cursor:w-resize}.line-s[data-v-48aab112]{bottom:-3px;left:0;height:5px;cursor:s-resize}.line-d[data-v-48aab112]{top:0;right:-3px;width:5px;cursor:e-resize}.crop-point[data-v-48aab112]{position:absolute;width:8px;height:8px;opacity:.75;background-color:#39f;border-radius:100%}.point1[data-v-48aab112]{top:-4px;left:-4px;cursor:nw-resize}.point2[data-v-48aab112]{top:-5px;left:50%;margin-left:-3px;cursor:n-resize}.point3[data-v-48aab112]{top:-4px;right:-4px;cursor:ne-resize}.point4[data-v-48aab112]{top:50%;left:-4px;margin-top:-3px;cursor:w-resize}.point5[data-v-48aab112]{top:50%;right:-4px;margin-top:-3px;cursor:e-resize}.point6[data-v-48aab112]{bottom:-5px;left:-4px;cursor:sw-resize}.point7[data-v-48aab112]{bottom:-5px;left:50%;margin-left:-3px;cursor:s-resize}.point8[data-v-48aab112]{bottom:-5px;right:-4px;cursor:se-resize}@media screen and (max-width:500px){.crop-point[data-v-48aab112]{position:absolute;width:20px;height:20px;opacity:.45;background-color:#39f;border-radius:100%}.point1[data-v-48aab112]{top:-10px;left:-10px}.point2[data-v-48aab112],.point4[data-v-48aab112],.point5[data-v-48aab112],.point7[data-v-48aab112]{display:none}.point3[data-v-48aab112]{top:-10px;right:-10px}.point4[data-v-48aab112]{top:0;left:0}.point6[data-v-48aab112]{bottom:-10px;left:-10px}.point8[data-v-48aab112]{bottom:-10px;right:-10px}}", "",{"version":3,"sources":["webpack://./node_modules/vue-cropper/dist/index.css"],"names":[],"mappings":"AAAA,8BAA8B,iBAAiB,CAAC,UAAU,CAAC,WAAW,CAAC,qBAAqB,CAAC,gBAAgB,CAAC,wBAAwB,CAAC,qBAAqB,CAAC,oBAAoB,CAAC,aAAa,CAAC,iBAAiB,CAAC,eAAe,CAAC,8QAA8Q,CAAC,wKAAwK,iBAAiB,CAAC,KAAK,CAAC,OAAO,CAAC,QAAQ,CAAC,MAAM,CAAC,wBAAe,CAAf,qBAAe,CAAf,oBAAe,CAAf,gBAAgB,CAAC,yCAAyC,iBAAiB,CAAC,eAAe,CAAC,wBAAgB,CAAhB,qBAAgB,CAAhB,oBAAgB,CAAhB,gBAAgB,CAAC,cAAc,CAAC,cAAc,CAAC,eAAe,CAAC,8BAA8B,eAAe,CAAC,+BAA+B,WAAW,CAAC,+BAA+B,gBAAgB,CAAC,gCAAgC,yBAAyB,CAAC,mCAAmC,aAAa,CAAC,eAAe,CAAC,UAAU,CAAC,WAAW,CAAC,sBAAsB,CAAC,kCAAkC,CAAC,wBAAe,CAAf,qBAAe,CAAf,oBAAe,CAAf,gBAAgB,CAAC,uCAAuC,wBAAgB,CAAhB,qBAAgB,CAAhB,oBAAgB,CAAhB,gBAAgB,CAAC,eAAe,CAAC,cAAc,CAAC,eAAe,CAAC,+BAA+B,KAAK,CAAC,MAAM,CAAC,qBAAqB,CAAC,UAAU,CAAC,4BAA4B,iBAAiB,CAAC,MAAM,CAAC,cAAc,CAAC,iBAAiB,CAAC,UAAU,CAAC,gBAAgB,CAAC,+BAA+B,CAAC,cAAc,CAAC,4BAA4B,iBAAiB,CAAC,aAAa,CAAC,UAAU,CAAC,WAAW,CAAC,UAAU,CAAC,yBAAyB,QAAQ,CAAC,MAAM,CAAC,UAAU,CAAC,eAAe,CAAC,yBAAyB,KAAK,CAAC,SAAS,CAAC,SAAS,CAAC,eAAe,CAAC,yBAAyB,WAAW,CAAC,MAAM,CAAC,UAAU,CAAC,eAAe,CAAC,yBAAyB,KAAK,CAAC,UAAU,CAAC,SAAS,CAAC,eAAe,CAAC,6BAA6B,iBAAiB,CAAC,SAAS,CAAC,UAAU,CAAC,WAAW,CAAC,qBAAqB,CAAC,kBAAkB,CAAC,yBAAyB,QAAQ,CAAC,SAAS,CAAC,gBAAgB,CAAC,yBAAyB,QAAQ,CAAC,QAAQ,CAAC,gBAAgB,CAAC,eAAe,CAAC,yBAAyB,QAAQ,CAAC,UAAU,CAAC,gBAAgB,CAAC,yBAAyB,OAAO,CAAC,SAAS,CAAC,eAAe,CAAC,eAAe,CAAC,yBAAyB,OAAO,CAAC,UAAU,CAAC,eAAe,CAAC,eAAe,CAAC,yBAAyB,WAAW,CAAC,SAAS,CAAC,gBAAgB,CAAC,yBAAyB,WAAW,CAAC,QAAQ,CAAC,gBAAgB,CAAC,eAAe,CAAC,yBAAyB,WAAW,CAAC,UAAU,CAAC,gBAAgB,CAAC,oCAAoC,6BAA6B,iBAAiB,CAAC,UAAU,CAAC,WAAW,CAAC,WAAW,CAAC,qBAAqB,CAAC,kBAAkB,CAAC,yBAAyB,SAAS,CAAC,UAAU,CAAC,oGAAoG,YAAY,CAAC,yBAAyB,SAAS,CAAC,WAAW,CAAC,yBAAyB,KAAK,CAAC,MAAM,CAAC,yBAAyB,YAAY,CAAC,UAAU,CAAC,yBAAyB,YAAY,CAAC,WAAW,CAAC","sourcesContent":[".vue-cropper[data-v-48aab112]{position:relative;width:100%;height:100%;box-sizing:border-box;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;direction:ltr;touch-action:none;text-align:left;background-image:url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC\")}.cropper-box-canvas[data-v-48aab112],.cropper-box[data-v-48aab112],.cropper-crop-box[data-v-48aab112],.cropper-drag-box[data-v-48aab112],.cropper-face[data-v-48aab112]{position:absolute;top:0;right:0;bottom:0;left:0;user-select:none}.cropper-box-canvas img[data-v-48aab112]{position:relative;text-align:left;user-select:none;transform:none;max-width:none;max-height:none}.cropper-box[data-v-48aab112]{overflow:hidden}.cropper-move[data-v-48aab112]{cursor:move}.cropper-crop[data-v-48aab112]{cursor:crosshair}.cropper-modal[data-v-48aab112]{background:rgba(0,0,0,.5)}.cropper-view-box[data-v-48aab112]{display:block;overflow:hidden;width:100%;height:100%;outline:1px solid #39f;outline-color:rgba(51,153,255,.75);user-select:none}.cropper-view-box img[data-v-48aab112]{user-select:none;text-align:left;max-width:none;max-height:none}.cropper-face[data-v-48aab112]{top:0;left:0;background-color:#fff;opacity:.1}.crop-info[data-v-48aab112]{position:absolute;left:0;min-width:65px;text-align:center;color:#fff;line-height:20px;background-color:rgba(0,0,0,.8);font-size:12px}.crop-line[data-v-48aab112]{position:absolute;display:block;width:100%;height:100%;opacity:.1}.line-w[data-v-48aab112]{top:-3px;left:0;height:5px;cursor:n-resize}.line-a[data-v-48aab112]{top:0;left:-3px;width:5px;cursor:w-resize}.line-s[data-v-48aab112]{bottom:-3px;left:0;height:5px;cursor:s-resize}.line-d[data-v-48aab112]{top:0;right:-3px;width:5px;cursor:e-resize}.crop-point[data-v-48aab112]{position:absolute;width:8px;height:8px;opacity:.75;background-color:#39f;border-radius:100%}.point1[data-v-48aab112]{top:-4px;left:-4px;cursor:nw-resize}.point2[data-v-48aab112]{top:-5px;left:50%;margin-left:-3px;cursor:n-resize}.point3[data-v-48aab112]{top:-4px;right:-4px;cursor:ne-resize}.point4[data-v-48aab112]{top:50%;left:-4px;margin-top:-3px;cursor:w-resize}.point5[data-v-48aab112]{top:50%;right:-4px;margin-top:-3px;cursor:e-resize}.point6[data-v-48aab112]{bottom:-5px;left:-4px;cursor:sw-resize}.point7[data-v-48aab112]{bottom:-5px;left:50%;margin-left:-3px;cursor:s-resize}.point8[data-v-48aab112]{bottom:-5px;right:-4px;cursor:se-resize}@media screen and (max-width:500px){.crop-point[data-v-48aab112]{position:absolute;width:20px;height:20px;opacity:.45;background-color:#39f;border-radius:100%}.point1[data-v-48aab112]{top:-10px;left:-10px}.point2[data-v-48aab112],.point4[data-v-48aab112],.point5[data-v-48aab112],.point7[data-v-48aab112]{display:none}.point3[data-v-48aab112]{top:-10px;right:-10px}.point4[data-v-48aab112]{top:0;left:0}.point6[data-v-48aab112]{bottom:-10px;left:-10px}.point8[data-v-48aab112]{bottom:-10px;right:-10px}}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, ".vue-cropper[data-v-be5e5ddc]{position:relative;width:100%;height:100%;box-sizing:border-box;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;direction:ltr;touch-action:none;text-align:left;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC)}.cropper-box[data-v-be5e5ddc],.cropper-box-canvas[data-v-be5e5ddc],.cropper-drag-box[data-v-be5e5ddc],.cropper-crop-box[data-v-be5e5ddc],.cropper-face[data-v-be5e5ddc]{position:absolute;top:0;right:0;bottom:0;left:0;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.cropper-box-canvas img[data-v-be5e5ddc]{position:relative;text-align:left;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;transform:none;max-width:none;max-height:none}.cropper-box[data-v-be5e5ddc]{overflow:hidden}.cropper-move[data-v-be5e5ddc]{cursor:move}.cropper-crop[data-v-be5e5ddc]{cursor:crosshair}.cropper-modal[data-v-be5e5ddc]{background:rgba(0,0,0,.5)}.cropper-view-box[data-v-be5e5ddc]{display:block;overflow:hidden;width:100%;height:100%;outline:1px solid #39f;outline-color:#3399ffbf;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.cropper-view-box img[data-v-be5e5ddc]{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;text-align:left;max-width:none;max-height:none}.cropper-face[data-v-be5e5ddc]{top:0;left:0;background-color:#fff;opacity:.1}.crop-info[data-v-be5e5ddc]{position:absolute;left:0px;min-width:65px;text-align:center;color:#fff;line-height:20px;background-color:#000c;font-size:12px}.crop-line[data-v-be5e5ddc]{position:absolute;display:block;width:100%;height:100%;opacity:.1}.line-w[data-v-be5e5ddc]{top:-3px;left:0;height:5px;cursor:n-resize}.line-a[data-v-be5e5ddc]{top:0;left:-3px;width:5px;cursor:w-resize}.line-s[data-v-be5e5ddc]{bottom:-3px;left:0;height:5px;cursor:s-resize}.line-d[data-v-be5e5ddc]{top:0;right:-3px;width:5px;cursor:e-resize}.crop-point[data-v-be5e5ddc]{position:absolute;width:8px;height:8px;opacity:.75;background-color:#39f;border-radius:100%}.point1[data-v-be5e5ddc]{top:-4px;left:-4px;cursor:nw-resize}.point2[data-v-be5e5ddc]{top:-5px;left:50%;margin-left:-3px;cursor:n-resize}.point3[data-v-be5e5ddc]{top:-4px;right:-4px;cursor:ne-resize}.point4[data-v-be5e5ddc]{top:50%;left:-4px;margin-top:-3px;cursor:w-resize}.point5[data-v-be5e5ddc]{top:50%;right:-4px;margin-top:-3px;cursor:e-resize}.point6[data-v-be5e5ddc]{bottom:-5px;left:-4px;cursor:sw-resize}.point7[data-v-be5e5ddc]{bottom:-5px;left:50%;margin-left:-3px;cursor:s-resize}.point8[data-v-be5e5ddc]{bottom:-5px;right:-4px;cursor:se-resize}@media screen and (max-width: 500px){.crop-point[data-v-be5e5ddc]{position:absolute;width:20px;height:20px;opacity:.45;background-color:#39f;border-radius:100%}.point1[data-v-be5e5ddc]{top:-10px;left:-10px}.point2[data-v-be5e5ddc],.point4[data-v-be5e5ddc],.point5[data-v-be5e5ddc],.point7[data-v-be5e5ddc]{display:none}.point3[data-v-be5e5ddc]{top:-10px;right:-10px}.point4[data-v-be5e5ddc]{top:0;left:0}.point6[data-v-be5e5ddc]{bottom:-10px;left:-10px}.point8[data-v-be5e5ddc]{bottom:-10px;right:-10px}}\n", "",{"version":3,"sources":["webpack://./node_modules/vue-cropper/dist/index.css"],"names":[],"mappings":"AAAA,8BAA8B,iBAAiB,CAAC,UAAU,CAAC,WAAW,CAAC,qBAAqB,CAAC,gBAAgB,CAAC,wBAAwB,CAAC,qBAAqB,CAAC,oBAAoB,CAAC,aAAa,CAAC,iBAAiB,CAAC,eAAe,CAAC,4QAA4Q,CAAC,wKAAwK,iBAAiB,CAAC,KAAK,CAAC,OAAO,CAAC,QAAQ,CAAC,MAAM,CAAC,wBAAe,CAAf,qBAAe,CAAf,oBAAe,CAAf,gBAAgB,CAAC,yCAAyC,iBAAiB,CAAC,eAAe,CAAC,wBAAgB,CAAhB,qBAAgB,CAAhB,oBAAgB,CAAhB,gBAAgB,CAAC,cAAc,CAAC,cAAc,CAAC,eAAe,CAAC,8BAA8B,eAAe,CAAC,+BAA+B,WAAW,CAAC,+BAA+B,gBAAgB,CAAC,gCAAgC,yBAAyB,CAAC,mCAAmC,aAAa,CAAC,eAAe,CAAC,UAAU,CAAC,WAAW,CAAC,sBAAsB,CAAC,uBAAuB,CAAC,wBAAe,CAAf,qBAAe,CAAf,oBAAe,CAAf,gBAAgB,CAAC,uCAAuC,wBAAgB,CAAhB,qBAAgB,CAAhB,oBAAgB,CAAhB,gBAAgB,CAAC,eAAe,CAAC,cAAc,CAAC,eAAe,CAAC,+BAA+B,KAAK,CAAC,MAAM,CAAC,qBAAqB,CAAC,UAAU,CAAC,4BAA4B,iBAAiB,CAAC,QAAQ,CAAC,cAAc,CAAC,iBAAiB,CAAC,UAAU,CAAC,gBAAgB,CAAC,sBAAsB,CAAC,cAAc,CAAC,4BAA4B,iBAAiB,CAAC,aAAa,CAAC,UAAU,CAAC,WAAW,CAAC,UAAU,CAAC,yBAAyB,QAAQ,CAAC,MAAM,CAAC,UAAU,CAAC,eAAe,CAAC,yBAAyB,KAAK,CAAC,SAAS,CAAC,SAAS,CAAC,eAAe,CAAC,yBAAyB,WAAW,CAAC,MAAM,CAAC,UAAU,CAAC,eAAe,CAAC,yBAAyB,KAAK,CAAC,UAAU,CAAC,SAAS,CAAC,eAAe,CAAC,6BAA6B,iBAAiB,CAAC,SAAS,CAAC,UAAU,CAAC,WAAW,CAAC,qBAAqB,CAAC,kBAAkB,CAAC,yBAAyB,QAAQ,CAAC,SAAS,CAAC,gBAAgB,CAAC,yBAAyB,QAAQ,CAAC,QAAQ,CAAC,gBAAgB,CAAC,eAAe,CAAC,yBAAyB,QAAQ,CAAC,UAAU,CAAC,gBAAgB,CAAC,yBAAyB,OAAO,CAAC,SAAS,CAAC,eAAe,CAAC,eAAe,CAAC,yBAAyB,OAAO,CAAC,UAAU,CAAC,eAAe,CAAC,eAAe,CAAC,yBAAyB,WAAW,CAAC,SAAS,CAAC,gBAAgB,CAAC,yBAAyB,WAAW,CAAC,QAAQ,CAAC,gBAAgB,CAAC,eAAe,CAAC,yBAAyB,WAAW,CAAC,UAAU,CAAC,gBAAgB,CAAC,qCAAqC,6BAA6B,iBAAiB,CAAC,UAAU,CAAC,WAAW,CAAC,WAAW,CAAC,qBAAqB,CAAC,kBAAkB,CAAC,yBAAyB,SAAS,CAAC,UAAU,CAAC,oGAAoG,YAAY,CAAC,yBAAyB,SAAS,CAAC,WAAW,CAAC,yBAAyB,KAAK,CAAC,MAAM,CAAC,yBAAyB,YAAY,CAAC,UAAU,CAAC,yBAAyB,YAAY,CAAC,WAAW,CAAC","sourcesContent":[".vue-cropper[data-v-be5e5ddc]{position:relative;width:100%;height:100%;box-sizing:border-box;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;direction:ltr;touch-action:none;text-align:left;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC)}.cropper-box[data-v-be5e5ddc],.cropper-box-canvas[data-v-be5e5ddc],.cropper-drag-box[data-v-be5e5ddc],.cropper-crop-box[data-v-be5e5ddc],.cropper-face[data-v-be5e5ddc]{position:absolute;top:0;right:0;bottom:0;left:0;user-select:none}.cropper-box-canvas img[data-v-be5e5ddc]{position:relative;text-align:left;user-select:none;transform:none;max-width:none;max-height:none}.cropper-box[data-v-be5e5ddc]{overflow:hidden}.cropper-move[data-v-be5e5ddc]{cursor:move}.cropper-crop[data-v-be5e5ddc]{cursor:crosshair}.cropper-modal[data-v-be5e5ddc]{background:rgba(0,0,0,.5)}.cropper-view-box[data-v-be5e5ddc]{display:block;overflow:hidden;width:100%;height:100%;outline:1px solid #39f;outline-color:#3399ffbf;user-select:none}.cropper-view-box img[data-v-be5e5ddc]{user-select:none;text-align:left;max-width:none;max-height:none}.cropper-face[data-v-be5e5ddc]{top:0;left:0;background-color:#fff;opacity:.1}.crop-info[data-v-be5e5ddc]{position:absolute;left:0px;min-width:65px;text-align:center;color:#fff;line-height:20px;background-color:#000c;font-size:12px}.crop-line[data-v-be5e5ddc]{position:absolute;display:block;width:100%;height:100%;opacity:.1}.line-w[data-v-be5e5ddc]{top:-3px;left:0;height:5px;cursor:n-resize}.line-a[data-v-be5e5ddc]{top:0;left:-3px;width:5px;cursor:w-resize}.line-s[data-v-be5e5ddc]{bottom:-3px;left:0;height:5px;cursor:s-resize}.line-d[data-v-be5e5ddc]{top:0;right:-3px;width:5px;cursor:e-resize}.crop-point[data-v-be5e5ddc]{position:absolute;width:8px;height:8px;opacity:.75;background-color:#39f;border-radius:100%}.point1[data-v-be5e5ddc]{top:-4px;left:-4px;cursor:nw-resize}.point2[data-v-be5e5ddc]{top:-5px;left:50%;margin-left:-3px;cursor:n-resize}.point3[data-v-be5e5ddc]{top:-4px;right:-4px;cursor:ne-resize}.point4[data-v-be5e5ddc]{top:50%;left:-4px;margin-top:-3px;cursor:w-resize}.point5[data-v-be5e5ddc]{top:50%;right:-4px;margin-top:-3px;cursor:e-resize}.point6[data-v-be5e5ddc]{bottom:-5px;left:-4px;cursor:sw-resize}.point7[data-v-be5e5ddc]{bottom:-5px;left:50%;margin-left:-3px;cursor:s-resize}.point8[data-v-be5e5ddc]{bottom:-5px;right:-4px;cursor:se-resize}@media screen and (max-width: 500px){.crop-point[data-v-be5e5ddc]{position:absolute;width:20px;height:20px;opacity:.45;background-color:#39f;border-radius:100%}.point1[data-v-be5e5ddc]{top:-10px;left:-10px}.point2[data-v-be5e5ddc],.point4[data-v-be5e5ddc],.point5[data-v-be5e5ddc],.point7[data-v-be5e5ddc]{display:none}.point3[data-v-be5e5ddc]{top:-10px;right:-10px}.point4[data-v-be5e5ddc]{top:0;left:0}.point6[data-v-be5e5ddc]{bottom:-10px;left:-10px}.point8[data-v-be5e5ddc]{bottom:-10px;right:-10px}}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -27594,7 +27682,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.profile-bar[data-v-01e3195c] {\n    display: flex;\n    flex-direction: column;\n    flex-shrink: 0;\n    flex-grow: 1;\n    max-width: 250px;\n    margin-right: 50px;\n    width: 100%;\n}\n.profile-bar-avatar[data-v-01e3195c] {\n    width: 100%;\n    height: 100%;\n    max-width: 250px;\n    max-height: 250px;\n    border-radius: 10px;\n    overflow: hidden;\n    position: relative;\n    margin-bottom: 12px;\n    flex-shrink: 0;\n    flex-grow: 1;\n}\n.profile-bar-avatar i[data-v-01e3195c] {\n    width: 100%;\n    height: 100%;\n    background: #131313;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    font-size: 106px;\n    color: #494949;\n}\n.profile-bar img[data-v-01e3195c] {\n    border-radius: 10px;\n    margin-bottom: 12px;\n}\n.profile-bar-avatar-upload[data-v-01e3195c] {\n    position: absolute;\n    left: 0;\n    bottom: -40px;\n    width: 100%;\n    height: 40px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    background: rgba(0, 0, 0, 0.5);\n    border: none;\n    outline: none;\n    transition: 0.5s;\n}\n.profile-bar-avatar-upload i[data-v-01e3195c] {\n    background: none;\n    font-size: 14px;\n    color: white;\n    width: auto;\n    height: auto;\n    margin-right: 5px;\n    transform: translateY(-1px);\n}\n.profile-bar-avatar:hover .profile-bar-avatar-upload[data-v-01e3195c] {\n    transition: 0.5s;\n    bottom: 0;\n}\n.profile-login[data-v-01e3195c] {\n    font-weight: bold;\n    font-size: 24px;\n}\n.profile-email[data-v-01e3195c] {\n    font-size: 14px;\n    color: #8D8D8D;\n}\n.profile-bar-sections-buttons[data-v-01e3195c] {\n    margin-top: 25px;\n}\n.profile-bar-sections-buttons p[data-v-01e3195c] {\n    margin-bottom: 8px;\n    font-weight: 600;\n    font-size: 18px;\n    color: #7E7E7E;\n    cursor: pointer;\n    transition: 0.5s;\n}\n.profile-bar-sections-buttons p.active[data-v-01e3195c] {\n    color: white;\n    transition: 0.5s;\n}\n.image-cropper-container[data-v-01e3195c] {\n    position: fixed;\n    width: 100vw;\n    height: 100vh;\n    left: 0;\n    top: 0;\n    background: rgba(0, 0, 0, 0.8);\n    z-index: 100;\n}\n.image-cropper-block[data-v-01e3195c] {\n    position: absolute;\n    left: 50%;\n    top: 50%;\n    transform: translate(-50%, -50%);\n    display: flex;\n    flex-direction: column;\n}\n.image-cropper-block .ti-btn[data-v-01e3195c] {\n    margin-left: auto;\n}\n.vue-cropper[data-v-01e3195c] {\n    height: 450px !important;\n    width: 450px !important;\n    overflow: hidden !important;\n    border-radius: 15px !important;\n    margin-bottom: 20px;\n}\ninput[type='file'][data-v-01e3195c] {\n    display: none;\n}\n@media (max-width: 550px) {\n.profile-bar[data-v-01e3195c] {\n        margin: 0 auto;\n        text-align: center;\n}\n.profile-container[data-v-01e3195c] {\n        padding: 0 20px;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./AccountProfileBar.vue"],"names":[],"mappings":";AA8IA;IACI,aAAa;IACb,sBAAsB;IACtB,cAAc;IACd,YAAY;IACZ,gBAAgB;IAChB,kBAAkB;IAClB,WAAW;AACf;AAEA;IACI,WAAW;IACX,YAAY;IACZ,gBAAgB;IAChB,iBAAiB;IACjB,mBAAmB;IACnB,gBAAgB;IAChB,kBAAkB;IAClB,mBAAmB;IACnB,cAAc;IACd,YAAY;AAChB;AAEA;IACI,WAAW;IACX,YAAY;IACZ,mBAAmB;IACnB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,uBAAuB;IACvB,gBAAgB;IAChB,cAAc;AAClB;AAEA;IACI,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,kBAAkB;IAClB,OAAO;IACP,aAAa;IACb,WAAW;IACX,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,uBAAuB;IACvB,8BAA8B;IAC9B,YAAY;IACZ,aAAa;IACb,gBAAgB;AACpB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,YAAY;IACZ,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,2BAA2B;AAC/B;AAEA;IACI,gBAAgB;IAChB,SAAS;AACb;AAEA;IACI,iBAAiB;IACjB,eAAe;AACnB;AAEA;IACI,eAAe;IACf,cAAc;AAClB;AAEA;IACI,gBAAgB;AACpB;AAEA;IACI,kBAAkB;IAClB,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,eAAe;IACf,gBAAgB;AACpB;AAEA;IACI,YAAY;IACZ,gBAAgB;AACpB;AAEA;IACI,eAAe;IACf,YAAY;IACZ,aAAa;IACb,OAAO;IACP,MAAM;IACN,8BAA8B;IAC9B,YAAY;AAChB;AAEA;IACI,kBAAkB;IAClB,SAAS;IACT,QAAQ;IACR,gCAAgC;IAChC,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,iBAAiB;AACrB;AAEA;IACI,wBAAwB;IACxB,uBAAuB;IACvB,2BAA2B;IAC3B,8BAA8B;IAC9B,mBAAmB;AACvB;AAEA;IACI,aAAa;AACjB;AAEA;AACI;QACI,cAAc;QACd,kBAAkB;AACtB;AAEA;QACI,eAAe;AACnB;AACJ","sourcesContent":["<template>\n    <div class=\"profile-bar\">\n        <div class=\"profile-bar-avatar\">\n            <img\n                v-if=\"user.avatar\"\n                :src=\"user.avatar\"\n                :alt=\"user.login\"\n            >\n            <i\n                v-else\n                class=\"fal fa-user\"\n            />\n            <button\n                class=\"profile-bar-avatar-upload\"\n                @click=\"openCropper\"\n            >\n                <i class=\"fal fa-upload\"/> Загрузить\n            </button>\n        </div>\n        <p class=\"profile-login\">\n            {{ user.login }}\n        </p>\n        <p class=\"profile-email\">\n            {{ user.email }}\n        </p>\n        <div class=\"profile-bar-sections-buttons\">\n            <InertiaLink\n                v-for=\"section in profile_sections\"\n                :key=\"section.id\"\n                :class=\"{'active': $page.url === getRelativeUrl(section.route)}\"\n                as=\"p\"\n                :href=\"section.route\"\n            >\n                {{ section.name }}\n            </InertiaLink>\n        </div>\n        <!--todo: make as component-->\n        <div\n            v-show=\"cropper.open\"\n            class=\"image-cropper-container\"\n            @click.self=\"closeCropper\"\n        >\n            <div class=\"image-cropper-block\">\n                <vueCropper\n                    ref=\"cropper\"\n                    :img=\"cropper.image\"\n                    output-type=\"webp\"\n                    :auto-crop=\"true\"\n                    :can-move=\"true\"\n                    :can-move-box=\"false\"\n                    :auto-crop-width=\"250\"\n                    :auto-crop-height=\"250\"\n                    :fixed-box=\"true\"\n                    :center-box=\"true\"\n                />\n\n                <input\n                    ref=\"uploadImg\"\n                    type=\"file\"\n                    accept=\"image/png, image/jpeg, image/gif, image/jpg\"\n                    @change=\"uploadImg($event)\"\n                >\n\n                <BaseButton @click=\"uploadUserAvatar\">\n                    Сохранить\n                </BaseButton>\n            </div>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'AccountProfileBar',\n    data() {\n        return {\n            cropper: {\n                open: false,\n                image: null,\n            },\n            profile_sections: [\n                {id: 0, name: 'Настройки', route: this.route('user.account')},\n                {id: 1, name: 'Недавно просмотренные', route: this.route('user.watched')},\n                {id: 2, name: 'Буду смотреть', route: this.route('user.want-to-watch')},\n                {id: 3, name: 'Отслеживаемое', route: this.route('user.tracked')},\n            ]\n        };\n    },\n    computed: {\n        user() {\n            return this.$page.props.user;\n        }\n    },\n    methods: {\n        openCropper() {\n            this.cropper.open = true;\n            this.$refs.uploadImg.click();\n        },\n        closeCropper() {\n            this.cropper.open = false;\n            this.cropper.image = null;\n        },\n        uploadUserAvatar() {\n            this.$refs.cropper.getCropData(data => {\n                this.$inertia.put(this.route('user-avatar.update'), {\n                        image: data,\n                    },\n                    {\n                        onSuccess: this.closeCropper,\n                    });\n            });\n        },\n        uploadImg(e) {\n            let file = e.target.files[0];\n            if (!/\\.(jpg|jpeg|png|JPG|PNG)$/.test(e.target.value)) {\n                alert('Поддерживаются только jpeg,jpg,png');\n                return false;\n            }\n            let reader = new FileReader();\n            reader.onload = e => {\n                let data;\n                if (typeof e.target.result === 'object') {\n                    data = window.URL.createObjectURL(new Blob([e.target.result]));\n                } else {\n                    data = e.target.result;\n                }\n\n                this.cropper.image = data;\n\n                this.$refs.uploadImg.value = '';\n            };\n            reader.readAsArrayBuffer(file);\n        },\n        getRelativeUrl(value) {\n            return value.replace(this.route().t.url, '');\n        }\n    },\n\n};\n</script>\n\n<style scoped>\n.profile-bar {\n    display: flex;\n    flex-direction: column;\n    flex-shrink: 0;\n    flex-grow: 1;\n    max-width: 250px;\n    margin-right: 50px;\n    width: 100%;\n}\n\n.profile-bar-avatar {\n    width: 100%;\n    height: 100%;\n    max-width: 250px;\n    max-height: 250px;\n    border-radius: 10px;\n    overflow: hidden;\n    position: relative;\n    margin-bottom: 12px;\n    flex-shrink: 0;\n    flex-grow: 1;\n}\n\n.profile-bar-avatar i {\n    width: 100%;\n    height: 100%;\n    background: #131313;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    font-size: 106px;\n    color: #494949;\n}\n\n.profile-bar img {\n    border-radius: 10px;\n    margin-bottom: 12px;\n}\n\n.profile-bar-avatar-upload {\n    position: absolute;\n    left: 0;\n    bottom: -40px;\n    width: 100%;\n    height: 40px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    background: rgba(0, 0, 0, 0.5);\n    border: none;\n    outline: none;\n    transition: 0.5s;\n}\n\n.profile-bar-avatar-upload i {\n    background: none;\n    font-size: 14px;\n    color: white;\n    width: auto;\n    height: auto;\n    margin-right: 5px;\n    transform: translateY(-1px);\n}\n\n.profile-bar-avatar:hover .profile-bar-avatar-upload {\n    transition: 0.5s;\n    bottom: 0;\n}\n\n.profile-login {\n    font-weight: bold;\n    font-size: 24px;\n}\n\n.profile-email {\n    font-size: 14px;\n    color: #8D8D8D;\n}\n\n.profile-bar-sections-buttons {\n    margin-top: 25px;\n}\n\n.profile-bar-sections-buttons p {\n    margin-bottom: 8px;\n    font-weight: 600;\n    font-size: 18px;\n    color: #7E7E7E;\n    cursor: pointer;\n    transition: 0.5s;\n}\n\n.profile-bar-sections-buttons p.active {\n    color: white;\n    transition: 0.5s;\n}\n\n.image-cropper-container {\n    position: fixed;\n    width: 100vw;\n    height: 100vh;\n    left: 0;\n    top: 0;\n    background: rgba(0, 0, 0, 0.8);\n    z-index: 100;\n}\n\n.image-cropper-block {\n    position: absolute;\n    left: 50%;\n    top: 50%;\n    transform: translate(-50%, -50%);\n    display: flex;\n    flex-direction: column;\n}\n\n.image-cropper-block .ti-btn {\n    margin-left: auto;\n}\n\n.vue-cropper {\n    height: 450px !important;\n    width: 450px !important;\n    overflow: hidden !important;\n    border-radius: 15px !important;\n    margin-bottom: 20px;\n}\n\ninput[type='file'] {\n    display: none;\n}\n\n@media (max-width: 550px) {\n    .profile-bar {\n        margin: 0 auto;\n        text-align: center;\n    }\n\n    .profile-container {\n        padding: 0 20px;\n    }\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.profile-bar[data-v-01e3195c] {\n    display: flex;\n    flex-direction: column;\n    flex-shrink: 0;\n    flex-grow: 1;\n    max-width: 250px;\n    margin-right: 50px;\n    width: 100%;\n}\n.profile-bar-avatar[data-v-01e3195c] {\n    width: 100%;\n    height: 100%;\n    max-width: 250px;\n    max-height: 250px;\n    border-radius: 10px;\n    overflow: hidden;\n    position: relative;\n    margin-bottom: 12px;\n    flex-shrink: 0;\n    flex-grow: 1;\n}\n.profile-bar-avatar i[data-v-01e3195c] {\n    width: 100%;\n    height: 100%;\n    background: #131313;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    font-size: 106px;\n    color: #494949;\n}\n.profile-bar img[data-v-01e3195c] {\n    border-radius: 10px;\n    margin-bottom: 12px;\n}\n.profile-bar-avatar-upload[data-v-01e3195c] {\n    position: absolute;\n    left: 0;\n    bottom: -40px;\n    width: 100%;\n    height: 40px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    background: rgba(0, 0, 0, 0.5);\n    border: none;\n    outline: none;\n    transition: 0.5s;\n}\n.profile-bar-avatar-upload i[data-v-01e3195c] {\n    background: none;\n    font-size: 14px;\n    color: white;\n    width: auto;\n    height: auto;\n    margin-right: 5px;\n    transform: translateY(-1px);\n}\n.profile-bar-avatar:hover .profile-bar-avatar-upload[data-v-01e3195c] {\n    transition: 0.5s;\n    bottom: 0;\n}\n.profile-login[data-v-01e3195c] {\n    font-weight: bold;\n    font-size: 24px;\n}\n.profile-email[data-v-01e3195c] {\n    font-size: 14px;\n    color: #8D8D8D;\n}\n.profile-bar-sections-buttons[data-v-01e3195c] {\n    margin-top: 25px;\n}\n.profile-bar-sections-buttons p[data-v-01e3195c] {\n    margin-bottom: 8px;\n    font-weight: 600;\n    font-size: 18px;\n    color: #7E7E7E;\n    cursor: pointer;\n    transition: 0.5s;\n}\n.profile-bar-sections-buttons p.active[data-v-01e3195c] {\n    color: white;\n    transition: 0.5s;\n}\n.image-cropper-container[data-v-01e3195c] {\n    position: fixed;\n    width: 100vw;\n    height: 100vh;\n    left: 0;\n    top: 0;\n    background: rgba(0, 0, 0, 0.8);\n    z-index: 100;\n}\n.image-cropper-block[data-v-01e3195c] {\n    position: absolute;\n    left: 50%;\n    top: 50%;\n    transform: translate(-50%, -50%);\n    display: flex;\n    flex-direction: column;\n}\n.image-cropper-block .ti-btn[data-v-01e3195c] {\n    margin-left: auto;\n}\n.vue-cropper[data-v-01e3195c] {\n    height: 450px !important;\n    width: 450px !important;\n    overflow: hidden !important;\n    border-radius: 15px !important;\n    margin-bottom: 20px;\n}\ninput[type='file'][data-v-01e3195c] {\n    display: none;\n}\n@media (max-width: 550px) {\n.profile-bar[data-v-01e3195c] {\n        margin: 0 auto;\n        text-align: center;\n}\n.profile-container[data-v-01e3195c] {\n        padding: 0 20px;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/components/AccountProfileBar.vue"],"names":[],"mappings":";AA8IA;IACI,aAAa;IACb,sBAAsB;IACtB,cAAc;IACd,YAAY;IACZ,gBAAgB;IAChB,kBAAkB;IAClB,WAAW;AACf;AAEA;IACI,WAAW;IACX,YAAY;IACZ,gBAAgB;IAChB,iBAAiB;IACjB,mBAAmB;IACnB,gBAAgB;IAChB,kBAAkB;IAClB,mBAAmB;IACnB,cAAc;IACd,YAAY;AAChB;AAEA;IACI,WAAW;IACX,YAAY;IACZ,mBAAmB;IACnB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,uBAAuB;IACvB,gBAAgB;IAChB,cAAc;AAClB;AAEA;IACI,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,kBAAkB;IAClB,OAAO;IACP,aAAa;IACb,WAAW;IACX,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,uBAAuB;IACvB,8BAA8B;IAC9B,YAAY;IACZ,aAAa;IACb,gBAAgB;AACpB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,YAAY;IACZ,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,2BAA2B;AAC/B;AAEA;IACI,gBAAgB;IAChB,SAAS;AACb;AAEA;IACI,iBAAiB;IACjB,eAAe;AACnB;AAEA;IACI,eAAe;IACf,cAAc;AAClB;AAEA;IACI,gBAAgB;AACpB;AAEA;IACI,kBAAkB;IAClB,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,eAAe;IACf,gBAAgB;AACpB;AAEA;IACI,YAAY;IACZ,gBAAgB;AACpB;AAEA;IACI,eAAe;IACf,YAAY;IACZ,aAAa;IACb,OAAO;IACP,MAAM;IACN,8BAA8B;IAC9B,YAAY;AAChB;AAEA;IACI,kBAAkB;IAClB,SAAS;IACT,QAAQ;IACR,gCAAgC;IAChC,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,iBAAiB;AACrB;AAEA;IACI,wBAAwB;IACxB,uBAAuB;IACvB,2BAA2B;IAC3B,8BAA8B;IAC9B,mBAAmB;AACvB;AAEA;IACI,aAAa;AACjB;AAEA;AACI;QACI,cAAc;QACd,kBAAkB;AACtB;AAEA;QACI,eAAe;AACnB;AACJ","sourcesContent":["<template>\n    <div class=\"profile-bar\">\n        <div class=\"profile-bar-avatar\">\n            <img\n                v-if=\"user.avatar\"\n                :src=\"user.avatar\"\n                :alt=\"user.login\"\n            >\n            <i\n                v-else\n                class=\"fal fa-user\"\n            />\n            <button\n                class=\"profile-bar-avatar-upload\"\n                @click=\"openCropper\"\n            >\n                <i class=\"fal fa-upload\"/> Загрузить\n            </button>\n        </div>\n        <p class=\"profile-login\">\n            {{ user.login }}\n        </p>\n        <p class=\"profile-email\">\n            {{ user.email }}\n        </p>\n        <div class=\"profile-bar-sections-buttons\">\n            <InertiaLink\n                v-for=\"section in profile_sections\"\n                :key=\"section.id\"\n                :class=\"{'active': $page.url === getRelativeUrl(section.route)}\"\n                as=\"p\"\n                :href=\"section.route\"\n            >\n                {{ section.name }}\n            </InertiaLink>\n        </div>\n        <!--todo: make as component-->\n        <div\n            v-show=\"cropper.open\"\n            class=\"image-cropper-container\"\n            @click.self=\"closeCropper\"\n        >\n            <div class=\"image-cropper-block\">\n                <vueCropper\n                    ref=\"cropper\"\n                    :img=\"cropper.image\"\n                    output-type=\"webp\"\n                    :auto-crop=\"true\"\n                    :can-move=\"true\"\n                    :can-move-box=\"false\"\n                    :auto-crop-width=\"250\"\n                    :auto-crop-height=\"250\"\n                    :fixed-box=\"true\"\n                    :center-box=\"true\"\n                />\n\n                <input\n                    ref=\"uploadImg\"\n                    type=\"file\"\n                    accept=\"image/png, image/jpeg, image/gif, image/jpg\"\n                    @change=\"uploadImg($event)\"\n                >\n\n                <BaseButton @click=\"uploadUserAvatar\">\n                    Сохранить\n                </BaseButton>\n            </div>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'AccountProfileBar',\n    data() {\n        return {\n            cropper: {\n                open: false,\n                image: null,\n            },\n            profile_sections: [\n                {id: 0, name: 'Настройки', route: this.route('user.account')},\n                {id: 1, name: 'Недавно просмотренные', route: this.route('user.watched')},\n                {id: 2, name: 'Буду смотреть', route: this.route('user.want-to-watch')},\n                {id: 3, name: 'Отслеживаемое', route: this.route('user.tracked')},\n            ]\n        };\n    },\n    computed: {\n        user() {\n            return this.$page.props.user;\n        }\n    },\n    methods: {\n        openCropper() {\n            this.cropper.open = true;\n            this.$refs.uploadImg.click();\n        },\n        closeCropper() {\n            this.cropper.open = false;\n            this.cropper.image = null;\n        },\n        uploadUserAvatar() {\n            this.$refs.cropper.getCropData(data => {\n                this.$inertia.put(this.route('user-avatar.update'), {\n                        image: data,\n                    },\n                    {\n                        onSuccess: this.closeCropper,\n                    });\n            });\n        },\n        uploadImg(e) {\n            let file = e.target.files[0];\n            if (!/\\.(jpg|jpeg|png|JPG|PNG)$/.test(e.target.value)) {\n                alert('Поддерживаются только jpeg,jpg,png');\n                return false;\n            }\n            let reader = new FileReader();\n            reader.onload = e => {\n                let data;\n                if (typeof e.target.result === 'object') {\n                    data = window.URL.createObjectURL(new Blob([e.target.result]));\n                } else {\n                    data = e.target.result;\n                }\n\n                this.cropper.image = data;\n\n                this.$refs.uploadImg.value = '';\n            };\n            reader.readAsArrayBuffer(file);\n        },\n        getRelativeUrl(value) {\n            return value.replace(this.route().t.url, '');\n        }\n    },\n\n};\n</script>\n\n<style scoped>\n.profile-bar {\n    display: flex;\n    flex-direction: column;\n    flex-shrink: 0;\n    flex-grow: 1;\n    max-width: 250px;\n    margin-right: 50px;\n    width: 100%;\n}\n\n.profile-bar-avatar {\n    width: 100%;\n    height: 100%;\n    max-width: 250px;\n    max-height: 250px;\n    border-radius: 10px;\n    overflow: hidden;\n    position: relative;\n    margin-bottom: 12px;\n    flex-shrink: 0;\n    flex-grow: 1;\n}\n\n.profile-bar-avatar i {\n    width: 100%;\n    height: 100%;\n    background: #131313;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    font-size: 106px;\n    color: #494949;\n}\n\n.profile-bar img {\n    border-radius: 10px;\n    margin-bottom: 12px;\n}\n\n.profile-bar-avatar-upload {\n    position: absolute;\n    left: 0;\n    bottom: -40px;\n    width: 100%;\n    height: 40px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    background: rgba(0, 0, 0, 0.5);\n    border: none;\n    outline: none;\n    transition: 0.5s;\n}\n\n.profile-bar-avatar-upload i {\n    background: none;\n    font-size: 14px;\n    color: white;\n    width: auto;\n    height: auto;\n    margin-right: 5px;\n    transform: translateY(-1px);\n}\n\n.profile-bar-avatar:hover .profile-bar-avatar-upload {\n    transition: 0.5s;\n    bottom: 0;\n}\n\n.profile-login {\n    font-weight: bold;\n    font-size: 24px;\n}\n\n.profile-email {\n    font-size: 14px;\n    color: #8D8D8D;\n}\n\n.profile-bar-sections-buttons {\n    margin-top: 25px;\n}\n\n.profile-bar-sections-buttons p {\n    margin-bottom: 8px;\n    font-weight: 600;\n    font-size: 18px;\n    color: #7E7E7E;\n    cursor: pointer;\n    transition: 0.5s;\n}\n\n.profile-bar-sections-buttons p.active {\n    color: white;\n    transition: 0.5s;\n}\n\n.image-cropper-container {\n    position: fixed;\n    width: 100vw;\n    height: 100vh;\n    left: 0;\n    top: 0;\n    background: rgba(0, 0, 0, 0.8);\n    z-index: 100;\n}\n\n.image-cropper-block {\n    position: absolute;\n    left: 50%;\n    top: 50%;\n    transform: translate(-50%, -50%);\n    display: flex;\n    flex-direction: column;\n}\n\n.image-cropper-block .ti-btn {\n    margin-left: auto;\n}\n\n.vue-cropper {\n    height: 450px !important;\n    width: 450px !important;\n    overflow: hidden !important;\n    border-radius: 15px !important;\n    margin-bottom: 20px;\n}\n\ninput[type='file'] {\n    display: none;\n}\n\n@media (max-width: 550px) {\n    .profile-bar {\n        margin: 0 auto;\n        text-align: center;\n    }\n\n    .profile-container {\n        padding: 0 20px;\n    }\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -27864,7 +27952,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.poster[data-v-432dbea6] {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n.poster img[data-v-432dbea6] {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n.poster button[data-v-432dbea6] {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n.poster-text-box[data-v-432dbea6] {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n.poster-text-box p[data-v-432dbea6] {\n    font-weight: 500;\n    font-size: 14px;\n    -webkit-line-clamp: 4;\n    display: -webkit-box;\n    line-height: 17px;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n.poster-text-box h3[data-v-432dbea6] {\n    font-weight: 700;\n    font-size: 22px;\n    line-height: 27px;\n    margin-bottom: 15px;\n}\n.backdrop[data-v-432dbea6] {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);\n    z-index: 100;\n}\n", "",{"version":3,"sources":["webpack://./RecommendedPoster.vue"],"names":[],"mappings":";AAoCA;IACI,gBAAgB;IAChB,kBAAkB;IAClB,eAAe;AACnB;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,OAAO;IACP,MAAM;AACV;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,YAAY;AAChB;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,UAAU;IACV,YAAY;IACZ,YAAY;AAChB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,qBAAqB;IACrB,oBAAoB;IACpB,iBAAiB;IACjB,4BAA4B;IAC5B,gBAAgB;IAChB,uBAAuB;AAC3B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,kBAAkB;IAClB,OAAO;IACP,MAAM;IACN,WAAW;IACX,YAAY;IACZ,gFAAgF;IAChF,YAAY;AAChB","sourcesContent":["<template>\n    <InertiaLink\n        :href=\"route('film.show', item.film.id)\"\n        as=\"div\"\n        class=\"poster\">\n        <img\n            :src=\"poster\"\n            :alt=\"item.film.title\"\n        >\n        <div class=\"poster-text-box\">\n            <h3>{{ item.film.title }}</h3>\n            <p>{{ item.film.description }}</p>\n        </div>\n        <BaseButton>Смотреть</BaseButton>\n        <div class=\"backdrop\"/>\n    </InertiaLink>\n</template>\n\n<script>\nexport default {\n    name: 'RecommendedPoster',\n    props: {\n        item: {\n            type: Object,\n            required: true,\n        }\n    },\n    computed: {\n        poster() {\n            return this.item.poster || this.item.film.poster;\n        }\n    }\n};\n</script>\n\n<style scoped>\n.poster {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n\n.poster img {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n\n.poster button {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n\n.poster-text-box {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n\n.poster-text-box p {\n    font-weight: 500;\n    font-size: 14px;\n    -webkit-line-clamp: 4;\n    display: -webkit-box;\n    line-height: 17px;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n.poster-text-box h3 {\n    font-weight: 700;\n    font-size: 22px;\n    line-height: 27px;\n    margin-bottom: 15px;\n}\n\n.backdrop {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);\n    z-index: 100;\n}\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.poster[data-v-432dbea6] {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n.poster img[data-v-432dbea6] {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n.poster button[data-v-432dbea6] {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n.poster-text-box[data-v-432dbea6] {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n.poster-text-box p[data-v-432dbea6] {\n    font-weight: 500;\n    font-size: 14px;\n    -webkit-line-clamp: 4;\n    display: -webkit-box;\n    line-height: 17px;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n.poster-text-box h3[data-v-432dbea6] {\n    font-weight: 700;\n    font-size: 22px;\n    line-height: 27px;\n    margin-bottom: 15px;\n}\n.backdrop[data-v-432dbea6] {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);\n    z-index: 100;\n}\n", "",{"version":3,"sources":["webpack://./resources/js/components/RecommendedPoster.vue"],"names":[],"mappings":";AAoCA;IACI,gBAAgB;IAChB,kBAAkB;IAClB,eAAe;AACnB;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,OAAO;IACP,MAAM;AACV;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,YAAY;AAChB;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,UAAU;IACV,YAAY;IACZ,YAAY;AAChB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,qBAAqB;IACrB,oBAAoB;IACpB,iBAAiB;IACjB,4BAA4B;IAC5B,gBAAgB;IAChB,uBAAuB;AAC3B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,kBAAkB;IAClB,OAAO;IACP,MAAM;IACN,WAAW;IACX,YAAY;IACZ,gFAAgF;IAChF,YAAY;AAChB","sourcesContent":["<template>\n    <InertiaLink\n        :href=\"route('film.show', item.film.id)\"\n        as=\"div\"\n        class=\"poster\">\n        <img\n            :src=\"poster\"\n            :alt=\"item.film.title\"\n        >\n        <div class=\"poster-text-box\">\n            <h3>{{ item.film.title }}</h3>\n            <p>{{ item.film.description }}</p>\n        </div>\n        <BaseButton>Смотреть</BaseButton>\n        <div class=\"backdrop\"/>\n    </InertiaLink>\n</template>\n\n<script>\nexport default {\n    name: 'RecommendedPoster',\n    props: {\n        item: {\n            type: Object,\n            required: true,\n        }\n    },\n    computed: {\n        poster() {\n            return this.item.poster || this.item.film.poster;\n        }\n    }\n};\n</script>\n\n<style scoped>\n.poster {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n\n.poster img {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n\n.poster button {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n\n.poster-text-box {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n\n.poster-text-box p {\n    font-weight: 500;\n    font-size: 14px;\n    -webkit-line-clamp: 4;\n    display: -webkit-box;\n    line-height: 17px;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n.poster-text-box h3 {\n    font-weight: 700;\n    font-size: 22px;\n    line-height: 27px;\n    margin-bottom: 15px;\n}\n\n.backdrop {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);\n    z-index: 100;\n}\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -27891,7 +27979,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.poster-small[data-v-3478a30a] {\n    background: #0F0F0F;\n    display: flex;\n    flex-direction: row;\n    cursor: pointer;\n}\n.poster-small img[data-v-3478a30a] {\n    width: 160px;\n    margin-right: 20px;\n    -o-object-fit: scale-down;\n       object-fit: scale-down;\n}\n.poster-info[data-v-3478a30a] {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    margin-right: 10px;\n}\n.poster-title[data-v-3478a30a] {\n    font-weight: bold;\n    font-size: 16px;\n    margin-bottom: 10px;\n}\n.poster-description[data-v-3478a30a] {\n    font-size: 14px;\n    color: #B7B7B7;\n    -webkit-line-clamp: 9;\n    display: -webkit-box;\n    line-height: 15px;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n", "",{"version":3,"sources":["webpack://./RecommendedPosterSmall.vue"],"names":[],"mappings":";AAuCA;IACI,mBAAmB;IACnB,aAAa;IACb,mBAAmB;IACnB,eAAe;AACnB;AAEA;IACI,YAAY;IACZ,kBAAkB;IAClB,yBAAsB;OAAtB,sBAAsB;AAC1B;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,uBAAuB;IACvB,kBAAkB;AACtB;AAEA;IACI,iBAAiB;IACjB,eAAe;IACf,mBAAmB;AACvB;AAEA;IACI,eAAe;IACf,cAAc;IACd,qBAAqB;IACrB,oBAAoB;IACpB,iBAAiB;IACjB,4BAA4B;IAC5B,gBAAgB;IAChB,uBAAuB;AAC3B","sourcesContent":["<template>\n    <InertiaLink\n        :href=\"route('film.show', item.film.id)\"\n        as=\"div\"\n        class=\"poster-small\">\n        <img\n            :src=\"poster\"\n            :alt=\"item.film.title\"\n        >\n        <div class=\"poster-info\">\n            <p class=\"poster-title\">\n                {{ item.film.title }}\n            </p>\n            <p class=\"poster-description\">\n                {{ item.film.description }}\n            </p>\n        </div>\n    </InertiaLink>\n</template>\n\n<script>\n//text-overflow: ellipsis;\nexport default {\n    name: 'RecommendedPosterSmall',\n    props: {\n        item: {\n            type: Object,\n            required: true,\n        }\n    },\n    computed: {\n        poster() {\n            return this.item.poster || this.item.film.poster;\n        }\n    }\n};\n</script>\n\n<style scoped>\n.poster-small {\n    background: #0F0F0F;\n    display: flex;\n    flex-direction: row;\n    cursor: pointer;\n}\n\n.poster-small img {\n    width: 160px;\n    margin-right: 20px;\n    object-fit: scale-down;\n}\n\n.poster-info {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    margin-right: 10px;\n}\n\n.poster-title {\n    font-weight: bold;\n    font-size: 16px;\n    margin-bottom: 10px;\n}\n\n.poster-description {\n    font-size: 14px;\n    color: #B7B7B7;\n    -webkit-line-clamp: 9;\n    display: -webkit-box;\n    line-height: 15px;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.poster-small[data-v-3478a30a] {\n    background: #0F0F0F;\n    display: flex;\n    flex-direction: row;\n    cursor: pointer;\n}\n.poster-small img[data-v-3478a30a] {\n    width: 160px;\n    margin-right: 20px;\n    -o-object-fit: scale-down;\n       object-fit: scale-down;\n}\n.poster-info[data-v-3478a30a] {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    margin-right: 10px;\n}\n.poster-title[data-v-3478a30a] {\n    font-weight: bold;\n    font-size: 16px;\n    margin-bottom: 10px;\n}\n.poster-description[data-v-3478a30a] {\n    font-size: 14px;\n    color: #B7B7B7;\n    -webkit-line-clamp: 9;\n    display: -webkit-box;\n    line-height: 15px;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/components/RecommendedPosterSmall.vue"],"names":[],"mappings":";AAuCA;IACI,mBAAmB;IACnB,aAAa;IACb,mBAAmB;IACnB,eAAe;AACnB;AAEA;IACI,YAAY;IACZ,kBAAkB;IAClB,yBAAsB;OAAtB,sBAAsB;AAC1B;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,uBAAuB;IACvB,kBAAkB;AACtB;AAEA;IACI,iBAAiB;IACjB,eAAe;IACf,mBAAmB;AACvB;AAEA;IACI,eAAe;IACf,cAAc;IACd,qBAAqB;IACrB,oBAAoB;IACpB,iBAAiB;IACjB,4BAA4B;IAC5B,gBAAgB;IAChB,uBAAuB;AAC3B","sourcesContent":["<template>\n    <InertiaLink\n        :href=\"route('film.show', item.film.id)\"\n        as=\"div\"\n        class=\"poster-small\">\n        <img\n            :src=\"poster\"\n            :alt=\"item.film.title\"\n        >\n        <div class=\"poster-info\">\n            <p class=\"poster-title\">\n                {{ item.film.title }}\n            </p>\n            <p class=\"poster-description\">\n                {{ item.film.description }}\n            </p>\n        </div>\n    </InertiaLink>\n</template>\n\n<script>\n//text-overflow: ellipsis;\nexport default {\n    name: 'RecommendedPosterSmall',\n    props: {\n        item: {\n            type: Object,\n            required: true,\n        }\n    },\n    computed: {\n        poster() {\n            return this.item.poster || this.item.film.poster;\n        }\n    }\n};\n</script>\n\n<style scoped>\n.poster-small {\n    background: #0F0F0F;\n    display: flex;\n    flex-direction: row;\n    cursor: pointer;\n}\n\n.poster-small img {\n    width: 160px;\n    margin-right: 20px;\n    object-fit: scale-down;\n}\n\n.poster-info {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    margin-right: 10px;\n}\n\n.poster-title {\n    font-weight: bold;\n    font-size: 16px;\n    margin-bottom: 10px;\n}\n\n.poster-description {\n    font-size: 14px;\n    color: #B7B7B7;\n    -webkit-line-clamp: 9;\n    display: -webkit-box;\n    line-height: 15px;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -27918,7 +28006,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\nfooter[data-v-2a04c4de] {\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n    position: relative;\n    margin-top: auto;\n    padding: 40px 0;\n    justify-content: space-around;\n}\n.footer-background[data-v-2a04c4de] {\n    position: absolute;\n    background: #0B0B0B;\n    left: -100vw;\n    width: 200vw;\n    height: 100%;\n    z-index: -1;\n    top: 0;\n}\n.footer-block[data-v-2a04c4de] {\n    display: flex;\n    flex-direction: column;\n}\n.footer-block h3[data-v-2a04c4de] {\n    font-weight: 600;\n    font-size: 16px;\n    color: white;\n}\n.footer-block ul[data-v-2a04c4de] {\n    display: flex;\n    flex-direction: column;\n    list-style-type: disc;\n    padding-left: 20px;\n}\n.footer-block li[data-v-2a04c4de] {\n    margin: 0 0 5px 0;\n}\n.footer-block a[data-v-2a04c4de] {\n    font-weight: 500;\n    font-size: 14px;\n    text-decoration: none;\n    color: #C4C4C4;\n}\n.footer-social-block[data-v-2a04c4de] {\n    display: grid;\n    grid-template-columns: repeat(2, 34px);\n    grid-template-rows: 34px;\n    gap: 5px;\n    margin-top: 10px;\n}\n.footer-social-block i[data-v-2a04c4de] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    border-radius: 3px;\n    background: #181818;\n    transition: 0.5s;\n    cursor: pointer;\n}\n.footer-social-block i[data-v-2a04c4de]:hover {\n    background: var(--main-color);\n    transition: 0.5s;\n}\n.footer-block .ti-btn[data-v-2a04c4de] {\n    margin-top: 10px;\n}\n@media (max-width: 550px) {\nfooter[data-v-2a04c4de] {\n        flex-direction: column;\n        align-items: center;\n        text-align: center;\n        padding: 20px 0;\n}\n.footer-block[data-v-2a04c4de] {\n        margin-bottom: 30px;\n}\n.footer-block ul[data-v-2a04c4de] {\n        list-style-type: none;\n        margin: 0;\n        padding: 0;\n}\n#sections[data-v-2a04c4de] {\n        display: none;\n}\n.footer-social-block[data-v-2a04c4de] {\n        justify-content: center;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./TheFooter.vue"],"names":[],"mappings":";AA0EA;IACI,aAAa;IACb,mBAAmB;IACnB,WAAW;IACX,kBAAkB;IAClB,gBAAgB;IAChB,eAAe;IACf,6BAA6B;AACjC;AAEA;IACI,kBAAkB;IAClB,mBAAmB;IACnB,YAAY;IACZ,YAAY;IACZ,YAAY;IACZ,WAAW;IACX,MAAM;AACV;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,YAAY;AAChB;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,qBAAqB;IACrB,kBAAkB;AACtB;AAEA;IACI,iBAAiB;AACrB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,qBAAqB;IACrB,cAAc;AAClB;AAEA;IACI,aAAa;IACb,sCAAsC;IACtC,wBAAwB;IACxB,QAAQ;IACR,gBAAgB;AACpB;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,uBAAuB;IACvB,kBAAkB;IAClB,mBAAmB;IACnB,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,6BAA6B;IAC7B,gBAAgB;AACpB;AAEA;IACI,gBAAgB;AACpB;AAEA;AACI;QACI,sBAAsB;QACtB,mBAAmB;QACnB,kBAAkB;QAClB,eAAe;AACnB;AAEA;QACI,mBAAmB;AACvB;AAEA;QACI,qBAAqB;QACrB,SAAS;QACT,UAAU;AACd;AAEA;QACI,aAAa;AACjB;AAEA;QACI,uBAAuB;AAC3B;AACJ","sourcesContent":["<template>\n    <footer>\n        <div class=\"footer-background\"/>\n        <div\n            id=\"sections\"\n            class=\"footer-block\"\n        >\n            <h3>Разделы</h3>\n            <ul>\n                <li>\n                    <InertiaLink :href=\"route('home')\">\n                        Главная\n                    </InertiaLink>\n                </li>\n                <li>\n                    <InertiaLink :href=\"route('films', {type: 'Фильм'})\">\n                        Фильмы\n                    </InertiaLink>\n                </li>\n                <li>\n                    <InertiaLink :href=\"route('films', {type: 'Сериал'})\">\n                        Сериалы\n                    </InertiaLink>\n                </li>\n            </ul>\n        </div>\n        <div class=\"footer-block\">\n            <h3>Пользователям и партнёрам</h3>\n            <ul>\n                <li>\n                    <InertiaLink :href=\"route('partners')\">\n                        Сотрудничество\n                    </InertiaLink>\n                </li><li>\n                    <InertiaLink :href=\"route('about-us')\">\n                        О проекте\n                    </InertiaLink>\n                </li>\n                <li>\n                    <InertiaLink :href=\"route('privacy')\">\n                        Политика конфиденциальности\n                    </InertiaLink>\n                </li>\n                <li>\n                    <InertiaLink :href=\"route('copy-right')\">\n                        Для правообладателей\n                    </InertiaLink>\n                </li>\n            </ul>\n        </div>\n        <div class=\"footer-block\">\n            <h3>Мы в социальных сетях</h3>\n            <div class=\"footer-social-block\">\n                <i class=\"fab fa-vk\"/>\n                <i class=\"fab fa-telegram\"/>\n            </div>\n        </div>\n        <div class=\"footer-block\">\n            <h3>Поддержка</h3>\n            <BaseButton>Написать в чате</BaseButton>\n        </div>\n    </footer>\n</template>\n\n<script>\nimport BaseButton from './BaseButton';\n\nexport default {\n    name: 'TheFooter',\n    components: {BaseButton}\n};\n</script>\n\n<style scoped>\nfooter {\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n    position: relative;\n    margin-top: auto;\n    padding: 40px 0;\n    justify-content: space-around;\n}\n\n.footer-background {\n    position: absolute;\n    background: #0B0B0B;\n    left: -100vw;\n    width: 200vw;\n    height: 100%;\n    z-index: -1;\n    top: 0;\n}\n\n.footer-block {\n    display: flex;\n    flex-direction: column;\n}\n\n.footer-block h3 {\n    font-weight: 600;\n    font-size: 16px;\n    color: white;\n}\n\n.footer-block ul {\n    display: flex;\n    flex-direction: column;\n    list-style-type: disc;\n    padding-left: 20px;\n}\n\n.footer-block li {\n    margin: 0 0 5px 0;\n}\n\n.footer-block a {\n    font-weight: 500;\n    font-size: 14px;\n    text-decoration: none;\n    color: #C4C4C4;\n}\n\n.footer-social-block {\n    display: grid;\n    grid-template-columns: repeat(2, 34px);\n    grid-template-rows: 34px;\n    gap: 5px;\n    margin-top: 10px;\n}\n\n.footer-social-block i {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    border-radius: 3px;\n    background: #181818;\n    transition: 0.5s;\n    cursor: pointer;\n}\n\n.footer-social-block i:hover {\n    background: var(--main-color);\n    transition: 0.5s;\n}\n\n.footer-block .ti-btn {\n    margin-top: 10px;\n}\n\n@media (max-width: 550px) {\n    footer {\n        flex-direction: column;\n        align-items: center;\n        text-align: center;\n        padding: 20px 0;\n    }\n\n    .footer-block {\n        margin-bottom: 30px;\n    }\n\n    .footer-block ul {\n        list-style-type: none;\n        margin: 0;\n        padding: 0;\n    }\n\n    #sections {\n        display: none;\n    }\n\n    .footer-social-block {\n        justify-content: center;\n    }\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\nfooter[data-v-2a04c4de] {\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n    position: relative;\n    margin-top: auto;\n    padding: 40px 0;\n    justify-content: space-around;\n}\n.footer-background[data-v-2a04c4de] {\n    position: absolute;\n    background: #0B0B0B;\n    left: -100vw;\n    width: 200vw;\n    height: 100%;\n    z-index: -1;\n    top: 0;\n}\n.footer-block[data-v-2a04c4de] {\n    display: flex;\n    flex-direction: column;\n}\n.footer-block h3[data-v-2a04c4de] {\n    font-weight: 600;\n    font-size: 16px;\n    color: white;\n}\n.footer-block ul[data-v-2a04c4de] {\n    display: flex;\n    flex-direction: column;\n    list-style-type: disc;\n    padding-left: 20px;\n}\n.footer-block li[data-v-2a04c4de] {\n    margin: 0 0 5px 0;\n}\n.footer-block a[data-v-2a04c4de] {\n    font-weight: 500;\n    font-size: 14px;\n    text-decoration: none;\n    color: #C4C4C4;\n}\n.footer-social-block[data-v-2a04c4de] {\n    display: grid;\n    grid-template-columns: repeat(2, 34px);\n    grid-template-rows: 34px;\n    gap: 5px;\n    margin-top: 10px;\n}\n.footer-social-block i[data-v-2a04c4de] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    border-radius: 3px;\n    background: #181818;\n    transition: 0.5s;\n    cursor: pointer;\n}\n.footer-social-block i[data-v-2a04c4de]:hover {\n    background: var(--main-color);\n    transition: 0.5s;\n}\n.footer-block .ti-btn[data-v-2a04c4de] {\n    margin-top: 10px;\n}\n@media (max-width: 550px) {\nfooter[data-v-2a04c4de] {\n        flex-direction: column;\n        align-items: center;\n        text-align: center;\n        padding: 20px 0;\n}\n.footer-block[data-v-2a04c4de] {\n        margin-bottom: 30px;\n}\n.footer-block ul[data-v-2a04c4de] {\n        list-style-type: none;\n        margin: 0;\n        padding: 0;\n}\n#sections[data-v-2a04c4de] {\n        display: none;\n}\n.footer-social-block[data-v-2a04c4de] {\n        justify-content: center;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/components/TheFooter.vue"],"names":[],"mappings":";AA0EA;IACI,aAAa;IACb,mBAAmB;IACnB,WAAW;IACX,kBAAkB;IAClB,gBAAgB;IAChB,eAAe;IACf,6BAA6B;AACjC;AAEA;IACI,kBAAkB;IAClB,mBAAmB;IACnB,YAAY;IACZ,YAAY;IACZ,YAAY;IACZ,WAAW;IACX,MAAM;AACV;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,YAAY;AAChB;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,qBAAqB;IACrB,kBAAkB;AACtB;AAEA;IACI,iBAAiB;AACrB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,qBAAqB;IACrB,cAAc;AAClB;AAEA;IACI,aAAa;IACb,sCAAsC;IACtC,wBAAwB;IACxB,QAAQ;IACR,gBAAgB;AACpB;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,uBAAuB;IACvB,kBAAkB;IAClB,mBAAmB;IACnB,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,6BAA6B;IAC7B,gBAAgB;AACpB;AAEA;IACI,gBAAgB;AACpB;AAEA;AACI;QACI,sBAAsB;QACtB,mBAAmB;QACnB,kBAAkB;QAClB,eAAe;AACnB;AAEA;QACI,mBAAmB;AACvB;AAEA;QACI,qBAAqB;QACrB,SAAS;QACT,UAAU;AACd;AAEA;QACI,aAAa;AACjB;AAEA;QACI,uBAAuB;AAC3B;AACJ","sourcesContent":["<template>\n    <footer>\n        <div class=\"footer-background\"/>\n        <div\n            id=\"sections\"\n            class=\"footer-block\"\n        >\n            <h3>Разделы</h3>\n            <ul>\n                <li>\n                    <InertiaLink :href=\"route('home')\">\n                        Главная\n                    </InertiaLink>\n                </li>\n                <li>\n                    <InertiaLink :href=\"route('films', {type: 'Фильм'})\">\n                        Фильмы\n                    </InertiaLink>\n                </li>\n                <li>\n                    <InertiaLink :href=\"route('films', {type: 'Сериал'})\">\n                        Сериалы\n                    </InertiaLink>\n                </li>\n            </ul>\n        </div>\n        <div class=\"footer-block\">\n            <h3>Пользователям и партнёрам</h3>\n            <ul>\n                <li>\n                    <InertiaLink :href=\"route('partners')\">\n                        Сотрудничество\n                    </InertiaLink>\n                </li><li>\n                    <InertiaLink :href=\"route('about-us')\">\n                        О проекте\n                    </InertiaLink>\n                </li>\n                <li>\n                    <InertiaLink :href=\"route('privacy')\">\n                        Политика конфиденциальности\n                    </InertiaLink>\n                </li>\n                <li>\n                    <InertiaLink :href=\"route('copy-right')\">\n                        Для правообладателей\n                    </InertiaLink>\n                </li>\n            </ul>\n        </div>\n        <div class=\"footer-block\">\n            <h3>Мы в социальных сетях</h3>\n            <div class=\"footer-social-block\">\n                <i class=\"fab fa-vk\"/>\n                <i class=\"fab fa-telegram\"/>\n            </div>\n        </div>\n        <div class=\"footer-block\">\n            <h3>Поддержка</h3>\n            <BaseButton>Написать в чате</BaseButton>\n        </div>\n    </footer>\n</template>\n\n<script>\nimport BaseButton from './BaseButton';\n\nexport default {\n    name: 'TheFooter',\n    components: {BaseButton}\n};\n</script>\n\n<style scoped>\nfooter {\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n    position: relative;\n    margin-top: auto;\n    padding: 40px 0;\n    justify-content: space-around;\n}\n\n.footer-background {\n    position: absolute;\n    background: #0B0B0B;\n    left: -100vw;\n    width: 200vw;\n    height: 100%;\n    z-index: -1;\n    top: 0;\n}\n\n.footer-block {\n    display: flex;\n    flex-direction: column;\n}\n\n.footer-block h3 {\n    font-weight: 600;\n    font-size: 16px;\n    color: white;\n}\n\n.footer-block ul {\n    display: flex;\n    flex-direction: column;\n    list-style-type: disc;\n    padding-left: 20px;\n}\n\n.footer-block li {\n    margin: 0 0 5px 0;\n}\n\n.footer-block a {\n    font-weight: 500;\n    font-size: 14px;\n    text-decoration: none;\n    color: #C4C4C4;\n}\n\n.footer-social-block {\n    display: grid;\n    grid-template-columns: repeat(2, 34px);\n    grid-template-rows: 34px;\n    gap: 5px;\n    margin-top: 10px;\n}\n\n.footer-social-block i {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    border-radius: 3px;\n    background: #181818;\n    transition: 0.5s;\n    cursor: pointer;\n}\n\n.footer-social-block i:hover {\n    background: var(--main-color);\n    transition: 0.5s;\n}\n\n.footer-block .ti-btn {\n    margin-top: 10px;\n}\n\n@media (max-width: 550px) {\n    footer {\n        flex-direction: column;\n        align-items: center;\n        text-align: center;\n        padding: 20px 0;\n    }\n\n    .footer-block {\n        margin-bottom: 30px;\n    }\n\n    .footer-block ul {\n        list-style-type: none;\n        margin: 0;\n        padding: 0;\n    }\n\n    #sections {\n        display: none;\n    }\n\n    .footer-social-block {\n        justify-content: center;\n    }\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -27945,7 +28033,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.header[data-v-0c300183] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    width: 100%;\n    height: 55px;\n    z-index: 50;\n    background: var(--background);\n    margin-top: 5px;\n    position: relative;\n    margin-bottom: 10px;\n}\n.header-title[data-v-0c300183] {\n    font-weight: bold;\n    font-size: 32px;\n    margin-right: 14px;\n    cursor: pointer;\n    position: relative;\n}\n.header-title span[data-v-0c300183] {\n    color: var(--main-color);\n}\n.search-bar[data-v-0c300183] {\n    flex: 1;\n    display: flex;\n    flex-direction: row;\n    height: 38px;\n    margin: 0 16px 0 30px;\n    position: relative;\n    z-index: 100;\n}\n.search-bar input[data-v-0c300183] {\n    width: 100%;\n    border-radius: 5px 0 0 5px;\n    padding: 2px 15px 0 15px;\n    outline: none;\n    border: none;\n    font-size: 14px;\n    color: black;\n}\n.search-bar button[data-v-0c300183] {\n    background: #181818;\n    border-radius: 0 5px 5px 0;\n    width: 32px;\n}\n.ti-btn[data-v-0c300183] {\n    height: 38px;\n    font-size: 14px;\n}\n.search-bar-body[data-v-0c300183] {\n    position: absolute;\n    left: 0;\n    width: 100%;\n    top: 50px;\n    display: flex;\n    flex-direction: column;\n    background: var(--background);\n    padding: 10px;\n}\n.search-bar-item[data-v-0c300183] {\n    height: 60px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 10px;\n    cursor: pointer;\n    transition: 0.5s;\n}\n.search-bar-item *[data-v-0c300183] {\n    font-family: 'Montserrat', sans-serif;\n}\n.search-bar-item:hover p[data-v-0c300183], .search-bar-item:hover span[data-v-0c300183] {\n    color: var(--main-color);\n    transition: 0.5s;\n}\n.search-bar-item img[data-v-0c300183] {\n    height: 100%;\n    width: auto;\n    margin-right: 10px;\n    border-radius: 5px;\n}\n.orig-title[data-v-0c300183] {\n    font-size: 12px;\n}\n.search-bar-background[data-v-0c300183] {\n    position: fixed;\n    left: 0;\n    top: 0;\n    width: 100vw;\n    height: 100vh;\n}\n.loading-animation[data-v-0c300183] {\n    margin: 0 auto;\n}\n.beta[data-v-0c300183] {\n    font-size: 12px;\n    color: white !important;\n    margin-bottom: auto;\n    position: absolute;\n    top: 0;\n    right: 0;\n    border-radius: 3px;\n}\n@media (max-width: 550px) {\nheader[data-v-0c300183] {\n        padding: 10px 20px;\n}\n.section[data-v-0c300183], .search-bar[data-v-0c300183], header .ti-btn[data-v-0c300183] {\n        display: none;\n}\nh1[data-v-0c300183] {\n        margin: 0 auto;\n}\n.header-title[data-v-0c300183] {\n        margin: 0 auto;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./TheHeader.vue"],"names":[],"mappings":";AAwGA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,WAAW;IACX,YAAY;IACZ,WAAW;IACX,6BAA6B;IAC7B,eAAe;IACf,kBAAkB;IAClB,mBAAmB;AACvB;AAEA;IACI,iBAAiB;IACjB,eAAe;IACf,kBAAkB;IAClB,eAAe;IACf,kBAAkB;AACtB;AAEA;IACI,wBAAwB;AAC5B;AAEA;IACI,OAAO;IACP,aAAa;IACb,mBAAmB;IACnB,YAAY;IACZ,qBAAqB;IACrB,kBAAkB;IAClB,YAAY;AAChB;AAEA;IACI,WAAW;IACX,0BAA0B;IAC1B,wBAAwB;IACxB,aAAa;IACb,YAAY;IACZ,eAAe;IACf,YAAY;AAChB;AAEA;IACI,mBAAmB;IACnB,0BAA0B;IAC1B,WAAW;AACf;AAEA;IACI,YAAY;IACZ,eAAe;AACnB;AAEA;IACI,kBAAkB;IAClB,OAAO;IACP,WAAW;IACX,SAAS;IACT,aAAa;IACb,sBAAsB;IACtB,6BAA6B;IAC7B,aAAa;AACjB;AAEA;IACI,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,mBAAmB;IACnB,eAAe;IACf,gBAAgB;AACpB;AAEA;IACI,qCAAqC;AACzC;AAEA;IACI,wBAAwB;IACxB,gBAAgB;AACpB;AAEA;IACI,YAAY;IACZ,WAAW;IACX,kBAAkB;IAClB,kBAAkB;AACtB;AAEA;IACI,eAAe;AACnB;AAEA;IACI,eAAe;IACf,OAAO;IACP,MAAM;IACN,YAAY;IACZ,aAAa;AACjB;AAGA;IACI,cAAc;AAClB;AAEA;IACI,eAAe;IACf,uBAAuB;IACvB,mBAAmB;IACnB,kBAAkB;IAClB,MAAM;IACN,QAAQ;IACR,kBAAkB;AACtB;AAEA;AACI;QACI,kBAAkB;AACtB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,cAAc;AAClB;AAEA;QACI,cAAc;AAClB;AACJ","sourcesContent":["<template>\n    <header class=\"header\">\n        <MobileBurger/>\n        <MobileSearch/>\n\n        <InertiaLink\n            class=\"header-title\"\n            as=\"h1\"\n            :href=\"route('home')\"\n        >\n            Anime<span>Zero</span><span class=\"beta\">BETA</span>\n        </InertiaLink>\n\n        <TheHeaderNav/>\n\n        <div class=\"search-bar\">\n            <div\n                v-if=\"search.open\"\n                class=\"search-bar-background\"\n                @click.self=\"closeSearchBar\"\n            />\n\n            <input\n                v-model=\"search.query\"\n                type=\"text\"\n                placeholder=\"Популярные новинки\"\n                @input=\"searchFilmDebounce\"\n            >\n\n            <button @click=\"searchFilm\">\n                <i class=\"fas fa-search\"/>\n            </button>\n\n            <div\n                v-if=\"search.open\"\n                class=\"search-bar-body\"\n            >\n                <LoadingAnimation\n                    v-if=\"search.loading\"\n                    class=\"loading-animation\"\n                />\n                <InertiaLink\n                    v-for=\"film in search.response\"\n                    v-else\n                    :key=\"film.id\"\n                    class=\"search-bar-item\"\n                    :href=\"route('film.show', film.id)\"\n                    as=\"div\"\n                >\n                    <img\n                        :src=\"film.poster\"\n                        :alt=\"film.title\"\n                    >\n                    <p>\n                        {{ film.title }} <span v-if=\"film.year\">({{ film.year }})</span><br>\n                        <span class=\"orig-title\">{{ film.title_orig }}</span>\n                    </p>\n                </InertiaLink>\n            </div>\n        </div>\n        <BaseButton\n            v-if=\"user && $page.url === '/user'\"\n            @click=\"$inertia.visit(route('user.logout'))\"\n        >\n            <i class=\"fal fa-sign-out\"/>Выход\n        </BaseButton>\n        <BaseButton\n            v-else-if=\"user\"\n            @click=\"$inertia.visit(route('user.account'))\"\n        >\n            <i class=\"fal fa-user\"/> Личный кабинет\n        </BaseButton>\n        <BaseButton\n            v-else\n            @click=\"$root.openModal\"\n        >\n            <i class=\"fal fa-sign-out\"/>Вход\n        </BaseButton>\n        <AuthModal/>\n    </header>\n</template>\n\n<script>\nimport AuthModal from './AuthModal';\nimport MobileBurger from './MobileBurger';\nimport MobileSearch from './MobileSearch';\nimport searchFilmMixin from '../mixins/SearchFilmMixin';\nimport LoadingAnimation from '../components/LoadingAnimation';\nimport TheHeaderNav from './TheHeaderNav';\n\nexport default {\n    name: 'TheHeader',\n    components: {TheHeaderNav, MobileSearch, MobileBurger, AuthModal, LoadingAnimation},\n    mixins: [searchFilmMixin],\n    computed: {\n        user() {\n            return this.$page.props.user;\n        }\n    }\n};\n</script>\n\n<style scoped>\n\n.header {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    width: 100%;\n    height: 55px;\n    z-index: 50;\n    background: var(--background);\n    margin-top: 5px;\n    position: relative;\n    margin-bottom: 10px;\n}\n\n.header-title {\n    font-weight: bold;\n    font-size: 32px;\n    margin-right: 14px;\n    cursor: pointer;\n    position: relative;\n}\n\n.header-title span {\n    color: var(--main-color);\n}\n\n.search-bar {\n    flex: 1;\n    display: flex;\n    flex-direction: row;\n    height: 38px;\n    margin: 0 16px 0 30px;\n    position: relative;\n    z-index: 100;\n}\n\n.search-bar input {\n    width: 100%;\n    border-radius: 5px 0 0 5px;\n    padding: 2px 15px 0 15px;\n    outline: none;\n    border: none;\n    font-size: 14px;\n    color: black;\n}\n\n.search-bar button {\n    background: #181818;\n    border-radius: 0 5px 5px 0;\n    width: 32px;\n}\n\n.ti-btn {\n    height: 38px;\n    font-size: 14px;\n}\n\n.search-bar-body {\n    position: absolute;\n    left: 0;\n    width: 100%;\n    top: 50px;\n    display: flex;\n    flex-direction: column;\n    background: var(--background);\n    padding: 10px;\n}\n\n.search-bar-item {\n    height: 60px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 10px;\n    cursor: pointer;\n    transition: 0.5s;\n}\n\n.search-bar-item * {\n    font-family: 'Montserrat', sans-serif;\n}\n\n.search-bar-item:hover p, .search-bar-item:hover span {\n    color: var(--main-color);\n    transition: 0.5s;\n}\n\n.search-bar-item img {\n    height: 100%;\n    width: auto;\n    margin-right: 10px;\n    border-radius: 5px;\n}\n\n.orig-title {\n    font-size: 12px;\n}\n\n.search-bar-background {\n    position: fixed;\n    left: 0;\n    top: 0;\n    width: 100vw;\n    height: 100vh;\n}\n\n\n.loading-animation {\n    margin: 0 auto;\n}\n\n.beta {\n    font-size: 12px;\n    color: white !important;\n    margin-bottom: auto;\n    position: absolute;\n    top: 0;\n    right: 0;\n    border-radius: 3px;\n}\n\n@media (max-width: 550px) {\n    header {\n        padding: 10px 20px;\n    }\n\n    .section, .search-bar, header .ti-btn {\n        display: none;\n    }\n\n    h1 {\n        margin: 0 auto;\n    }\n\n    .header-title {\n        margin: 0 auto;\n    }\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.header[data-v-0c300183] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    width: 100%;\n    height: 55px;\n    z-index: 50;\n    background: var(--background);\n    margin-top: 5px;\n    position: relative;\n    margin-bottom: 10px;\n}\n.header-title[data-v-0c300183] {\n    font-weight: bold;\n    font-size: 32px;\n    margin-right: 14px;\n    cursor: pointer;\n    position: relative;\n}\n.header-title span[data-v-0c300183] {\n    color: var(--main-color);\n}\n.search-bar[data-v-0c300183] {\n    flex: 1;\n    display: flex;\n    flex-direction: row;\n    height: 38px;\n    margin: 0 16px 0 30px;\n    position: relative;\n    z-index: 100;\n}\n.search-bar input[data-v-0c300183] {\n    width: 100%;\n    border-radius: 5px 0 0 5px;\n    padding: 2px 15px 0 15px;\n    outline: none;\n    border: none;\n    font-size: 14px;\n    color: black;\n}\n.search-bar button[data-v-0c300183] {\n    background: #181818;\n    border-radius: 0 5px 5px 0;\n    width: 32px;\n}\n.ti-btn[data-v-0c300183] {\n    height: 38px;\n    font-size: 14px;\n}\n.search-bar-body[data-v-0c300183] {\n    position: absolute;\n    left: 0;\n    width: 100%;\n    top: 50px;\n    display: flex;\n    flex-direction: column;\n    background: var(--background);\n    padding: 10px;\n}\n.search-bar-item[data-v-0c300183] {\n    height: 60px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 10px;\n    cursor: pointer;\n    transition: 0.5s;\n}\n.search-bar-item *[data-v-0c300183] {\n    font-family: 'Montserrat', sans-serif;\n}\n.search-bar-item:hover p[data-v-0c300183], .search-bar-item:hover span[data-v-0c300183] {\n    color: var(--main-color);\n    transition: 0.5s;\n}\n.search-bar-item img[data-v-0c300183] {\n    height: 100%;\n    width: auto;\n    margin-right: 10px;\n    border-radius: 5px;\n}\n.orig-title[data-v-0c300183] {\n    font-size: 12px;\n}\n.search-bar-background[data-v-0c300183] {\n    position: fixed;\n    left: 0;\n    top: 0;\n    width: 100vw;\n    height: 100vh;\n}\n.loading-animation[data-v-0c300183] {\n    margin: 0 auto;\n}\n.beta[data-v-0c300183] {\n    font-size: 12px;\n    color: white !important;\n    margin-bottom: auto;\n    position: absolute;\n    top: 0;\n    right: 0;\n    border-radius: 3px;\n}\n@media (max-width: 550px) {\nheader[data-v-0c300183] {\n        padding: 10px 20px;\n}\n.section[data-v-0c300183], .search-bar[data-v-0c300183], header .ti-btn[data-v-0c300183] {\n        display: none;\n}\nh1[data-v-0c300183] {\n        margin: 0 auto;\n}\n.header-title[data-v-0c300183] {\n        margin: 0 auto;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/components/TheHeader.vue"],"names":[],"mappings":";AAwGA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,WAAW;IACX,YAAY;IACZ,WAAW;IACX,6BAA6B;IAC7B,eAAe;IACf,kBAAkB;IAClB,mBAAmB;AACvB;AAEA;IACI,iBAAiB;IACjB,eAAe;IACf,kBAAkB;IAClB,eAAe;IACf,kBAAkB;AACtB;AAEA;IACI,wBAAwB;AAC5B;AAEA;IACI,OAAO;IACP,aAAa;IACb,mBAAmB;IACnB,YAAY;IACZ,qBAAqB;IACrB,kBAAkB;IAClB,YAAY;AAChB;AAEA;IACI,WAAW;IACX,0BAA0B;IAC1B,wBAAwB;IACxB,aAAa;IACb,YAAY;IACZ,eAAe;IACf,YAAY;AAChB;AAEA;IACI,mBAAmB;IACnB,0BAA0B;IAC1B,WAAW;AACf;AAEA;IACI,YAAY;IACZ,eAAe;AACnB;AAEA;IACI,kBAAkB;IAClB,OAAO;IACP,WAAW;IACX,SAAS;IACT,aAAa;IACb,sBAAsB;IACtB,6BAA6B;IAC7B,aAAa;AACjB;AAEA;IACI,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,mBAAmB;IACnB,eAAe;IACf,gBAAgB;AACpB;AAEA;IACI,qCAAqC;AACzC;AAEA;IACI,wBAAwB;IACxB,gBAAgB;AACpB;AAEA;IACI,YAAY;IACZ,WAAW;IACX,kBAAkB;IAClB,kBAAkB;AACtB;AAEA;IACI,eAAe;AACnB;AAEA;IACI,eAAe;IACf,OAAO;IACP,MAAM;IACN,YAAY;IACZ,aAAa;AACjB;AAGA;IACI,cAAc;AAClB;AAEA;IACI,eAAe;IACf,uBAAuB;IACvB,mBAAmB;IACnB,kBAAkB;IAClB,MAAM;IACN,QAAQ;IACR,kBAAkB;AACtB;AAEA;AACI;QACI,kBAAkB;AACtB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,cAAc;AAClB;AAEA;QACI,cAAc;AAClB;AACJ","sourcesContent":["<template>\n    <header class=\"header\">\n        <MobileBurger/>\n        <MobileSearch/>\n\n        <InertiaLink\n            class=\"header-title\"\n            as=\"h1\"\n            :href=\"route('home')\"\n        >\n            Anime<span>Zero</span><span class=\"beta\">BETA</span>\n        </InertiaLink>\n\n        <TheHeaderNav/>\n\n        <div class=\"search-bar\">\n            <div\n                v-if=\"search.open\"\n                class=\"search-bar-background\"\n                @click.self=\"closeSearchBar\"\n            />\n\n            <input\n                v-model=\"search.query\"\n                type=\"text\"\n                placeholder=\"Популярные новинки\"\n                @input=\"searchFilmDebounce\"\n            >\n\n            <button @click=\"searchFilm\">\n                <i class=\"fas fa-search\"/>\n            </button>\n\n            <div\n                v-if=\"search.open\"\n                class=\"search-bar-body\"\n            >\n                <LoadingAnimation\n                    v-if=\"search.loading\"\n                    class=\"loading-animation\"\n                />\n                <InertiaLink\n                    v-for=\"film in search.response\"\n                    v-else\n                    :key=\"film.id\"\n                    class=\"search-bar-item\"\n                    :href=\"route('film.show', film.id)\"\n                    as=\"div\"\n                >\n                    <img\n                        :src=\"film.poster\"\n                        :alt=\"film.title\"\n                    >\n                    <p>\n                        {{ film.title }} <span v-if=\"film.year\">({{ film.year }})</span><br>\n                        <span class=\"orig-title\">{{ film.title_orig }}</span>\n                    </p>\n                </InertiaLink>\n            </div>\n        </div>\n        <BaseButton\n            v-if=\"user && $page.url === '/user'\"\n            @click=\"$inertia.visit(route('user.logout'))\"\n        >\n            <i class=\"fal fa-sign-out\"/>Выход\n        </BaseButton>\n        <BaseButton\n            v-else-if=\"user\"\n            @click=\"$inertia.visit(route('user.account'))\"\n        >\n            <i class=\"fal fa-user\"/> Личный кабинет\n        </BaseButton>\n        <BaseButton\n            v-else\n            @click=\"$root.openModal\"\n        >\n            <i class=\"fal fa-sign-out\"/>Вход\n        </BaseButton>\n        <AuthModal/>\n    </header>\n</template>\n\n<script>\nimport AuthModal from './AuthModal';\nimport MobileBurger from './MobileBurger';\nimport MobileSearch from './MobileSearch';\nimport searchFilmMixin from '../mixins/SearchFilmMixin';\nimport LoadingAnimation from '../components/LoadingAnimation';\nimport TheHeaderNav from './TheHeaderNav';\n\nexport default {\n    name: 'TheHeader',\n    components: {TheHeaderNav, MobileSearch, MobileBurger, AuthModal, LoadingAnimation},\n    mixins: [searchFilmMixin],\n    computed: {\n        user() {\n            return this.$page.props.user;\n        }\n    }\n};\n</script>\n\n<style scoped>\n\n.header {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    width: 100%;\n    height: 55px;\n    z-index: 50;\n    background: var(--background);\n    margin-top: 5px;\n    position: relative;\n    margin-bottom: 10px;\n}\n\n.header-title {\n    font-weight: bold;\n    font-size: 32px;\n    margin-right: 14px;\n    cursor: pointer;\n    position: relative;\n}\n\n.header-title span {\n    color: var(--main-color);\n}\n\n.search-bar {\n    flex: 1;\n    display: flex;\n    flex-direction: row;\n    height: 38px;\n    margin: 0 16px 0 30px;\n    position: relative;\n    z-index: 100;\n}\n\n.search-bar input {\n    width: 100%;\n    border-radius: 5px 0 0 5px;\n    padding: 2px 15px 0 15px;\n    outline: none;\n    border: none;\n    font-size: 14px;\n    color: black;\n}\n\n.search-bar button {\n    background: #181818;\n    border-radius: 0 5px 5px 0;\n    width: 32px;\n}\n\n.ti-btn {\n    height: 38px;\n    font-size: 14px;\n}\n\n.search-bar-body {\n    position: absolute;\n    left: 0;\n    width: 100%;\n    top: 50px;\n    display: flex;\n    flex-direction: column;\n    background: var(--background);\n    padding: 10px;\n}\n\n.search-bar-item {\n    height: 60px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 10px;\n    cursor: pointer;\n    transition: 0.5s;\n}\n\n.search-bar-item * {\n    font-family: 'Montserrat', sans-serif;\n}\n\n.search-bar-item:hover p, .search-bar-item:hover span {\n    color: var(--main-color);\n    transition: 0.5s;\n}\n\n.search-bar-item img {\n    height: 100%;\n    width: auto;\n    margin-right: 10px;\n    border-radius: 5px;\n}\n\n.orig-title {\n    font-size: 12px;\n}\n\n.search-bar-background {\n    position: fixed;\n    left: 0;\n    top: 0;\n    width: 100vw;\n    height: 100vh;\n}\n\n\n.loading-animation {\n    margin: 0 auto;\n}\n\n.beta {\n    font-size: 12px;\n    color: white !important;\n    margin-bottom: auto;\n    position: absolute;\n    top: 0;\n    right: 0;\n    border-radius: 3px;\n}\n\n@media (max-width: 550px) {\n    header {\n        padding: 10px 20px;\n    }\n\n    .section, .search-bar, header .ti-btn {\n        display: none;\n    }\n\n    h1 {\n        margin: 0 auto;\n    }\n\n    .header-title {\n        margin: 0 auto;\n    }\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -27999,7 +28087,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.aboutus-block[data-v-94f6977e] {\n    display: flex;\n    flex-direction: column;\n}\n.aboutus-block h4[data-v-94f6977e] {\n    font-weight: 500;\n    font-size: 32px;\n    line-height: 38px;\n    margin-bottom: 19px;\n}\n.aboutus-block p[data-v-94f6977e] {\n    font-weight: 500;\n    font-size: 18px;\n    line-height: 21px;\n}\n.footer-page-title[data-v-94f6977e] {\n    font-weight: 400;\n    font-size: 32px;\n    line-height: 38px;\n}\n\n", "",{"version":3,"sources":["webpack://./AboutUsPage.vue"],"names":[],"mappings":";AAmCA;IACI,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,iBAAiB;AACrB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,iBAAiB;AACrB","sourcesContent":["<template>\n    <div class=\"footer-page-container\">\n        <div class=\"footer-page-head\">\n            <h3>Anime Zero</h3>\n            <p>/ О проекте</p>\n        </div>\n        <h2 class=\"footer-page-title\">\n            О Нас\n        </h2>\n        <p class=\"footer-page-subtitle\">\n            AnimeZero - один из самых крупнейших онлайн-кинотеатров в России, посвященных аниме. Мы успешно работаем с\n            2021 года.\n        </p>\n        <div class=\"aboutus-body\">\n            <div class=\"aboutus-block\">\n                <h4 class=\"aboutus-block-title\">\n                    Огромный выбор фильмов и сериалов\n                </h4>\n                <p>\n                    В нашем каталоге вы найдете огромную коллекцию аниме фильмов и сериалов с большим выбором озвучки и\n                    хорошим качеством воспроизведения. Для вас мы ежедневно работаем над улучшением нашего сервиса,\n                    чтобы принести в каждый дом уютную атмосферу и удобный просмотр аниме.\n                </p>\n            </div>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'AboutUsPage'\n};\n</script>\n\n<style scoped>\n.aboutus-block {\n    display: flex;\n    flex-direction: column;\n}\n\n.aboutus-block h4 {\n    font-weight: 500;\n    font-size: 32px;\n    line-height: 38px;\n    margin-bottom: 19px;\n}\n\n.aboutus-block p {\n    font-weight: 500;\n    font-size: 18px;\n    line-height: 21px;\n}\n\n.footer-page-title {\n    font-weight: 400;\n    font-size: 32px;\n    line-height: 38px;\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.aboutus-block[data-v-94f6977e] {\n    display: flex;\n    flex-direction: column;\n}\n.aboutus-block h4[data-v-94f6977e] {\n    font-weight: 500;\n    font-size: 32px;\n    line-height: 38px;\n    margin-bottom: 19px;\n}\n.aboutus-block p[data-v-94f6977e] {\n    font-weight: 500;\n    font-size: 18px;\n    line-height: 21px;\n}\n.footer-page-title[data-v-94f6977e] {\n    font-weight: 400;\n    font-size: 32px;\n    line-height: 38px;\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/pages/AboutUsPage.vue"],"names":[],"mappings":";AAmCA;IACI,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,iBAAiB;AACrB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,iBAAiB;AACrB","sourcesContent":["<template>\n    <div class=\"footer-page-container\">\n        <div class=\"footer-page-head\">\n            <h3>Anime Zero</h3>\n            <p>/ О проекте</p>\n        </div>\n        <h2 class=\"footer-page-title\">\n            О Нас\n        </h2>\n        <p class=\"footer-page-subtitle\">\n            AnimeZero - один из самых крупнейших онлайн-кинотеатров в России, посвященных аниме. Мы успешно работаем с\n            2021 года.\n        </p>\n        <div class=\"aboutus-body\">\n            <div class=\"aboutus-block\">\n                <h4 class=\"aboutus-block-title\">\n                    Огромный выбор фильмов и сериалов\n                </h4>\n                <p>\n                    В нашем каталоге вы найдете огромную коллекцию аниме фильмов и сериалов с большим выбором озвучки и\n                    хорошим качеством воспроизведения. Для вас мы ежедневно работаем над улучшением нашего сервиса,\n                    чтобы принести в каждый дом уютную атмосферу и удобный просмотр аниме.\n                </p>\n            </div>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'AboutUsPage'\n};\n</script>\n\n<style scoped>\n.aboutus-block {\n    display: flex;\n    flex-direction: column;\n}\n\n.aboutus-block h4 {\n    font-weight: 500;\n    font-size: 32px;\n    line-height: 38px;\n    margin-bottom: 19px;\n}\n\n.aboutus-block p {\n    font-weight: 500;\n    font-size: 18px;\n    line-height: 21px;\n}\n\n.footer-page-title {\n    font-weight: 400;\n    font-size: 32px;\n    line-height: 38px;\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -28053,7 +28141,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.copyright-head[data-v-3fb14d3d] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-top: 100px;\n    margin-bottom: 26px;\n}\n.copyright-head h3[data-v-3fb14d3d] {\n    font-weight: 700;\n    font-size: 19px;\n    border-bottom: 2px solid var(--main-color);\n    margin-right: 5px;\n}\n.copyright-head p[data-v-3fb14d3d] {\n    color: #808080;\n    font-weight: 500;\n    font-size: 16px;\n}\n.copyright-title[data-v-3fb14d3d] {\n    font-weight: 500;\n    font-size: 32px;\n    margin-bottom: 20px;\n}\n.copyright-subtitle[data-v-3fb14d3d] {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 20px;\n}\n.copyright-body p[data-v-3fb14d3d] {\n    margin-bottom: 10px;\n}\n.copyright-body ul[data-v-3fb14d3d] {\n    list-style-type: disc;\n    max-width: none;\n    margin: 10px 0 10px 40px;\n}\n.copyright-body li[data-v-3fb14d3d] {\n    margin: 0;\n}\n.copyright-body a[data-v-3fb14d3d] {\n    color: var(--main-color);\n    text-decoration: none;\n    font-weight: 600;\n}\n\n", "",{"version":3,"sources":["webpack://./CopyrightPage.vue"],"names":[],"mappings":";AA0DA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,0CAA0C;IAC1C,iBAAiB;AACrB;AAEA;IACI,cAAc;IACd,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,mBAAmB;AACvB;AAEA;IACI,qBAAqB;IACrB,eAAe;IACf,wBAAwB;AAC5B;AAEA;IACI,SAAS;AACb;AAEA;IACI,wBAAwB;IACxB,qBAAqB;IACrB,gBAAgB;AACpB","sourcesContent":["<template>\n    <div class=\"footer-page-container\">\n        <div class=\"footer-page-head\">\n            <h3>Anime Zero</h3>\n            <p>/ Для правообладателей</p>\n        </div>\n        <h2 class=\"footer-page-title\">\n            Информация для правообладателей\n        </h2>\n        <p class=\"footer-page-subtitle\">\n            Деятельность сайта AnimeZero осуществляется в соответствии с законодательством РФ в области защиты\n            информации и авторских прав на предоставляемый контент.\n        </p>\n        <div class=\"copyright-body\">\n            <p>\n                Все размещенные на нашем ресурсе материалы находятся в свободном доступе и могут быть бесплатно скачаны\n                из интернета. Сбор информации в сети и размещение контента производится в автоматическом режиме.\n            </p>\n            <p>\n                Публикация нелицензионного, похищенного контента и материалов, защищенных авторским правом, не\n                допускается. Администрация размещает только любительские русскоязычные материалы из свободных источников\n                при использовании автоматической системы.\n            </p>\n            <p>\n                Администрация ресурса предлагает сотрудничество с правообладателями контента. В случае нарушения прав\n                собственности сайт обязуется убрать неправомерно размещенный материал или предложить выгодные условия\n                сотрудничества правообладателю. Если вы обнаружили материал, представленный на нашем сайте, который\n                нарушает ваши авторские права, или же дискредитирует Вашу компанию, предоставляя неверную или искаженную\n                информацию, пожалуйста свяжитесь с нами для решения этого вопроса.\n            </p>\n            <p>\n                Для этого вы можете обратиться в поддержку или отправить сообщение на нашу корпоративную почту\n                <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> со следующим содержанием:\n            </p>\n            <ul>\n                <li>Контактные данные</li>\n                <li>Реквизиты вашей компании</li>\n                <li>Прямую ссылку (ссылки) на материал, который вы считаете спорным</li>\n                <li>\n                    Заверенные сканированные копии документов, подтверждающих ваше эксклюзивное право на материал (или\n                    копии документов на посреднические услуги)\n                </li>\n            </ul>\n            <p>\n                После проверки всей информации, администрация сайта свяжется с вами для урегулирования спорного\n                вопроса.\n            </p>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'CopyrightPage'\n};\n</script>\n\n<style scoped>\n.copyright-head {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-top: 100px;\n    margin-bottom: 26px;\n}\n\n.copyright-head h3 {\n    font-weight: 700;\n    font-size: 19px;\n    border-bottom: 2px solid var(--main-color);\n    margin-right: 5px;\n}\n\n.copyright-head p {\n    color: #808080;\n    font-weight: 500;\n    font-size: 16px;\n}\n\n.copyright-title {\n    font-weight: 500;\n    font-size: 32px;\n    margin-bottom: 20px;\n}\n\n.copyright-subtitle {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 20px;\n}\n\n.copyright-body p {\n    margin-bottom: 10px;\n}\n\n.copyright-body ul {\n    list-style-type: disc;\n    max-width: none;\n    margin: 10px 0 10px 40px;\n}\n\n.copyright-body li {\n    margin: 0;\n}\n\n.copyright-body a {\n    color: var(--main-color);\n    text-decoration: none;\n    font-weight: 600;\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.copyright-head[data-v-3fb14d3d] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-top: 100px;\n    margin-bottom: 26px;\n}\n.copyright-head h3[data-v-3fb14d3d] {\n    font-weight: 700;\n    font-size: 19px;\n    border-bottom: 2px solid var(--main-color);\n    margin-right: 5px;\n}\n.copyright-head p[data-v-3fb14d3d] {\n    color: #808080;\n    font-weight: 500;\n    font-size: 16px;\n}\n.copyright-title[data-v-3fb14d3d] {\n    font-weight: 500;\n    font-size: 32px;\n    margin-bottom: 20px;\n}\n.copyright-subtitle[data-v-3fb14d3d] {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 20px;\n}\n.copyright-body p[data-v-3fb14d3d] {\n    margin-bottom: 10px;\n}\n.copyright-body ul[data-v-3fb14d3d] {\n    list-style-type: disc;\n    max-width: none;\n    margin: 10px 0 10px 40px;\n}\n.copyright-body li[data-v-3fb14d3d] {\n    margin: 0;\n}\n.copyright-body a[data-v-3fb14d3d] {\n    color: var(--main-color);\n    text-decoration: none;\n    font-weight: 600;\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/pages/CopyrightPage.vue"],"names":[],"mappings":";AA0DA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,0CAA0C;IAC1C,iBAAiB;AACrB;AAEA;IACI,cAAc;IACd,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,mBAAmB;AACvB;AAEA;IACI,qBAAqB;IACrB,eAAe;IACf,wBAAwB;AAC5B;AAEA;IACI,SAAS;AACb;AAEA;IACI,wBAAwB;IACxB,qBAAqB;IACrB,gBAAgB;AACpB","sourcesContent":["<template>\n    <div class=\"footer-page-container\">\n        <div class=\"footer-page-head\">\n            <h3>Anime Zero</h3>\n            <p>/ Для правообладателей</p>\n        </div>\n        <h2 class=\"footer-page-title\">\n            Информация для правообладателей\n        </h2>\n        <p class=\"footer-page-subtitle\">\n            Деятельность сайта AnimeZero осуществляется в соответствии с законодательством РФ в области защиты\n            информации и авторских прав на предоставляемый контент.\n        </p>\n        <div class=\"copyright-body\">\n            <p>\n                Все размещенные на нашем ресурсе материалы находятся в свободном доступе и могут быть бесплатно скачаны\n                из интернета. Сбор информации в сети и размещение контента производится в автоматическом режиме.\n            </p>\n            <p>\n                Публикация нелицензионного, похищенного контента и материалов, защищенных авторским правом, не\n                допускается. Администрация размещает только любительские русскоязычные материалы из свободных источников\n                при использовании автоматической системы.\n            </p>\n            <p>\n                Администрация ресурса предлагает сотрудничество с правообладателями контента. В случае нарушения прав\n                собственности сайт обязуется убрать неправомерно размещенный материал или предложить выгодные условия\n                сотрудничества правообладателю. Если вы обнаружили материал, представленный на нашем сайте, который\n                нарушает ваши авторские права, или же дискредитирует Вашу компанию, предоставляя неверную или искаженную\n                информацию, пожалуйста свяжитесь с нами для решения этого вопроса.\n            </p>\n            <p>\n                Для этого вы можете обратиться в поддержку или отправить сообщение на нашу корпоративную почту\n                <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> со следующим содержанием:\n            </p>\n            <ul>\n                <li>Контактные данные</li>\n                <li>Реквизиты вашей компании</li>\n                <li>Прямую ссылку (ссылки) на материал, который вы считаете спорным</li>\n                <li>\n                    Заверенные сканированные копии документов, подтверждающих ваше эксклюзивное право на материал (или\n                    копии документов на посреднические услуги)\n                </li>\n            </ul>\n            <p>\n                После проверки всей информации, администрация сайта свяжется с вами для урегулирования спорного\n                вопроса.\n            </p>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'CopyrightPage'\n};\n</script>\n\n<style scoped>\n.copyright-head {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-top: 100px;\n    margin-bottom: 26px;\n}\n\n.copyright-head h3 {\n    font-weight: 700;\n    font-size: 19px;\n    border-bottom: 2px solid var(--main-color);\n    margin-right: 5px;\n}\n\n.copyright-head p {\n    color: #808080;\n    font-weight: 500;\n    font-size: 16px;\n}\n\n.copyright-title {\n    font-weight: 500;\n    font-size: 32px;\n    margin-bottom: 20px;\n}\n\n.copyright-subtitle {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 20px;\n}\n\n.copyright-body p {\n    margin-bottom: 10px;\n}\n\n.copyright-body ul {\n    list-style-type: disc;\n    max-width: none;\n    margin: 10px 0 10px 40px;\n}\n\n.copyright-body li {\n    margin: 0;\n}\n\n.copyright-body a {\n    color: var(--main-color);\n    text-decoration: none;\n    font-weight: 600;\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -28134,7 +28222,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.films-filter-container[data-v-83cdc736] {\n    display: flex;\n    flex-direction: column;\n    background: #0F0F0F;\n    padding: 20px 30px;\n    margin-top: 100px;\n    margin-bottom: 40px;\n}\n.selectors-container[data-v-83cdc736] {\n    display: grid;\n    grid-template-columns: repeat(4, 1fr);\n    grid-template-rows: repeat(2, 50px);\n    gap: 30px;\n    margin-top: 20px;\n    margin-bottom: 35px;\n}\n.reset-filters[data-v-83cdc736] {\n    background: none;\n    color: #BABABA;\n    font-size: 16px;\n    margin-right: auto;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n.reset-filters .fa-times[data-v-83cdc736] {\n    margin-right: 10px;\n}\n.films-container[data-v-83cdc736] {\n    display: grid;\n    gap: 25px;\n    grid-template-rows: 1fr;\n    grid-template-columns: repeat(6, 1fr);\n    margin-bottom: 60px;\n}\n.controls-container[data-v-83cdc736] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-between;\n}\n@media (max-width: 550px) {\n.films-filter-container[data-v-83cdc736] {\n        margin-top: 5px;\n}\n.selectors-container[data-v-83cdc736] {\n        grid-template-columns: repeat(2, 1fr);\n        grid-template-rows: repeat(3, 50px);\n        gap: 10px\n}\n.films-container[data-v-83cdc736] {\n        padding: 0 20px;\n        grid-template-columns: repeat(2, 1fr);\n}\n.films-pagination[data-v-83cdc736] {\n        margin: 0 20px;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./FilmsPage.vue"],"names":[],"mappings":";AAoNA;IACI,aAAa;IACb,sBAAsB;IACtB,mBAAmB;IACnB,kBAAkB;IAClB,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,qCAAqC;IACrC,mCAAmC;IACnC,SAAS;IACT,gBAAgB;IAChB,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,cAAc;IACd,eAAe;IACf,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,kBAAkB;AACtB;AAEA;IACI,aAAa;IACb,SAAS;IACT,uBAAuB;IACvB,qCAAqC;IACrC,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,8BAA8B;AAClC;AAEA;AACI;QACI,eAAe;AACnB;AAEA;QACI,qCAAqC;QACrC,mCAAmC;QACnC;AACJ;AAEA;QACI,eAAe;QACf,qCAAqC;AACzC;AAEA;QACI,cAAc;AAClB;AACJ","sourcesContent":["<template>\n    <div class=\"films-filter-container\">\n        <h2>Фильтры</h2>\n        <div class=\"selectors-container\">\n            <BaseSelect\n                title=\"Жанры\"\n                :options=\"genres\"\n                :backup=\"filters.genres\"\n                @change=\"setGenres\"\n            />\n\n            <BaseSelect\n                title=\"Статус\"\n                :options=\"statuses\"\n                :backup=\"filters.statuses\"\n                @change=\"setStatuses\"\n            />\n\n            <BaseSelect\n                title=\"Тип\"\n                :options=\"contentTypes\"\n                :backup=\"filters.type\"\n                :single=\"true\"\n                @change=\"setContentTypes\"\n            />\n\n            <BaseSelect\n                title=\"Годы выхода\"\n                :options=\"options.years\"\n                :backup=\"filters.years\"\n                :single=\"true\"\n                @change=\"setYears\"\n            />\n\n            <BaseSelect\n                title=\"Рейтинг\"\n                :options=\"options.rating\"\n                :backup=\"order.rating\"\n                :single=\"true\"\n                @change=\"setRating\"\n            />\n\n            <BaseSelect\n                title=\"Название\"\n                :options=\"options.title\"\n                :backup=\"order.title\"\n                :single=\"true\"\n                @change=\"setTitle\"\n            />\n        </div>\n        <div class=\"controls-container\">\n            <button\n                class=\"reset-filters\"\n                @click=\"resetFilters\"\n            >\n                <i class=\"fal fa-times\"/>Сбросить фильтры\n            </button>\n        </div>\n    </div>\n    <div class=\"films-container\">\n        <FilmCard\n            v-for=\"film in films.data\"\n            :key=\"film.id\"\n            :item=\"film\"\n        />\n    </div>\n    <Pagination\n        class=\"films-pagination\"\n        :meta=\"films.meta\"\n        :filters=\"getTransformedFilters\"\n    />\n</template>\n\n<script>\nimport BaseSelect from '../components/BaseSelect';\nimport FilmCard from '../components/FilmCard';\nimport Pagination from '../components/BasePagination';\n\nexport default {\n    name: 'FilmsPage',\n    components: {Pagination, FilmCard, BaseSelect},\n    props: {\n        films: {\n            type: Object,\n            required: true,\n        },\n        genres: {\n            type: Array,\n            required: true,\n        },\n        statuses: {\n            type: Array,\n            required: true,\n        },\n        contentTypes: {\n            type: Array,\n            required: true,\n        },\n    },\n    data() {\n        return {\n            filters: {\n                genres: [],\n                statuses: [],\n                type: [],\n                years: [],\n            },\n            order: {\n                rating: [],\n                title: [],\n            },\n            options: {\n                years: [\n                    {id: 0, name: 'Все'},\n                    {id: 1, name: '2021-2022'},\n                    {id: 2, name: '2020-2020'},\n                    {id: 3, name: '2010-2019'},\n                    {id: 4, name: '2000-2009'},\n                    {id: 5, name: '1990-1999'},\n                    {id: 6, name: '1980-1989'},\n                ],\n                rating: [\n                    {id: 0, name: 'По умолчанию'},\n                    {id: 1, name: 'По убыванию'},\n                    {id: 2, name: 'По возрастанию'},\n                ],\n                title: [\n                    {id: 0, name: 'По умолчанию'},\n                    {id: 1, name: 'По убыванию (Я-а)'},\n                    {id: 2, name: 'По возрастанию (А-я)'},\n                ]\n            }\n        };\n    },\n    computed: {\n        getTransformedFilters() {\n            return this.removeBlank({\n                genres: this.filters.genres,\n                statuses: this.filters.statuses,\n                type: this.filters.type.toString(),\n                years: this.filters.years.toString(),\n                rating: this.order.rating.toString(),\n                title: this.order.title.toString(),\n            });\n        }\n    },\n    mounted() {\n        this.restoreFilters();\n    },\n    methods: {\n        //fixme:\n        setGenres(array) {\n            this.filters.genres = array;\n            this.applyFilters();\n        },\n        setStatuses(array) {\n            this.filters.statuses = array;\n            this.applyFilters();\n        },\n        setContentTypes(array) {\n            this.filters.type = array;\n            this.applyFilters();\n        },\n        setYears(array) {\n            this.filters.years = array;\n            this.applyFilters();\n        },\n        setRating(array) {\n            this.order.rating = array;\n            this.applyFilters();\n        },\n        setTitle(array) {\n            this.order.title = array;\n            this.applyFilters();\n        },\n        removeBlank(object) {\n            let result = {};\n            for (let key in object) {\n                if (object[key])\n                    result[key] = object[key];\n            }\n            return result;\n        },\n        applyFilters() {\n            this.$inertia.get(this.route('films'), this.getTransformedFilters, {\n                preserveState: true,\n            });\n        },\n        resetFilters() {\n            Object.keys(this.filters).forEach(key => {\n                this.filters[key] = [];\n            });\n\n            this.applyFilters();\n        },\n        restoreFilters() {\n            let url = {};\n            location.search.substr(1).split('&').forEach(function (item) {\n                let k = item.split('=')[0].replace('[]', '');\n                let v = decodeURIComponent(item.split('=')[1]);\n                (k in url) ? url[k].push(v) : url[k] = [v];\n            });\n\n            for (let key in url) {\n                this.filters[key] = url[key];\n            }\n        }\n    }\n};\n</script>\n\n<style scoped>\n.films-filter-container {\n    display: flex;\n    flex-direction: column;\n    background: #0F0F0F;\n    padding: 20px 30px;\n    margin-top: 100px;\n    margin-bottom: 40px;\n}\n\n.selectors-container {\n    display: grid;\n    grid-template-columns: repeat(4, 1fr);\n    grid-template-rows: repeat(2, 50px);\n    gap: 30px;\n    margin-top: 20px;\n    margin-bottom: 35px;\n}\n\n.reset-filters {\n    background: none;\n    color: #BABABA;\n    font-size: 16px;\n    margin-right: auto;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n\n.reset-filters .fa-times {\n    margin-right: 10px;\n}\n\n.films-container {\n    display: grid;\n    gap: 25px;\n    grid-template-rows: 1fr;\n    grid-template-columns: repeat(6, 1fr);\n    margin-bottom: 60px;\n}\n\n.controls-container {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-between;\n}\n\n@media (max-width: 550px) {\n    .films-filter-container {\n        margin-top: 5px;\n    }\n\n    .selectors-container {\n        grid-template-columns: repeat(2, 1fr);\n        grid-template-rows: repeat(3, 50px);\n        gap: 10px\n    }\n\n    .films-container {\n        padding: 0 20px;\n        grid-template-columns: repeat(2, 1fr);\n    }\n\n    .films-pagination {\n        margin: 0 20px;\n    }\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.films-filter-container[data-v-83cdc736] {\n    display: flex;\n    flex-direction: column;\n    background: #0F0F0F;\n    padding: 20px 30px;\n    margin-top: 100px;\n    margin-bottom: 40px;\n}\n.selectors-container[data-v-83cdc736] {\n    display: grid;\n    grid-template-columns: repeat(4, 1fr);\n    grid-template-rows: repeat(2, 50px);\n    gap: 30px;\n    margin-top: 20px;\n    margin-bottom: 35px;\n}\n.reset-filters[data-v-83cdc736] {\n    background: none;\n    color: #BABABA;\n    font-size: 16px;\n    margin-right: auto;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n.reset-filters .fa-times[data-v-83cdc736] {\n    margin-right: 10px;\n}\n.films-container[data-v-83cdc736] {\n    display: grid;\n    gap: 25px;\n    grid-template-rows: 1fr;\n    grid-template-columns: repeat(6, 1fr);\n    margin-bottom: 60px;\n}\n.controls-container[data-v-83cdc736] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-between;\n}\n@media (max-width: 550px) {\n.films-filter-container[data-v-83cdc736] {\n        margin-top: 5px;\n}\n.selectors-container[data-v-83cdc736] {\n        grid-template-columns: repeat(2, 1fr);\n        grid-template-rows: repeat(3, 50px);\n        gap: 10px\n}\n.films-container[data-v-83cdc736] {\n        padding: 0 20px;\n        grid-template-columns: repeat(2, 1fr);\n}\n.films-pagination[data-v-83cdc736] {\n        margin: 0 20px;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/pages/FilmsPage.vue"],"names":[],"mappings":";AAoNA;IACI,aAAa;IACb,sBAAsB;IACtB,mBAAmB;IACnB,kBAAkB;IAClB,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,qCAAqC;IACrC,mCAAmC;IACnC,SAAS;IACT,gBAAgB;IAChB,mBAAmB;AACvB;AAEA;IACI,gBAAgB;IAChB,cAAc;IACd,eAAe;IACf,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,kBAAkB;AACtB;AAEA;IACI,aAAa;IACb,SAAS;IACT,uBAAuB;IACvB,qCAAqC;IACrC,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,8BAA8B;AAClC;AAEA;AACI;QACI,eAAe;AACnB;AAEA;QACI,qCAAqC;QACrC,mCAAmC;QACnC;AACJ;AAEA;QACI,eAAe;QACf,qCAAqC;AACzC;AAEA;QACI,cAAc;AAClB;AACJ","sourcesContent":["<template>\n    <div class=\"films-filter-container\">\n        <h2>Фильтры</h2>\n        <div class=\"selectors-container\">\n            <BaseSelect\n                title=\"Жанры\"\n                :options=\"genres\"\n                :backup=\"filters.genres\"\n                @change=\"setGenres\"\n            />\n\n            <BaseSelect\n                title=\"Статус\"\n                :options=\"statuses\"\n                :backup=\"filters.statuses\"\n                @change=\"setStatuses\"\n            />\n\n            <BaseSelect\n                title=\"Тип\"\n                :options=\"contentTypes\"\n                :backup=\"filters.type\"\n                :single=\"true\"\n                @change=\"setContentTypes\"\n            />\n\n            <BaseSelect\n                title=\"Годы выхода\"\n                :options=\"options.years\"\n                :backup=\"filters.years\"\n                :single=\"true\"\n                @change=\"setYears\"\n            />\n\n            <BaseSelect\n                title=\"Рейтинг\"\n                :options=\"options.rating\"\n                :backup=\"order.rating\"\n                :single=\"true\"\n                @change=\"setRating\"\n            />\n\n            <BaseSelect\n                title=\"Название\"\n                :options=\"options.title\"\n                :backup=\"order.title\"\n                :single=\"true\"\n                @change=\"setTitle\"\n            />\n        </div>\n        <div class=\"controls-container\">\n            <button\n                class=\"reset-filters\"\n                @click=\"resetFilters\"\n            >\n                <i class=\"fal fa-times\"/>Сбросить фильтры\n            </button>\n        </div>\n    </div>\n    <div class=\"films-container\">\n        <FilmCard\n            v-for=\"film in films.data\"\n            :key=\"film.id\"\n            :item=\"film\"\n        />\n    </div>\n    <Pagination\n        class=\"films-pagination\"\n        :meta=\"films.meta\"\n        :filters=\"getTransformedFilters\"\n    />\n</template>\n\n<script>\nimport BaseSelect from '../components/BaseSelect';\nimport FilmCard from '../components/FilmCard';\nimport Pagination from '../components/BasePagination';\n\nexport default {\n    name: 'FilmsPage',\n    components: {Pagination, FilmCard, BaseSelect},\n    props: {\n        films: {\n            type: Object,\n            required: true,\n        },\n        genres: {\n            type: Array,\n            required: true,\n        },\n        statuses: {\n            type: Array,\n            required: true,\n        },\n        contentTypes: {\n            type: Array,\n            required: true,\n        },\n    },\n    data() {\n        return {\n            filters: {\n                genres: [],\n                statuses: [],\n                type: [],\n                years: [],\n            },\n            order: {\n                rating: [],\n                title: [],\n            },\n            options: {\n                years: [\n                    {id: 0, name: 'Все'},\n                    {id: 1, name: '2021-2022'},\n                    {id: 2, name: '2020-2020'},\n                    {id: 3, name: '2010-2019'},\n                    {id: 4, name: '2000-2009'},\n                    {id: 5, name: '1990-1999'},\n                    {id: 6, name: '1980-1989'},\n                ],\n                rating: [\n                    {id: 0, name: 'По умолчанию'},\n                    {id: 1, name: 'По убыванию'},\n                    {id: 2, name: 'По возрастанию'},\n                ],\n                title: [\n                    {id: 0, name: 'По умолчанию'},\n                    {id: 1, name: 'По убыванию (Я-а)'},\n                    {id: 2, name: 'По возрастанию (А-я)'},\n                ]\n            }\n        };\n    },\n    computed: {\n        getTransformedFilters() {\n            return this.removeBlank({\n                genres: this.filters.genres,\n                statuses: this.filters.statuses,\n                type: this.filters.type.toString(),\n                years: this.filters.years.toString(),\n                rating: this.order.rating.toString(),\n                title: this.order.title.toString(),\n            });\n        }\n    },\n    mounted() {\n        this.restoreFilters();\n    },\n    methods: {\n        //fixme:\n        setGenres(array) {\n            this.filters.genres = array;\n            this.applyFilters();\n        },\n        setStatuses(array) {\n            this.filters.statuses = array;\n            this.applyFilters();\n        },\n        setContentTypes(array) {\n            this.filters.type = array;\n            this.applyFilters();\n        },\n        setYears(array) {\n            this.filters.years = array;\n            this.applyFilters();\n        },\n        setRating(array) {\n            this.order.rating = array;\n            this.applyFilters();\n        },\n        setTitle(array) {\n            this.order.title = array;\n            this.applyFilters();\n        },\n        removeBlank(object) {\n            let result = {};\n            for (let key in object) {\n                if (object[key])\n                    result[key] = object[key];\n            }\n            return result;\n        },\n        applyFilters() {\n            this.$inertia.get(this.route('films'), this.getTransformedFilters, {\n                preserveState: true,\n            });\n        },\n        resetFilters() {\n            Object.keys(this.filters).forEach(key => {\n                this.filters[key] = [];\n            });\n\n            this.applyFilters();\n        },\n        restoreFilters() {\n            let url = {};\n            location.search.substr(1).split('&').forEach(function (item) {\n                let k = item.split('=')[0].replace('[]', '');\n                let v = decodeURIComponent(item.split('=')[1]);\n                (k in url) ? url[k].push(v) : url[k] = [v];\n            });\n\n            for (let key in url) {\n                this.filters[key] = url[key];\n            }\n        }\n    }\n};\n</script>\n\n<style scoped>\n.films-filter-container {\n    display: flex;\n    flex-direction: column;\n    background: #0F0F0F;\n    padding: 20px 30px;\n    margin-top: 100px;\n    margin-bottom: 40px;\n}\n\n.selectors-container {\n    display: grid;\n    grid-template-columns: repeat(4, 1fr);\n    grid-template-rows: repeat(2, 50px);\n    gap: 30px;\n    margin-top: 20px;\n    margin-bottom: 35px;\n}\n\n.reset-filters {\n    background: none;\n    color: #BABABA;\n    font-size: 16px;\n    margin-right: auto;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n\n.reset-filters .fa-times {\n    margin-right: 10px;\n}\n\n.films-container {\n    display: grid;\n    gap: 25px;\n    grid-template-rows: 1fr;\n    grid-template-columns: repeat(6, 1fr);\n    margin-bottom: 60px;\n}\n\n.controls-container {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-between;\n}\n\n@media (max-width: 550px) {\n    .films-filter-container {\n        margin-top: 5px;\n    }\n\n    .selectors-container {\n        grid-template-columns: repeat(2, 1fr);\n        grid-template-rows: repeat(3, 50px);\n        gap: 10px\n    }\n\n    .films-container {\n        padding: 0 20px;\n        grid-template-columns: repeat(2, 1fr);\n    }\n\n    .films-pagination {\n        margin: 0 20px;\n    }\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -28161,7 +28249,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.main-poster-block[data-v-04c29797] {\n    width: 100%;\n    height: 100%;\n    max-height: 650px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    z-index: 10;\n    overflow: hidden;\n}\n.main-poster-info[data-v-04c29797] {\n    display: flex;\n    flex-direction: column;\n}\n.main-poster-section-title[data-v-04c29797] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 19px;\n}\n.main-poster-section-title h3[data-v-04c29797] {\n    font-size: 20px;\n    border-bottom: 2px solid var(--main-color);\n    color: white;\n}\n.main-poster-section-title p[data-v-04c29797] {\n    font-size: 16px;\n    color: #808080;\n    margin: 0 0 0 6px;\n}\n.main-poster-title[data-v-04c29797] {\n    font-size: 32px;\n    font-weight: 500;\n    margin-bottom: 29px;\n    line-height: 38px;\n}\n.main-poster-title span[data-v-04c29797] {\n    color: var(--main-color);\n}\n.main-poster-description[data-v-04c29797] {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 27px;\n}\n.main-poster-grid[data-v-04c29797] {\n    display: grid;\n    grid-template-rows: repeat(3, 222px);\n    grid-template-columns: repeat(3, 160px);\n    gap: 60px 30px;\n    margin-left: auto;\n    transform: rotate(335deg);\n}\n.image-block[data-v-04c29797] {\n    border-radius: 10px;\n    overflow: hidden;\n    transition: 0.5s;\n    cursor: pointer;\n}\n.image-block[data-v-04c29797]:nth-child(2), .image-block[data-v-04c29797]:nth-child(5), .image-block[data-v-04c29797]:nth-child(8) {\n    transform: translateY(-55%);\n}\n.main-films-block[data-v-04c29797] {\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    padding: 32px 53px 53px 53px;\n    background: #0F0F0F;\n    margin-bottom: 8px;\n}\n.main-films-block[data-v-04c29797]:nth-child(2n + 1) {\n    background: none;\n}\n.films-block-head[data-v-04c29797], .films-block-title[data-v-04c29797] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n.films-block-title i[data-v-04c29797] {\n    height: 38px;\n    width: 38px;\n    background: var(--main-color);\n    border-radius: 5px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    margin-right: 10px;\n}\n.films-block-title i img[data-v-04c29797] {\n    width: 16px;\n    height: 16px;\n}\n.films-block-head button[data-v-04c29797] {\n    margin-left: auto;\n}\n.films-block-body[data-v-04c29797] {\n    margin-top: 40px;\n    display: grid;\n    grid-template-columns: repeat(6, 1fr);\n    grid-template-rows: 1fr;\n    grid-auto-flow: row;\n    justify-content: space-between;\n    gap: 0 20px;\n}\n.films-block-body-big[data-v-04c29797] {\n    grid-template-rows: repeat(2, 250px);\n    grid-template-areas:\n        \"first first first first second second\"\n        \"first first first first third third\";\n    gap: 36px;\n}\n.first[data-v-04c29797] {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n.first img[data-v-04c29797] {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n.first button[data-v-04c29797] {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n.first-text-box[data-v-04c29797] {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n.main-films-block-big[data-v-04c29797] {\n    padding-left: 0;\n    padding-right: 0;\n}\n.main-films-block-big .films-block-head[data-v-04c29797] {\n    margin: 0 53px 0 53px;\n}\n.ongoing-block[data-v-04c29797] {\n    grid-template-rows: repeat(2, 240px);\n    grid-template-columns: repeat(2, 500px);\n    gap: 25px 60px;\n    grid-auto-flow: row;\n    justify-content: space-between;\n}\n.selected-poster[data-v-04c29797] {\n    border: 6px solid var(--main-color);\n    transition: 0.5s;\n}\n.flickity[data-v-04c29797] {\n    display: none;\n}\n@media (max-width: 550px) {\n.main-poster-block[data-v-04c29797] {\n        flex-direction: column;\n}\n.main-poster-grid[data-v-04c29797] {\n        display: none;\n}\n.main-poster-info[data-v-04c29797] {\n        padding: 0 20px;\n        margin-top: 20px;\n}\n.flickity[data-v-04c29797] {\n        display: block;\n        width: 100%;\n        height: 150px;\n        margin: 10px 0 20px 0;\n}\n.flickity-films[data-v-04c29797] {\n        height: 290px;\n}\n.carousel-cell[data-v-04c29797] {\n        width: 120px;\n        margin-right: 18px;\n}\n.carousel-cell-films[data-v-04c29797] {\n        width: 180px;\n}\n.main-poster-info[data-v-04c29797] {\n        width: 100%;\n        margin-bottom: 20px;\n}\n.main-films-block[data-v-04c29797] {\n        padding: 40px 20px;\n}\n.films-block-body[data-v-04c29797] {\n        display: none;\n}\n.films-block-body.mobile[data-v-04c29797] {\n        display: block;\n}\n.films-block-body.films-block-body-big[data-v-04c29797] {\n        display: grid;\n        grid-template-columns: 1fr;\n        grid-template-rows: repeat(3, 1fr);\n        grid-template-areas:\n                            \"first\"\n                            \"second\"\n                            \"third\";\n}\n.films-block-head[data-v-04c29797] {\n        margin: 0 !important;\n        width: 100%;\n}\n.first-text-box p[data-v-04c29797] {\n        display: none;\n}\n.second-info[data-v-04c29797], .third-info[data-v-04c29797] {\n        padding-right: 20px;\n}\n.first h3[data-v-04c29797] {\n        font-size: 14px;\n}\n.ti-btn[data-v-04c29797] {\n        font-size: 12px;\n}\n.main-poster-section-title[data-v-04c29797], .main-poster-buttons[data-v-04c29797], .films-block-head .ti-btn[data-v-04c29797] {\n        display: none;\n}\n.ongoing-block[data-v-04c29797] {\n        display: none !important;\n}\n.main-poster-title[data-v-04c29797] {\n        margin-bottom: 5px;\n}\n.main-poster-description[data-v-04c29797] {\n        margin-bottom: 10px;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./HomePage.vue"],"names":[],"mappings":";AAiNA;IACI,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,WAAW;IACX,gBAAgB;AACpB;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,eAAe;IACf,0CAA0C;IAC1C,YAAY;AAChB;AAEA;IACI,eAAe;IACf,cAAc;IACd,iBAAiB;AACrB;AAEA;IACI,eAAe;IACf,gBAAgB;IAChB,mBAAmB;IACnB,iBAAiB;AACrB;AAEA;IACI,wBAAwB;AAC5B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,oCAAoC;IACpC,uCAAuC;IACvC,cAAc;IACd,iBAAiB;IACjB,yBAAyB;AAC7B;AAEA;IACI,mBAAmB;IACnB,gBAAgB;IAChB,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,2BAA2B;AAC/B;AAEA;IACI,WAAW;IACX,aAAa;IACb,sBAAsB;IACtB,4BAA4B;IAC5B,mBAAmB;IACnB,kBAAkB;AACtB;AAEA;IACI,gBAAgB;AACpB;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,YAAY;IACZ,WAAW;IACX,6BAA6B;IAC7B,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,uBAAuB;IACvB,kBAAkB;AACtB;AAEA;IACI,WAAW;IACX,YAAY;AAChB;AAEA;IACI,iBAAiB;AACrB;AAEA;IACI,gBAAgB;IAChB,aAAa;IACb,qCAAqC;IACrC,uBAAuB;IACvB,mBAAmB;IACnB,8BAA8B;IAC9B,WAAW;AACf;AAEA;IACI,oCAAoC;IACpC;;6CAEyC;IACzC,SAAS;AACb;AAEA;IACI,gBAAgB;IAChB,kBAAkB;IAClB,eAAe;AACnB;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,OAAO;IACP,MAAM;AACV;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,YAAY;AAChB;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,UAAU;IACV,YAAY;IACZ,YAAY;AAChB;AAEA;IACI,eAAe;IACf,gBAAgB;AACpB;AAEA;IACI,qBAAqB;AACzB;AAEA;IACI,oCAAoC;IACpC,uCAAuC;IACvC,cAAc;IACd,mBAAmB;IACnB,8BAA8B;AAClC;AAEA;IACI,mCAAmC;IACnC,gBAAgB;AACpB;AAEA;IACI,aAAa;AACjB;AAEA;AACI;QACI,sBAAsB;AAC1B;AAEA;QACI,aAAa;AACjB;AAEA;QACI,eAAe;QACf,gBAAgB;AACpB;AAEA;QACI,cAAc;QACd,WAAW;QACX,aAAa;QACb,qBAAqB;AACzB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,YAAY;QACZ,kBAAkB;AACtB;AAEA;QACI,YAAY;AAChB;AAEA;QACI,WAAW;QACX,mBAAmB;AACvB;AAEA;QACI,kBAAkB;AACtB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,cAAc;AAClB;AAEA;QACI,aAAa;QACb,0BAA0B;QAC1B,kCAAkC;QAClC;;;mCAG2B;AAC/B;AAGA;QACI,oBAAoB;QACpB,WAAW;AACf;AAEA;QACI,aAAa;AACjB;AAEA;QACI,mBAAmB;AACvB;AAEA;QACI,eAAe;AACnB;AAEA;QACI,eAAe;AACnB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,wBAAwB;AAC5B;AAEA;QACI,kBAAkB;AACtB;AAEA;QACI,mBAAmB;AACvB;AAEJ","sourcesContent":["<template>\n    <div class=\"main-poster-block\">\n        <div class=\"main-poster-info\">\n            <div class=\"main-poster-section-title\">\n                <h3>Anime Zero</h3>\n                <p>/ Каталог</p>\n            </div>\n            <h2 class=\"main-poster-title\">\n                Смотрите онлайн<br> фильмы на Anime<span>Zero</span>\n            </h2>\n            <p class=\"main-poster-description\">\n                Смотрите фильмы в хорошем качестве<br> только у нас !\n            </p>\n            <div class=\"main-poster-buttons\">\n                <BaseButton @click=\"watchFilm\">\n                    <i class=\"fal fa-play\"/>Перейти к просмотру\n                </BaseButton>\n            </div>\n        </div>\n        <Flickity\n            v-if=\"films.best.length\"\n            ref=\"flickity\"\n            :options=\"flickity.bestFilmSlider\"\n            class=\"flickity\"\n        >\n            <div\n                v-for=\"best in films.best\"\n                :key=\"best.id\"\n                class=\"carousel-cell\"\n            >\n                <InertiaLink\n                    :href=\"route('film.show', best.id)\"\n                    as=\"img\"\n                    class=\"gallery-cell-img\"\n                    :src=\"best.poster\"\n                    :alt=\"best.title\"\n                />\n            </div>\n        </Flickity>\n        <div class=\"main-poster-grid\">\n            <div\n                v-for=\"(best, index) in films.best\"\n                :key=\"best.id\"\n                class=\"image-block\"\n                :class=\"{'selected-poster': index === selected_poster}\"\n                @click=\"selectPoster(index)\"\n            >\n                <img\n                    :src=\"best.poster\"\n                    :alt=\"best.title\"\n                >\n            </div>\n        </div>\n    </div>\n    <div class=\"main-films-block\">\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i class=\"fal fa-chart-bar\"/>\n                <h4>Новинки</h4>\n            </div>\n            <BaseButton @click=\"$inertia.visit(route('films', {years: '2021-2022'}))\">\n                Показать все\n            </BaseButton>\n        </div>\n        <div class=\"films-block-body\">\n            <FilmCard\n                v-for=\"film in films.newest\"\n                :key=\"film.id\"\n                :item=\"film\"\n            />\n        </div>\n        <div class=\"films-block-body mobile\">\n            <Flickity\n                v-if=\"films.newest.length\"\n                ref=\"flickity\"\n                class=\"flickity flickity-films\"\n                :options=\"flickity.filmsSlider\"\n            >\n                <div\n                    v-for=\"film in films.newest\"\n                    :key=\"film.id\"\n                    class=\"carousel-cell carousel-cell-films\"\n                >\n                    <FilmCard :item=\"film\"/>\n                </div>\n            </Flickity>\n        </div>\n    </div>\n    <div\n        v-if=\"films.recommended.length > 2\"\n        class=\"main-films-block main-films-block-big\"\n    >\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i class=\"fal fa-star\"/>\n                <h4>Мы рекомендуем</h4>\n            </div>\n        </div>\n        <div class=\"films-block-body films-block-body-big\">\n            <RecommendedPoster\n:item=\"films.recommended[0]\"\nstyle=\"grid-area: first\"/>\n            <RecommendedPosterSmall\n                :item=\"films.recommended[1]\"\n                style=\"grid-area: second\"/>\n            <RecommendedPosterSmall\n                :item=\"films.recommended[2]\"\n                style=\"grid-area: third\"/>\n        </div>\n    </div>\n    <div class=\"main-films-block\">\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i><img\n                    src=\"/img/ongoing-icon.svg\"\n                    alt=\"ongoing\"\n                ></i>\n                <h4>Скоро выйдет</h4>\n            </div>\n            <BaseButton @click=\"$inertia.visit(route('films', {statuses: 'Онгоинг'}))\">\n                Показать все\n            </BaseButton>\n        </div>\n        <div class=\"films-block-body ongoing-block mobile\">\n            <OngoingCard\n                v-for=\"ongoing in films.ongoing\"\n                :key=\"ongoing.id\"\n                :item=\"ongoing\"\n            />\n        </div>\n        <Flickity\n            v-if=\"films.ongoing.length\"\n            ref=\"flickity\"\n            :options=\"flickity.filmsSlider\"\n            class=\"flickity flickity-films\"\n        >\n            <div\n                v-for=\"ongoing in films.ongoing\"\n                :key=\"ongoing.id\"\n                class=\"carousel-cell carousel-cell-films\"\n            >\n                <FilmCard :item=\"ongoing\"/>\n            </div>\n        </Flickity>\n    </div>\n</template>\n\n<script>\nimport FilmCard from '../components/FilmCard';\nimport OngoingCard from '../components/OngoingCard';\nimport Flickity from 'vue-flickity';\nimport RecommendedPosterSmall from '../components/RecommendedPosterSmall';\nimport RecommendedPoster from '../components/RecommendedPoster';\n\nexport default {\n    name: 'HomePage',\n    components: {RecommendedPoster, RecommendedPosterSmall, OngoingCard, FilmCard, Flickity},\n    props: {\n        films: {\n            type: Object,\n            required: true,\n        },\n    },\n    data() {\n        return {\n            selected_poster: -1,\n            flickity: {\n                bestFilmSlider: {\n                    initialIndex: 3,\n                    prevNextButtons: false,\n                    pageDots: false,\n                    wrapAround: true\n                },\n                filmsSlider: {\n                    initialIndex: 1,\n                    prevNextButtons: false,\n                    pageDots: false,\n                    wrapAround: true\n                }\n            }\n        };\n    },\n    mounted() {\n        if (this.$page.props.flash.message === 'email-verification-required') {\n            this.$root.setModalState(this.$root.modal.enum.EMAIL_VERIFY);\n            this.$root.openModal();\n        }\n\n        if (this.$page.props.flash.message === 'auth-required') {\n            this.$root.setModalState(this.$root.modal.enum.LOGIN);\n            this.$root.openModal();\n        }\n    },\n    methods: {\n        selectPoster(id) {\n            this.selected_poster = id;\n        },\n        watchFilm() {\n            if (this.selected_poster === -1)\n                return this.$inertia.get(this.route('films'));\n\n            this.$inertia.get(this.route('film.show', this.films.best[this.selected_poster].id));\n        }\n    }\n};\n</script>\n\n<style scoped>\n\n.main-poster-block {\n    width: 100%;\n    height: 100%;\n    max-height: 650px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    z-index: 10;\n    overflow: hidden;\n}\n\n.main-poster-info {\n    display: flex;\n    flex-direction: column;\n}\n\n.main-poster-section-title {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 19px;\n}\n\n.main-poster-section-title h3 {\n    font-size: 20px;\n    border-bottom: 2px solid var(--main-color);\n    color: white;\n}\n\n.main-poster-section-title p {\n    font-size: 16px;\n    color: #808080;\n    margin: 0 0 0 6px;\n}\n\n.main-poster-title {\n    font-size: 32px;\n    font-weight: 500;\n    margin-bottom: 29px;\n    line-height: 38px;\n}\n\n.main-poster-title span {\n    color: var(--main-color);\n}\n\n.main-poster-description {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 27px;\n}\n\n.main-poster-grid {\n    display: grid;\n    grid-template-rows: repeat(3, 222px);\n    grid-template-columns: repeat(3, 160px);\n    gap: 60px 30px;\n    margin-left: auto;\n    transform: rotate(335deg);\n}\n\n.image-block {\n    border-radius: 10px;\n    overflow: hidden;\n    transition: 0.5s;\n    cursor: pointer;\n}\n\n.image-block:nth-child(2), .image-block:nth-child(5), .image-block:nth-child(8) {\n    transform: translateY(-55%);\n}\n\n.main-films-block {\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    padding: 32px 53px 53px 53px;\n    background: #0F0F0F;\n    margin-bottom: 8px;\n}\n\n.main-films-block:nth-child(2n + 1) {\n    background: none;\n}\n\n.films-block-head, .films-block-title {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n\n.films-block-title i {\n    height: 38px;\n    width: 38px;\n    background: var(--main-color);\n    border-radius: 5px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    margin-right: 10px;\n}\n\n.films-block-title i img {\n    width: 16px;\n    height: 16px;\n}\n\n.films-block-head button {\n    margin-left: auto;\n}\n\n.films-block-body {\n    margin-top: 40px;\n    display: grid;\n    grid-template-columns: repeat(6, 1fr);\n    grid-template-rows: 1fr;\n    grid-auto-flow: row;\n    justify-content: space-between;\n    gap: 0 20px;\n}\n\n.films-block-body-big {\n    grid-template-rows: repeat(2, 250px);\n    grid-template-areas:\n        \"first first first first second second\"\n        \"first first first first third third\";\n    gap: 36px;\n}\n\n.first {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n\n.first img {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n\n.first button {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n\n.first-text-box {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n\n.main-films-block-big {\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.main-films-block-big .films-block-head {\n    margin: 0 53px 0 53px;\n}\n\n.ongoing-block {\n    grid-template-rows: repeat(2, 240px);\n    grid-template-columns: repeat(2, 500px);\n    gap: 25px 60px;\n    grid-auto-flow: row;\n    justify-content: space-between;\n}\n\n.selected-poster {\n    border: 6px solid var(--main-color);\n    transition: 0.5s;\n}\n\n.flickity {\n    display: none;\n}\n\n@media (max-width: 550px) {\n    .main-poster-block {\n        flex-direction: column;\n    }\n\n    .main-poster-grid {\n        display: none;\n    }\n\n    .main-poster-info {\n        padding: 0 20px;\n        margin-top: 20px;\n    }\n\n    .flickity {\n        display: block;\n        width: 100%;\n        height: 150px;\n        margin: 10px 0 20px 0;\n    }\n\n    .flickity-films {\n        height: 290px;\n    }\n\n    .carousel-cell {\n        width: 120px;\n        margin-right: 18px;\n    }\n\n    .carousel-cell-films {\n        width: 180px;\n    }\n\n    .main-poster-info {\n        width: 100%;\n        margin-bottom: 20px;\n    }\n\n    .main-films-block {\n        padding: 40px 20px;\n    }\n\n    .films-block-body {\n        display: none;\n    }\n\n    .films-block-body.mobile {\n        display: block;\n    }\n\n    .films-block-body.films-block-body-big {\n        display: grid;\n        grid-template-columns: 1fr;\n        grid-template-rows: repeat(3, 1fr);\n        grid-template-areas:\n                            \"first\"\n                            \"second\"\n                            \"third\";\n    }\n\n\n    .films-block-head {\n        margin: 0 !important;\n        width: 100%;\n    }\n\n    .first-text-box p {\n        display: none;\n    }\n\n    .second-info, .third-info {\n        padding-right: 20px;\n    }\n\n    .first h3 {\n        font-size: 14px;\n    }\n\n    .ti-btn {\n        font-size: 12px;\n    }\n\n    .main-poster-section-title, .main-poster-buttons, .films-block-head .ti-btn {\n        display: none;\n    }\n\n    .ongoing-block {\n        display: none !important;\n    }\n\n    .main-poster-title {\n        margin-bottom: 5px;\n    }\n\n    .main-poster-description {\n        margin-bottom: 10px;\n    }\n\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.main-poster-block[data-v-04c29797] {\n    width: 100%;\n    height: 100%;\n    max-height: 650px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    z-index: 10;\n    overflow: hidden;\n}\n.main-poster-info[data-v-04c29797] {\n    display: flex;\n    flex-direction: column;\n}\n.main-poster-section-title[data-v-04c29797] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 19px;\n}\n.main-poster-section-title h3[data-v-04c29797] {\n    font-size: 20px;\n    border-bottom: 2px solid var(--main-color);\n    color: white;\n}\n.main-poster-section-title p[data-v-04c29797] {\n    font-size: 16px;\n    color: #808080;\n    margin: 0 0 0 6px;\n}\n.main-poster-title[data-v-04c29797] {\n    font-size: 32px;\n    font-weight: 500;\n    margin-bottom: 29px;\n    line-height: 38px;\n}\n.main-poster-title span[data-v-04c29797] {\n    color: var(--main-color);\n}\n.main-poster-description[data-v-04c29797] {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 27px;\n}\n.main-poster-grid[data-v-04c29797] {\n    display: grid;\n    grid-template-rows: repeat(3, 222px);\n    grid-template-columns: repeat(3, 160px);\n    gap: 60px 30px;\n    margin-left: auto;\n    transform: rotate(335deg);\n}\n.image-block[data-v-04c29797] {\n    border-radius: 10px;\n    overflow: hidden;\n    transition: 0.5s;\n    cursor: pointer;\n}\n.image-block[data-v-04c29797]:nth-child(2), .image-block[data-v-04c29797]:nth-child(5), .image-block[data-v-04c29797]:nth-child(8) {\n    transform: translateY(-55%);\n}\n.main-films-block[data-v-04c29797] {\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    padding: 32px 53px 53px 53px;\n    background: #0F0F0F;\n    margin-bottom: 8px;\n}\n.main-films-block[data-v-04c29797]:nth-child(2n + 1) {\n    background: none;\n}\n.films-block-head[data-v-04c29797], .films-block-title[data-v-04c29797] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n.films-block-title i[data-v-04c29797] {\n    height: 38px;\n    width: 38px;\n    background: var(--main-color);\n    border-radius: 5px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    margin-right: 10px;\n}\n.films-block-title i img[data-v-04c29797] {\n    width: 16px;\n    height: 16px;\n}\n.films-block-head button[data-v-04c29797] {\n    margin-left: auto;\n}\n.films-block-body[data-v-04c29797] {\n    margin-top: 40px;\n    display: grid;\n    grid-template-columns: repeat(6, 1fr);\n    grid-template-rows: 1fr;\n    grid-auto-flow: row;\n    justify-content: space-between;\n    gap: 0 20px;\n}\n.films-block-body-big[data-v-04c29797] {\n    grid-template-rows: repeat(2, 250px);\n    grid-template-areas:\n        \"first first first first second second\"\n        \"first first first first third third\";\n    gap: 36px;\n}\n.first[data-v-04c29797] {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n.first img[data-v-04c29797] {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n.first button[data-v-04c29797] {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n.first-text-box[data-v-04c29797] {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n.main-films-block-big[data-v-04c29797] {\n    padding-left: 0;\n    padding-right: 0;\n}\n.main-films-block-big .films-block-head[data-v-04c29797] {\n    margin: 0 53px 0 53px;\n}\n.ongoing-block[data-v-04c29797] {\n    grid-template-rows: repeat(2, 240px);\n    grid-template-columns: repeat(2, 500px);\n    gap: 25px 60px;\n    grid-auto-flow: row;\n    justify-content: space-between;\n}\n.selected-poster[data-v-04c29797] {\n    border: 6px solid var(--main-color);\n    transition: 0.5s;\n}\n.flickity[data-v-04c29797] {\n    display: none;\n}\n@media (max-width: 550px) {\n.main-poster-block[data-v-04c29797] {\n        flex-direction: column;\n}\n.main-poster-grid[data-v-04c29797] {\n        display: none;\n}\n.main-poster-info[data-v-04c29797] {\n        padding: 0 20px;\n        margin-top: 20px;\n}\n.flickity[data-v-04c29797] {\n        display: block;\n        width: 100%;\n        height: 150px;\n        margin: 10px 0 20px 0;\n}\n.flickity-films[data-v-04c29797] {\n        height: 290px;\n}\n.carousel-cell[data-v-04c29797] {\n        width: 120px;\n        margin-right: 18px;\n}\n.carousel-cell-films[data-v-04c29797] {\n        width: 180px;\n}\n.main-poster-info[data-v-04c29797] {\n        width: 100%;\n        margin-bottom: 20px;\n}\n.main-films-block[data-v-04c29797] {\n        padding: 40px 20px;\n}\n.films-block-body[data-v-04c29797] {\n        display: none;\n}\n.films-block-body.mobile[data-v-04c29797] {\n        display: block;\n}\n.films-block-body.films-block-body-big[data-v-04c29797] {\n        display: grid;\n        grid-template-columns: 1fr;\n        grid-template-rows: repeat(3, 1fr);\n        grid-template-areas:\n                            \"first\"\n                            \"second\"\n                            \"third\";\n}\n.films-block-head[data-v-04c29797] {\n        margin: 0 !important;\n        width: 100%;\n}\n.first-text-box p[data-v-04c29797] {\n        display: none;\n}\n.second-info[data-v-04c29797], .third-info[data-v-04c29797] {\n        padding-right: 20px;\n}\n.first h3[data-v-04c29797] {\n        font-size: 14px;\n}\n.ti-btn[data-v-04c29797] {\n        font-size: 12px;\n}\n.main-poster-section-title[data-v-04c29797], .main-poster-buttons[data-v-04c29797], .films-block-head .ti-btn[data-v-04c29797] {\n        display: none;\n}\n.ongoing-block[data-v-04c29797] {\n        display: none !important;\n}\n.main-poster-title[data-v-04c29797] {\n        margin-bottom: 5px;\n}\n.main-poster-description[data-v-04c29797] {\n        margin-bottom: 10px;\n}\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/pages/HomePage.vue"],"names":[],"mappings":";AAiNA;IACI,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,WAAW;IACX,gBAAgB;AACpB;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,eAAe;IACf,0CAA0C;IAC1C,YAAY;AAChB;AAEA;IACI,eAAe;IACf,cAAc;IACd,iBAAiB;AACrB;AAEA;IACI,eAAe;IACf,gBAAgB;IAChB,mBAAmB;IACnB,iBAAiB;AACrB;AAEA;IACI,wBAAwB;AAC5B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,oCAAoC;IACpC,uCAAuC;IACvC,cAAc;IACd,iBAAiB;IACjB,yBAAyB;AAC7B;AAEA;IACI,mBAAmB;IACnB,gBAAgB;IAChB,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,2BAA2B;AAC/B;AAEA;IACI,WAAW;IACX,aAAa;IACb,sBAAsB;IACtB,4BAA4B;IAC5B,mBAAmB;IACnB,kBAAkB;AACtB;AAEA;IACI,gBAAgB;AACpB;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,YAAY;IACZ,WAAW;IACX,6BAA6B;IAC7B,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,uBAAuB;IACvB,kBAAkB;AACtB;AAEA;IACI,WAAW;IACX,YAAY;AAChB;AAEA;IACI,iBAAiB;AACrB;AAEA;IACI,gBAAgB;IAChB,aAAa;IACb,qCAAqC;IACrC,uBAAuB;IACvB,mBAAmB;IACnB,8BAA8B;IAC9B,WAAW;AACf;AAEA;IACI,oCAAoC;IACpC;;6CAEyC;IACzC,SAAS;AACb;AAEA;IACI,gBAAgB;IAChB,kBAAkB;IAClB,eAAe;AACnB;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,OAAO;IACP,MAAM;AACV;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;IAClB,YAAY;AAChB;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,UAAU;IACV,YAAY;IACZ,YAAY;AAChB;AAEA;IACI,eAAe;IACf,gBAAgB;AACpB;AAEA;IACI,qBAAqB;AACzB;AAEA;IACI,oCAAoC;IACpC,uCAAuC;IACvC,cAAc;IACd,mBAAmB;IACnB,8BAA8B;AAClC;AAEA;IACI,mCAAmC;IACnC,gBAAgB;AACpB;AAEA;IACI,aAAa;AACjB;AAEA;AACI;QACI,sBAAsB;AAC1B;AAEA;QACI,aAAa;AACjB;AAEA;QACI,eAAe;QACf,gBAAgB;AACpB;AAEA;QACI,cAAc;QACd,WAAW;QACX,aAAa;QACb,qBAAqB;AACzB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,YAAY;QACZ,kBAAkB;AACtB;AAEA;QACI,YAAY;AAChB;AAEA;QACI,WAAW;QACX,mBAAmB;AACvB;AAEA;QACI,kBAAkB;AACtB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,cAAc;AAClB;AAEA;QACI,aAAa;QACb,0BAA0B;QAC1B,kCAAkC;QAClC;;;mCAG2B;AAC/B;AAGA;QACI,oBAAoB;QACpB,WAAW;AACf;AAEA;QACI,aAAa;AACjB;AAEA;QACI,mBAAmB;AACvB;AAEA;QACI,eAAe;AACnB;AAEA;QACI,eAAe;AACnB;AAEA;QACI,aAAa;AACjB;AAEA;QACI,wBAAwB;AAC5B;AAEA;QACI,kBAAkB;AACtB;AAEA;QACI,mBAAmB;AACvB;AAEJ","sourcesContent":["<template>\n    <div class=\"main-poster-block\">\n        <div class=\"main-poster-info\">\n            <div class=\"main-poster-section-title\">\n                <h3>Anime Zero</h3>\n                <p>/ Каталог</p>\n            </div>\n            <h2 class=\"main-poster-title\">\n                Смотрите онлайн<br> фильмы на Anime<span>Zero</span>\n            </h2>\n            <p class=\"main-poster-description\">\n                Смотрите фильмы в хорошем качестве<br> только у нас !\n            </p>\n            <div class=\"main-poster-buttons\">\n                <BaseButton @click=\"watchFilm\">\n                    <i class=\"fal fa-play\"/>Перейти к просмотру\n                </BaseButton>\n            </div>\n        </div>\n        <Flickity\n            v-if=\"films.best.length\"\n            ref=\"flickity\"\n            :options=\"flickity.bestFilmSlider\"\n            class=\"flickity\"\n        >\n            <div\n                v-for=\"best in films.best\"\n                :key=\"best.id\"\n                class=\"carousel-cell\"\n            >\n                <InertiaLink\n                    :href=\"route('film.show', best.id)\"\n                    as=\"img\"\n                    class=\"gallery-cell-img\"\n                    :src=\"best.poster\"\n                    :alt=\"best.title\"\n                />\n            </div>\n        </Flickity>\n        <div class=\"main-poster-grid\">\n            <div\n                v-for=\"(best, index) in films.best\"\n                :key=\"best.id\"\n                class=\"image-block\"\n                :class=\"{'selected-poster': index === selected_poster}\"\n                @click=\"selectPoster(index)\"\n            >\n                <img\n                    :src=\"best.poster\"\n                    :alt=\"best.title\"\n                >\n            </div>\n        </div>\n    </div>\n    <div class=\"main-films-block\">\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i class=\"fal fa-chart-bar\"/>\n                <h4>Новинки</h4>\n            </div>\n            <BaseButton @click=\"$inertia.visit(route('films', {years: '2021-2022'}))\">\n                Показать все\n            </BaseButton>\n        </div>\n        <div class=\"films-block-body\">\n            <FilmCard\n                v-for=\"film in films.newest\"\n                :key=\"film.id\"\n                :item=\"film\"\n            />\n        </div>\n        <div class=\"films-block-body mobile\">\n            <Flickity\n                v-if=\"films.newest.length\"\n                ref=\"flickity\"\n                class=\"flickity flickity-films\"\n                :options=\"flickity.filmsSlider\"\n            >\n                <div\n                    v-for=\"film in films.newest\"\n                    :key=\"film.id\"\n                    class=\"carousel-cell carousel-cell-films\"\n                >\n                    <FilmCard :item=\"film\"/>\n                </div>\n            </Flickity>\n        </div>\n    </div>\n    <div\n        v-if=\"films.recommended.length > 2\"\n        class=\"main-films-block main-films-block-big\"\n    >\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i class=\"fal fa-star\"/>\n                <h4>Мы рекомендуем</h4>\n            </div>\n        </div>\n        <div class=\"films-block-body films-block-body-big\">\n            <RecommendedPoster\n:item=\"films.recommended[0]\"\nstyle=\"grid-area: first\"/>\n            <RecommendedPosterSmall\n                :item=\"films.recommended[1]\"\n                style=\"grid-area: second\"/>\n            <RecommendedPosterSmall\n                :item=\"films.recommended[2]\"\n                style=\"grid-area: third\"/>\n        </div>\n    </div>\n    <div class=\"main-films-block\">\n        <div class=\"films-block-head\">\n            <div class=\"films-block-title\">\n                <i><img\n                    src=\"/img/ongoing-icon.svg\"\n                    alt=\"ongoing\"\n                ></i>\n                <h4>Скоро выйдет</h4>\n            </div>\n            <BaseButton @click=\"$inertia.visit(route('films', {statuses: 'Онгоинг'}))\">\n                Показать все\n            </BaseButton>\n        </div>\n        <div class=\"films-block-body ongoing-block mobile\">\n            <OngoingCard\n                v-for=\"ongoing in films.ongoing\"\n                :key=\"ongoing.id\"\n                :item=\"ongoing\"\n            />\n        </div>\n        <Flickity\n            v-if=\"films.ongoing.length\"\n            ref=\"flickity\"\n            :options=\"flickity.filmsSlider\"\n            class=\"flickity flickity-films\"\n        >\n            <div\n                v-for=\"ongoing in films.ongoing\"\n                :key=\"ongoing.id\"\n                class=\"carousel-cell carousel-cell-films\"\n            >\n                <FilmCard :item=\"ongoing\"/>\n            </div>\n        </Flickity>\n    </div>\n</template>\n\n<script>\nimport FilmCard from '../components/FilmCard';\nimport OngoingCard from '../components/OngoingCard';\nimport Flickity from 'vue-flickity';\nimport RecommendedPosterSmall from '../components/RecommendedPosterSmall';\nimport RecommendedPoster from '../components/RecommendedPoster';\n\nexport default {\n    name: 'HomePage',\n    components: {RecommendedPoster, RecommendedPosterSmall, OngoingCard, FilmCard, Flickity},\n    props: {\n        films: {\n            type: Object,\n            required: true,\n        },\n    },\n    data() {\n        return {\n            selected_poster: -1,\n            flickity: {\n                bestFilmSlider: {\n                    initialIndex: 3,\n                    prevNextButtons: false,\n                    pageDots: false,\n                    wrapAround: true\n                },\n                filmsSlider: {\n                    initialIndex: 1,\n                    prevNextButtons: false,\n                    pageDots: false,\n                    wrapAround: true\n                }\n            }\n        };\n    },\n    mounted() {\n        if (this.$page.props.flash.message === 'email-verification-required') {\n            this.$root.setModalState(this.$root.modal.enum.EMAIL_VERIFY);\n            this.$root.openModal();\n        }\n\n        if (this.$page.props.flash.message === 'auth-required') {\n            this.$root.setModalState(this.$root.modal.enum.LOGIN);\n            this.$root.openModal();\n        }\n    },\n    methods: {\n        selectPoster(id) {\n            this.selected_poster = id;\n        },\n        watchFilm() {\n            if (this.selected_poster === -1)\n                return this.$inertia.get(this.route('films'));\n\n            this.$inertia.get(this.route('film.show', this.films.best[this.selected_poster].id));\n        }\n    }\n};\n</script>\n\n<style scoped>\n\n.main-poster-block {\n    width: 100%;\n    height: 100%;\n    max-height: 650px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    z-index: 10;\n    overflow: hidden;\n}\n\n.main-poster-info {\n    display: flex;\n    flex-direction: column;\n}\n\n.main-poster-section-title {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    margin-bottom: 19px;\n}\n\n.main-poster-section-title h3 {\n    font-size: 20px;\n    border-bottom: 2px solid var(--main-color);\n    color: white;\n}\n\n.main-poster-section-title p {\n    font-size: 16px;\n    color: #808080;\n    margin: 0 0 0 6px;\n}\n\n.main-poster-title {\n    font-size: 32px;\n    font-weight: 500;\n    margin-bottom: 29px;\n    line-height: 38px;\n}\n\n.main-poster-title span {\n    color: var(--main-color);\n}\n\n.main-poster-description {\n    font-weight: 500;\n    font-size: 16px;\n    color: #7F7F7F;\n    margin-bottom: 27px;\n}\n\n.main-poster-grid {\n    display: grid;\n    grid-template-rows: repeat(3, 222px);\n    grid-template-columns: repeat(3, 160px);\n    gap: 60px 30px;\n    margin-left: auto;\n    transform: rotate(335deg);\n}\n\n.image-block {\n    border-radius: 10px;\n    overflow: hidden;\n    transition: 0.5s;\n    cursor: pointer;\n}\n\n.image-block:nth-child(2), .image-block:nth-child(5), .image-block:nth-child(8) {\n    transform: translateY(-55%);\n}\n\n.main-films-block {\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    padding: 32px 53px 53px 53px;\n    background: #0F0F0F;\n    margin-bottom: 8px;\n}\n\n.main-films-block:nth-child(2n + 1) {\n    background: none;\n}\n\n.films-block-head, .films-block-title {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n\n.films-block-title i {\n    height: 38px;\n    width: 38px;\n    background: var(--main-color);\n    border-radius: 5px;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    margin-right: 10px;\n}\n\n.films-block-title i img {\n    width: 16px;\n    height: 16px;\n}\n\n.films-block-head button {\n    margin-left: auto;\n}\n\n.films-block-body {\n    margin-top: 40px;\n    display: grid;\n    grid-template-columns: repeat(6, 1fr);\n    grid-template-rows: 1fr;\n    grid-auto-flow: row;\n    justify-content: space-between;\n    gap: 0 20px;\n}\n\n.films-block-body-big {\n    grid-template-rows: repeat(2, 250px);\n    grid-template-areas:\n        \"first first first first second second\"\n        \"first first first first third third\";\n    gap: 36px;\n}\n\n.first {\n    grid-area: first;\n    position: relative;\n    cursor: pointer;\n}\n\n.first img {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    top: 0;\n}\n\n.first button {\n    right: 30px;\n    bottom: 20px;\n    position: absolute;\n    z-index: 150;\n}\n\n.first-text-box {\n    position: absolute;\n    width: 65%;\n    left: 30px;\n    bottom: 20px;\n    z-index: 150;\n}\n\n.main-films-block-big {\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.main-films-block-big .films-block-head {\n    margin: 0 53px 0 53px;\n}\n\n.ongoing-block {\n    grid-template-rows: repeat(2, 240px);\n    grid-template-columns: repeat(2, 500px);\n    gap: 25px 60px;\n    grid-auto-flow: row;\n    justify-content: space-between;\n}\n\n.selected-poster {\n    border: 6px solid var(--main-color);\n    transition: 0.5s;\n}\n\n.flickity {\n    display: none;\n}\n\n@media (max-width: 550px) {\n    .main-poster-block {\n        flex-direction: column;\n    }\n\n    .main-poster-grid {\n        display: none;\n    }\n\n    .main-poster-info {\n        padding: 0 20px;\n        margin-top: 20px;\n    }\n\n    .flickity {\n        display: block;\n        width: 100%;\n        height: 150px;\n        margin: 10px 0 20px 0;\n    }\n\n    .flickity-films {\n        height: 290px;\n    }\n\n    .carousel-cell {\n        width: 120px;\n        margin-right: 18px;\n    }\n\n    .carousel-cell-films {\n        width: 180px;\n    }\n\n    .main-poster-info {\n        width: 100%;\n        margin-bottom: 20px;\n    }\n\n    .main-films-block {\n        padding: 40px 20px;\n    }\n\n    .films-block-body {\n        display: none;\n    }\n\n    .films-block-body.mobile {\n        display: block;\n    }\n\n    .films-block-body.films-block-body-big {\n        display: grid;\n        grid-template-columns: 1fr;\n        grid-template-rows: repeat(3, 1fr);\n        grid-template-areas:\n                            \"first\"\n                            \"second\"\n                            \"third\";\n    }\n\n\n    .films-block-head {\n        margin: 0 !important;\n        width: 100%;\n    }\n\n    .first-text-box p {\n        display: none;\n    }\n\n    .second-info, .third-info {\n        padding-right: 20px;\n    }\n\n    .first h3 {\n        font-size: 14px;\n    }\n\n    .ti-btn {\n        font-size: 12px;\n    }\n\n    .main-poster-section-title, .main-poster-buttons, .films-block-head .ti-btn {\n        display: none;\n    }\n\n    .ongoing-block {\n        display: none !important;\n    }\n\n    .main-poster-title {\n        margin-bottom: 5px;\n    }\n\n    .main-poster-description {\n        margin-bottom: 10px;\n    }\n\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -28188,7 +28276,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.partners-body[data-v-37fb1a3a] {\n    display: flex;\n    flex-direction: column;\n}\n.partners-body .title[data-v-37fb1a3a] {\n    font-weight: 500;\n    font-size: 18px;\n    line-height: 21px;\n    margin-bottom: 25px;\n}\n.contacts[data-v-37fb1a3a] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n.contacts button[data-v-37fb1a3a] {\n    margin-right: 25px;\n    font-size: 18px;\n    height: 50px;\n}\n.contacts a[data-v-37fb1a3a] {\n    text-decoration: none;\n    color: var(--main-color);\n    font-weight: 600;\n}\n\n", "",{"version":3,"sources":["webpack://./PartnersPage.vue"],"names":[],"mappings":";AAqCA;IACI,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,kBAAkB;IAClB,eAAe;IACf,YAAY;AAChB;AAEA;IACI,qBAAqB;IACrB,wBAAwB;IACxB,gBAAgB;AACpB","sourcesContent":["<template>\n    <div class=\"footer-page-container\">\n        <div class=\"footer-page-head\">\n            <h3>Anime Zero</h3>\n            <p>/ Сотрудничество</p>\n        </div>\n        <h2 class=\"footer-page-title\">\n            Партнерам\n        </h2>\n        <p class=\"footer-page-subtitle\">\n            AnimeZero - один из самых крупнейших онлайн-кинотеатров в России, посвященных аниме. Мы успешно работаем с\n            2021 года.Наш кинотеатр всегда рад новым партнерам. За поддержку нашего портала мы будем рады предоставить\n            эксклюзивные предложения и надежные прозрачные взаимоотношения.\n        </p>\n        <div class=\"partners-body\">\n            <p class=\"title\">\n                Получить более подробную информацию о партнерской программе вы можете обратившись в\n                чате:\n            </p>\n            <div class=\"contacts\">\n                <BaseButton>Поддержка</BaseButton>\n                <p>Или на почту <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a></p>\n            </div>\n        </div>\n    </div>\n</template>\n\n<script>\nimport BaseButton from '../components/BaseButton';\n\nexport default {\n    name: 'Partners',\n    components: {BaseButton}\n};\n</script>\n\n<style scoped>\n.partners-body {\n    display: flex;\n    flex-direction: column;\n}\n\n.partners-body .title {\n    font-weight: 500;\n    font-size: 18px;\n    line-height: 21px;\n    margin-bottom: 25px;\n}\n\n.contacts {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n\n.contacts button {\n    margin-right: 25px;\n    font-size: 18px;\n    height: 50px;\n}\n\n.contacts a {\n    text-decoration: none;\n    color: var(--main-color);\n    font-weight: 600;\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.partners-body[data-v-37fb1a3a] {\n    display: flex;\n    flex-direction: column;\n}\n.partners-body .title[data-v-37fb1a3a] {\n    font-weight: 500;\n    font-size: 18px;\n    line-height: 21px;\n    margin-bottom: 25px;\n}\n.contacts[data-v-37fb1a3a] {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n.contacts button[data-v-37fb1a3a] {\n    margin-right: 25px;\n    font-size: 18px;\n    height: 50px;\n}\n.contacts a[data-v-37fb1a3a] {\n    text-decoration: none;\n    color: var(--main-color);\n    font-weight: 600;\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/pages/PartnersPage.vue"],"names":[],"mappings":";AAqCA;IACI,aAAa;IACb,sBAAsB;AAC1B;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,iBAAiB;IACjB,mBAAmB;AACvB;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;AACvB;AAEA;IACI,kBAAkB;IAClB,eAAe;IACf,YAAY;AAChB;AAEA;IACI,qBAAqB;IACrB,wBAAwB;IACxB,gBAAgB;AACpB","sourcesContent":["<template>\n    <div class=\"footer-page-container\">\n        <div class=\"footer-page-head\">\n            <h3>Anime Zero</h3>\n            <p>/ Сотрудничество</p>\n        </div>\n        <h2 class=\"footer-page-title\">\n            Партнерам\n        </h2>\n        <p class=\"footer-page-subtitle\">\n            AnimeZero - один из самых крупнейших онлайн-кинотеатров в России, посвященных аниме. Мы успешно работаем с\n            2021 года.Наш кинотеатр всегда рад новым партнерам. За поддержку нашего портала мы будем рады предоставить\n            эксклюзивные предложения и надежные прозрачные взаимоотношения.\n        </p>\n        <div class=\"partners-body\">\n            <p class=\"title\">\n                Получить более подробную информацию о партнерской программе вы можете обратившись в\n                чате:\n            </p>\n            <div class=\"contacts\">\n                <BaseButton>Поддержка</BaseButton>\n                <p>Или на почту <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a></p>\n            </div>\n        </div>\n    </div>\n</template>\n\n<script>\nimport BaseButton from '../components/BaseButton';\n\nexport default {\n    name: 'PartnersPage',\n    components: {BaseButton}\n};\n</script>\n\n<style scoped>\n.partners-body {\n    display: flex;\n    flex-direction: column;\n}\n\n.partners-body .title {\n    font-weight: 500;\n    font-size: 18px;\n    line-height: 21px;\n    margin-bottom: 25px;\n}\n\n.contacts {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n\n.contacts button {\n    margin-right: 25px;\n    font-size: 18px;\n    height: 50px;\n}\n\n.contacts a {\n    text-decoration: none;\n    color: var(--main-color);\n    font-weight: 600;\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -28215,7 +28303,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.privacy-block[data-v-244915d0] {\n    display: flex;\n    flex-direction: column;\n    font-weight: 500;\n    font-size: 14px;\n}\n.privacy-block h3[data-v-244915d0] {\n    font-weight: 700;\n    font-size: 18px;\n    color: #FFFFFF;\n    margin-bottom: 10px;\n}\n.privacy-block p[data-v-244915d0] {\n    margin-bottom: 10px;\n}\n.privacy-block ul[data-v-244915d0] {\n    margin: 0 0 10px 0;\n    padding-left: 20px;\n    width: 100%;\n    max-width: unset;\n}\n.privacy-block li[data-v-244915d0] {\n    margin: 0;\n}\n.privacy-block a[data-v-244915d0] {\n    color: var(--main-color);\n    text-decoration: none;\n    font-weight: 600;\n}\n\n", "",{"version":3,"sources":["webpack://./PrivacyPolicyPage.vue"],"names":[],"mappings":";AAghBA;IACI,aAAa;IACb,sBAAsB;IACtB,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,mBAAmB;AACvB;AAEA;IACI,kBAAkB;IAClB,kBAAkB;IAClB,WAAW;IACX,gBAAgB;AACpB;AAEA;IACI,SAAS;AACb;AAEA;IACI,wBAAwB;IACxB,qBAAqB;IACrB,gBAAgB;AACpB","sourcesContent":["<template>\n    <div class=\"footer-page-container\">\n        <div class=\"footer-page-head\">\n            <h3>Anime Zero</h3>\n            <p>/ Политика конфиденциальности</p>\n        </div>\n        <h2 class=\"footer-page-title\">\n            Политика конфиденциальности\n        </h2>\n        <p class=\"footer-page-subtitle\">\n            Мы уверяем вас, что данные, оставленные на нашем сайте не будут подвергаться\n            распространению.\n        </p>\n        <div class=\"privacy-block\">\n            <h3>1. Общие положения</h3>\n            <p>\n                Настоящая политика обработки персональных данных составлена в соответствии с требованиями Федерального\n                закона от 27.07.2006. №152-ФЗ «О персональных данных» (далее - Закон о персональных данных) и определяет\n                порядок обработки персональных данных и меры по обеспечению безопасности персональных данных,\n                предпринимаемые ООО «AnimeZero» (далее – Оператор).\n            </p>\n            <ul>\n                <li>\n                    1.1. Оператор ставит своей важнейшей целью и условием осуществления своей деятельности соблюдение\n                    прав и свобод человека и гражданина при обработке его персональных данных, в том числе защиты прав\n                    на неприкосновенность частной жизни, личную и семейную тайну.\n                </li>\n                <li>\n                    1.2. Настоящая политика Оператора в отношении обработки персональных данных (далее – Политика)\n                    применяется ко всей информации, которую Оператор может получить о посетителях веб-сайта\n                    <a href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>2. Основные понятия, используемые в Политике</h3>\n            <ul>\n                <li>\n                    2.1. Автоматизированная обработка персональных данных – обработка персональных данных с помощью\n                    средств вычислительной техники.\n                </li>\n                <li>\n                    2.2. Блокирование персональных данных – временное прекращение обработки персональных данных (за\n                    исключением случаев, если обработка необходима для уточнения персональных данных).\n                </li>\n                <li>\n                    2.3. Веб-сайт – совокупность графических и информационных материалов, а также программ для ЭВМ и баз\n                    данных, обеспечивающих их доступность в сети интернет по сетевому адресу <a\n                    href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    2.4. Информационная система персональных данных — совокупность содержащихся в базах данных\n                    персональных данных, и обеспечивающих их обработку информационных технологий и технических средств.\n                </li>\n                <li>\n                    2.5. Обезличивание персональных данных — действия, в результате которых невозможно определить без\n                    использования дополнительной информации принадлежность персональных данных конкретному Пользователю\n                    или иному субъекту персональных данных.\n                </li>\n                <li>\n                    2.6. Обработка персональных данных – любое действие (операция) или совокупность действий (операций),\n                    совершаемых с использованием средств автоматизации или без использования таких средств с\n                    персональными данными, включая сбор, запись, систематизацию, накопление, хранение, уточнение\n                    (обновление, изменение), извлечение, использование, передачу (распространение, предоставление,\n                    доступ), обезличивание, блокирование, удаление, уничтожение персональных данных.\n                </li>\n                <li>\n                    2.7. Оператор – государственный орган, муниципальный орган, юридическое или физическое лицо,\n                    самостоятельно или совместно с другими лицами организующие и (или) осуществляющие обработку\n                    персональных данных, а также определяющие цели обработки персональных данных, состав персональных\n                    данных, подлежащих обработке, действия (операции), совершаемые с персональными данными.\n                </li>\n                <li>\n                    2.8. Персональные данные – любая информация, относящаяся прямо или косвенно к определенному или\n                    определяемому Пользователю веб-сайта <a href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    2.9. Персональные данные, разрешенные субъектом персональных данных для распространения, -\n                    персональные данные, доступ неограниченного круга лиц к которым предоставлен субъектом персональных\n                    данных путем дачи согласия на обработку персональных данных, разрешенных субъектом персональных\n                    данных для распространения в порядке, предусмотренном Законом о персональных данных (далее -\n                    персональные данные, разрешенные для распространения).\n                </li>\n                <li>\n                    2.10. Пользователь – любой посетитель веб-сайта <a\n                    href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    2.11. Предоставление персональных данных – действия, направленные на раскрытие персональных данных\n                    определенному лицу или определенному кругу лиц.\n                </li>\n                <li>\n                    2.12. Распространение персональных данных – любые действия, направленные на раскрытие персональных\n                    данных неопределенному кругу лиц (передача персональных данных) или на ознакомление с персональными\n                    данными неограниченного круга лиц, в том числе обнародование персональных данных в средствах\n                    массовой информации, размещение в информационно-телекоммуникационных сетях или предоставление\n                    доступа к персональным данным каким-либо иным способом.\n                </li>\n                <li>\n                    2.13. Трансграничная передача персональных данных – передача персональных данных на территорию\n                    иностранного государства органу власти иностранного государства, иностранному физическому или\n                    иностранному юридическому лицу.\n                </li>\n                <li>\n                    2.14. Уничтожение персональных данных – любые действия, в результате которых персональные данные\n                    уничтожаются безвозвратно с невозможностью дальнейшего восстановления содержания персональных данных\n                    в информационной системе персональных данных и (или) уничтожаются материальные носители персональных\n                    данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>3. Основные права и обязанности Оператора</h3>\n            <ul>\n                <li>\n                    3.1. Оператор имеет право:<br>\n                    – получать от субъекта персональных данных достоверные информацию и/или документы, содержащие\n                    персональные данные;<br>\n                    – в случае отзыва субъектом персональных данных согласия на обработку персональных данных Оператор\n                    вправе продолжить обработку персональных данных без согласия субъекта персональных данных при\n                    наличии оснований, указанных в Законе о персональных данных;<br>\n                    – самостоятельно определять состав и перечень мер, необходимых и достаточных для обеспечения\n                    выполнения обязанностей, предусмотренных Законом о персональных данных и принятыми в соответствии с\n                    ним нормативными правовыми актами, если иное не предусмотрено Законом о персональных данных или\n                    другими федеральными законами.\n                </li>\n                <li>\n                    3.2. Оператор обязан:<br>\n                    – предоставлять субъекту персональных данных по его просьбе информацию, касающуюся обработки его\n                    персональных данных;<br>\n                    – организовывать обработку персональных данных в порядке, установленном действующим\n                    законодательством РФ;<br>\n                    – отвечать на обращения и запросы субъектов персональных данных и их законных представителей в\n                    соответствии с требованиями Закона о персональных данных;<br>\n                    – сообщать в уполномоченный орган по защите прав субъектов персональных данных по запросу этого\n                    органа необходимую информацию в течение 30 дней с даты получения такого запроса;<br>\n                    – публиковать или иным образом обеспечивать неограниченный доступ к настоящей Политике в отношении\n                    обработки персональных данных;<br>\n                    – принимать правовые, организационные и технические меры для защиты персональных данных от\n                    неправомерного или случайного доступа к ним, уничтожения, изменения, блокирования, копирования,\n                    предоставления, распространения персональных данных, а также от иных неправомерных действий в\n                    отношении персональных данных;<br>\n                    – прекратить передачу (распространение, предоставление, доступ) персональных данных, прекратить\n                    обработку и уничтожить персональные данные в порядке и случаях, предусмотренных Законом о\n                    персональных данных;<br>\n                    – исполнять иные обязанности, предусмотренные Законом о персональных данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>4. Основные права и обязанности субъектов персональных данных</h3>\n            <ul>\n                <li>\n                    4.1. Субъекты персональных данных имеют право:<br>\n                    – получать информацию, касающуюся обработки его персональных данных, за исключением случаев,\n                    предусмотренных федеральными законами. Сведения предоставляются субъекту персональных данных\n                    Оператором в доступной форме, и в них не должны содержаться персональные данные, относящиеся к\n                    другим субъектам персональных данных, за исключением случаев, когда имеются законные основания для\n                    раскрытия таких персональных данных. Перечень информации и порядок ее получения установлен Законом о\n                    персональных данных;<br>\n                    – требовать от оператора уточнения его персональных данных, их блокирования или уничтожения в\n                    случае, если персональные данные являются неполными, устаревшими, неточными, незаконно полученными\n                    или не являются необходимыми для заявленной цели обработки, а также принимать предусмотренные\n                    законом меры по защите своих прав;<br>\n                    – выдвигать условие предварительного согласия при обработке персональных данных в целях продвижения\n                    на рынке товаров, работ и услуг;<br>\n                    – на отзыв согласия на обработку персональных данных;<br>\n                    – обжаловать в уполномоченный орган по защите прав субъектов персональных данных или в судебном\n                    порядке неправомерные действия или бездействие Оператора при обработке его персональных данных;<br>\n                    – на осуществление иных прав, предусмотренных законодательством РФ.<br>\n                </li>\n                <li>\n                    4.2. Субъекты персональных данных обязаны:\n                    – предоставлять Оператору достоверные данные о себе;<br>\n                    – сообщать Оператору об уточнении (обновлении, изменении) своих персональных данных.<br>\n                </li>\n                <li>\n                    4.3. Лица, передавшие Оператору недостоверные сведения о себе, либо сведения о другом субъекте\n                    персональных данных без согласия последнего, несут ответственность в соответствии с\n                    законодательством РФ.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>5. Оператор может обрабатывать следующие персональные данные Пользователя</h3>\n            <ul>\n                <li>5.1. Электронный адрес.</li>\n                <li>\n                    5.2. Также на сайте происходит сбор и обработка обезличенных данных о посетителях (в т.ч. файлов\n                    «cookie») с помощью сервисов интернет-статистики (Яндекс Метрика и Гугл Аналитика и других).\n                </li>\n                <li>\n                    5.3. Вышеперечисленные данные далее по тексту Политики объединены общим понятием Персональные\n                    данные.\n                </li>\n                <li>\n                    5.4. Обработка специальных категорий персональных данных, касающихся расовой, национальной\n                    принадлежности, политических взглядов, религиозных или философских убеждений, интимной жизни,\n                    Оператором\n                    не осуществляется.\n                </li>\n                <li>\n                    5.5. Обработка персональных данных, разрешенных для распространения, из числа специальных категорий\n                    персональных данных, указанных в ч. 1 ст. 10 Закона о персональных данных, допускается, если\n                    соблюдаются\n                    запреты и условия, предусмотренные ст. 10.1 Закона о персональных данных.\n                </li>\n                <li>\n                    5.6. Согласие Пользователя на обработку персональных данных, разрешенных для распространения,\n                    оформляется отдельно от других согласий на обработку его персональных данных. При этом соблюдаются\n                    условия, предусмотренные, в частности, ст. 10.1 Закона о персональных данных. Требования к\n                    содержанию\n                    такого согласия устанавливаются уполномоченным органом по защите прав субъектов персональных данных.\n                </li>\n                <ul>\n                    <li>\n                        5.6.1 Согласие на обработку персональных данных, разрешенных для распространения,\n                        Пользователь\n                        предоставляет Оператору непосредственно.\n                    </li>\n                    <li>\n                        5.6.2 Оператор обязан в срок не позднее трех рабочих дней с момента получения указанного\n                        согласия\n                        Пользователя опубликовать информацию об условиях обработки, о наличии запретов и условий на\n                        обработку\n                        неограниченным кругом лиц персональных данных, разрешенных для распространения.\n                    </li>\n                    <li>\n                        5.6.3 Передача (распространение, предоставление, доступ) персональных данных, разрешенных\n                        субъектом\n                        персональных данных для распространения, должна быть прекращена в любое время по требованию\n                        субъекта\n                        персональных данных. Данное требование должно включать в себя фамилию, имя, отчество (при\n                        наличии),\n                        контактную информацию (номер телефона, адрес электронной почты или почтовый адрес) субъекта\n                        персональных\n                        данных, а также перечень персональных данных, обработка которых подлежит прекращению.\n                        Указанные в данном\n                        требовании персональные данные могут обрабатываться только Оператором, которому оно\n                        направлено.\n                    </li>\n                    <li>\n                        5.6.4 Согласие на обработку персональных данных, разрешенных для распространения, прекращает\n                        свое\n                        действие с момента поступления Оператору требования, указанного в п. 5.6.3 настоящей\n                        Политики в\n                        отношении обработки персональных данных.\n                    </li>\n                </ul>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>6. Принципы обработки персональных данных</h3>\n            <ul>\n                <li>6.1. Обработка персональных данных осуществляется на законной и справедливой основе.</li>\n                <li>\n                    6.2. Обработка персональных данных ограничивается достижением конкретных, заранее определенных и\n                    законных целей. Не допускается обработка персональных данных, несовместимая с целями сбора\n                    персональных\n                    данных.\n                </li>\n                <li>\n                    6.3. Не допускается объединение баз данных, содержащих персональные данные, обработка которых\n                    осуществляется в целях, несовместимых между собой.\n                </li>\n                <li>6.4. Обработке подлежат только персональные данные, которые отвечают целям их обработки.</li>\n                <li>\n                    6.5. Содержание и объем обрабатываемых персональных данных соответствуют заявленным целям обработки.\n                    Не\n                    допускается избыточность обрабатываемых персональных данных по отношению к заявленным целям их\n                    обработки.\n                </li>\n                <li>\n                    6.6. При обработке персональных данных обеспечивается точность персональных данных, их\n                    достаточность, а\n                    в необходимых случаях и актуальность по отношению к целям обработки персональных данных. Оператор\n                    принимает необходимые меры и/или обеспечивает их принятие по удалению или уточнению неполных или\n                    неточных данных.\n                </li>\n                <li>\n                    6.7. Хранение персональных данных осуществляется в форме, позволяющей определить субъекта\n                    персональных\n                    данных, не дольше, чем этого требуют цели обработки персональных данных, если срок хранения\n                    персональных\n                    данных не установлен федеральным законом, договором, стороной которого, выгодоприобретателем или\n                    поручителем по которому является субъект персональных данных. Обрабатываемые персональные данные\n                    уничтожаются либо обезличиваются по достижении целей обработки или в случае утраты необходимости в\n                    достижении этих целей, если иное не предусмотрено федеральным законом.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>7. Цели обработки персональных данных</h3>\n            <ul>\n                <li>\n                    7.1. Цель обработки персональных данных Пользователя:<br>\n                    – информирование Пользователя посредством отправки электронных писем;<br>\n                    – предоставление доступа Пользователю к сервисам, информации и/или материалам, содержащимся на\n                    веб-сайте\n                    <a href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    7.2. Также Оператор имеет право направлять Пользователю уведомления о новых продуктах и услугах,\n                    специальных предложениях и различных событиях. Пользователь всегда может отказаться от получения\n                    информационных сообщений, направив Оператору письмо на адрес электронной почты <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> с\n                    пометкой «Отказ от уведомлений о новых продуктах и услугах и специальных предложениях».\n                </li>\n                <li>\n                    7.3. Обезличенные данные Пользователей, собираемые с помощью сервисов интернет-статистики, служат\n                    для\n                    сбора информации о действиях Пользователей на сайте, улучшения качества сайта и его содержания.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>8. Правовые основания обработки персональных данных</h3>\n            <ul>\n                <li>\n                    8.1. Правовыми основаниями обработки персональных данных Оператором являются:<br>\n                    – перечислите нормативно-правовые акты, регулирующие отношения, связанные с вашей деятельностью,\n                    например, если ваша деятельность связана с информационными технологиями, в частности с созданием\n                    сайтов,\n                    то здесь можно указать Федеральный закон \"Об информации, информационных технологиях и о защите\n                    информации\" от 27.07.2006 N 149-ФЗ;<br>\n                    – уставные документы Оператора;<br>\n                    – договоры, заключаемые между оператором и субъектом персональных данных;<br>\n                    – федеральные законы, иные нормативно-правовые акты в сфере защиты персональных данных;<br>\n                    – согласия Пользователей на обработку их персональных данных, на обработку персональных данных,\n                    разрешенных для распространения.\n                </li>\n                <li>\n                    8.2. Оператор обрабатывает персональные данные Пользователя только в случае их заполнения и/или\n                    отправки\n                    Пользователем самостоятельно через специальные формы, расположенные на сайте https://animezero.ru\n                    или\n                    направленные Оператору посредством электронной почты. Заполняя соответствующие формы и/или отправляя\n                    свои персональные данные Оператору, Пользователь выражает свое согласие с данной Политикой.\n                </li>\n                <li>\n                    8.3. Оператор обрабатывает обезличенные данные о Пользователе в случае, если это разрешено в\n                    настройках\n                    браузера Пользователя (включено сохранение файлов «cookie» и использование технологии JavaScript).\n                </li>\n                <li>\n                    8.4. Субъект персональных данных самостоятельно принимает решение о предоставлении его персональных\n                    данных и дает согласие свободно, своей волей и в своем интересе.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>9. Условия обработки персональных данных</h3>\n            <ul>\n                <li>\n                    9.1. Обработка персональных данных осуществляется с согласия субъекта персональных данных на\n                    обработку его персональных данных.\n                </li>\n                <li>\n                    9.2. Обработка персональных данных необходима для достижения целей, предусмотренных международным\n                    договором Российской Федерации или законом, для осуществления возложенных законодательством\n                    Российской Федерации на оператора функций, полномочий и обязанностей.\n                </li>\n                <li>\n                    9.3. Обработка персональных данных необходима для осуществления правосудия, исполнения судебного\n                    акта, акта другого органа или должностного лица, подлежащих исполнению в соответствии с\n                    законодательством Российской Федерации об исполнительном производстве.\n                </li>\n                <li>\n                    9.4. Обработка персональных данных необходима для исполнения договора, стороной которого либо\n                    выгодоприобретателем или поручителем по которому является субъект персональных данных, а также для\n                    заключения договора по инициативе субъекта персональных данных или договора, по которому субъект\n                    персональных данных будет являться выгодоприобретателем или поручителем.\n                </li>\n                <li>\n                    9.5. Обработка персональных данных необходима для осуществления прав и законных интересов оператора\n                    или третьих лиц либо для достижения общественно значимых целей при условии, что при этом не\n                    нарушаются права и свободы субъекта персональных данных.\n                </li>\n                <li>\n                    9.6. Осуществляется обработка персональных данных, доступ неограниченного круга лиц к которым\n                    предоставлен субъектом персональных данных либо по его просьбе (далее – общедоступные персональные\n                    данные).\n                </li>\n                <li>\n                    9.7. Осуществляется обработка персональных данных, подлежащих опубликованию или обязательному\n                    раскрытию в соответствии с федеральным законом.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>10. Порядок сбора, хранения, передачи и других видов обработки персональных данных</h3>\n            <p>\n                Безопасность персональных данных, которые обрабатываются Оператором, обеспечивается путем реализации\n                правовых, организационных и технических мер, необходимых для выполнения в полном объеме требований\n                действующего законодательства в области защиты персональных данных.\n            </p>\n            <ul>\n                <li>\n                    10.1. Оператор обеспечивает сохранность персональных данных и принимает все возможные меры,\n                    исключающие\n                    доступ к персональным данным неуполномоченных лиц.\n                </li>\n                <li>\n                    10.2. Персональные данные Пользователя никогда, ни при каких условиях не будут переданы третьим\n                    лицам,\n                    за исключением случаев, связанных с исполнением действующего законодательства либо в случае, если\n                    субъектом персональных данных дано согласие Оператору на передачу данных третьему лицу для\n                    исполнения\n                    обязательств по гражданско-правовому договору.\n                </li>\n                <li>\n                    10.3. В случае выявления неточностей в персональных данных, Пользователь может актуализировать их\n                    самостоятельно, путем направления Оператору уведомление на адрес электронной почты Оператора\n                    <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> с пометкой «Актуализация персональных данных».\n                </li>\n                <li>\n                    10.4. Срок обработки персональных данных определяется достижением целей, для которых были собраны\n                    персональные данные, если иной срок не предусмотрен договором или действующим законодательством.\n                    Пользователь может в любой момент отозвать свое согласие на обработку персональных данных, направив\n                    Оператору уведомление посредством электронной почты на электронный адрес Оператора\n                    <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> с\n                    пометкой «Отзыв согласия на обработку персональных данных».\n                </li>\n                <li>\n                    10.5. Вся информация, которая собирается сторонними сервисами, в том числе платежными системами,\n                    средствами связи и другими поставщиками услуг, хранится и обрабатывается указанными лицами\n                    (Операторами)\n                    в соответствии с их Пользовательским соглашением и Политикой конфиденциальности. Субъект\n                    персональных\n                    данных и/или Пользователь обязан самостоятельно своевременно ознакомиться с указанными документами.\n                    Оператор не несет ответственность за действия третьих лиц, в том числе указанных в настоящем пункте\n                    поставщиков услуг.\n                </li>\n                <li>\n                    10.6. Установленные субъектом персональных данных запреты на передачу (кроме предоставления\n                    доступа), а\n                    также на обработку или условия обработки (кроме получения доступа) персональных данных, разрешенных\n                    для\n                    распространения, не действуют в случаях обработки персональных данных в государственных,\n                    общественных и\n                    иных публичных интересах, определенных законодательством РФ.\n                </li>\n                <li>\n                    10.7. Оператор при обработке персональных данных обеспечивает конфиденциальность персональных\n                    данных.\n                </li>\n                <li>\n                    10.8. Оператор осуществляет хранение персональных данных в форме, позволяющей определить субъекта\n                    персональных данных, не дольше, чем этого требуют цели обработки персональных данных, если срок\n                    хранения\n                    персональных данных не установлен федеральным законом, договором, стороной которого,\n                    выгодоприобретателем или поручителем по которому является субъект персональных данных.\n                </li>\n                <li>\n                    10.9. Условием прекращения обработки персональных данных может являться достижение целей обработки\n                    персональных данных, истечение срока действия согласия субъекта персональных данных или отзыв\n                    согласия\n                    субъектом персональных данных, а также выявление неправомерной обработки персональных данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>11. Перечень действий, производимых Оператором с полученными персональными данными</h3>\n            <ul>\n                <li>\n                    11.1. Оператор осуществляет сбор, запись, систематизацию, накопление, хранение, уточнение\n                    (обновление,\n                    изменение), извлечение, использование, передачу (распространение, предоставление, доступ),\n                    обезличивание, блокирование, удаление и уничтожение персональных данных.\n                </li>\n                <li>\n                    11.2. Оператор осуществляет автоматизированную обработку персональных данных с получением и/или\n                    передачей полученной информации по информационно-телекоммуникационным сетям или без таковой.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>12. Трансграничная передача персональных данных</h3>\n            <ul>\n                <li>\n                    12.1. Оператор до начала осуществления трансграничной передачи персональных данных обязан убедиться\n                    в\n                    том, что иностранным государством, на территорию которого предполагается осуществлять передачу\n                    персональных данных, обеспечивается надежная защита прав субъектов персональных данных.\n                </li>\n                12.2. Трансграничная передача персональных данных на территории иностранных государств, не отвечающих\n                <li>\n                    вышеуказанным требованиям, может осуществляться только в случае наличия согласия в письменной форме\n                    субъекта персональных данных на трансграничную передачу его персональных данных и/или исполнения\n                    договора, стороной которого является субъект персональных данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>13. Конфиденциальность персональных данных</h3>\n            <p>\n                Оператор и иные лица, получившие доступ к персональным данным, обязаны не раскрывать третьим лицам и не\n                распространять персональные данные без согласия субъекта персональных данных, если иное не предусмотрено\n                федеральным законом.\n            </p>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>14. Заключительные положения</h3>\n            <ul>\n                <li>\n                    14.1. Пользователь может получить любые разъяснения по интересующим вопросам, касающимся обработки\n                    его персональных данных, обратившись к Оператору с помощью электронной почты <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a>.\n                </li>\n                <li>\n                    14.2. В данном документе будут отражены любые изменения политики обработки персональных данных\n                    Оператором. Политика действует бессрочно до замены ее новой версией.\n                </li>\n                <li>\n                    14.3. Актуальная версия Политики в свободном доступе расположена в сети Интернет по адресу\n                    <a href=\"https://animezero.ru/privacy\">https://animezero.ru/privacy</a>.\n                </li>\n            </ul>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'PrivacyPolicyPage'\n};\n</script>\n\n<style scoped>\n\n.privacy-block {\n    display: flex;\n    flex-direction: column;\n    font-weight: 500;\n    font-size: 14px;\n}\n\n.privacy-block h3 {\n    font-weight: 700;\n    font-size: 18px;\n    color: #FFFFFF;\n    margin-bottom: 10px;\n}\n\n.privacy-block p {\n    margin-bottom: 10px;\n}\n\n.privacy-block ul {\n    margin: 0 0 10px 0;\n    padding-left: 20px;\n    width: 100%;\n    max-width: unset;\n}\n\n.privacy-block li {\n    margin: 0;\n}\n\n.privacy-block a {\n    color: var(--main-color);\n    text-decoration: none;\n    font-weight: 600;\n}\n\n</style>\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.privacy-block[data-v-244915d0] {\n    display: flex;\n    flex-direction: column;\n    font-weight: 500;\n    font-size: 14px;\n}\n.privacy-block h3[data-v-244915d0] {\n    font-weight: 700;\n    font-size: 18px;\n    color: #FFFFFF;\n    margin-bottom: 10px;\n}\n.privacy-block p[data-v-244915d0] {\n    margin-bottom: 10px;\n}\n.privacy-block ul[data-v-244915d0] {\n    margin: 0 0 10px 0;\n    padding-left: 20px;\n    width: 100%;\n    max-width: unset;\n}\n.privacy-block li[data-v-244915d0] {\n    margin: 0;\n}\n.privacy-block a[data-v-244915d0] {\n    color: var(--main-color);\n    text-decoration: none;\n    font-weight: 600;\n}\n\n", "",{"version":3,"sources":["webpack://./resources/js/pages/PrivacyPolicyPage.vue"],"names":[],"mappings":";AAghBA;IACI,aAAa;IACb,sBAAsB;IACtB,gBAAgB;IAChB,eAAe;AACnB;AAEA;IACI,gBAAgB;IAChB,eAAe;IACf,cAAc;IACd,mBAAmB;AACvB;AAEA;IACI,mBAAmB;AACvB;AAEA;IACI,kBAAkB;IAClB,kBAAkB;IAClB,WAAW;IACX,gBAAgB;AACpB;AAEA;IACI,SAAS;AACb;AAEA;IACI,wBAAwB;IACxB,qBAAqB;IACrB,gBAAgB;AACpB","sourcesContent":["<template>\n    <div class=\"footer-page-container\">\n        <div class=\"footer-page-head\">\n            <h3>Anime Zero</h3>\n            <p>/ Политика конфиденциальности</p>\n        </div>\n        <h2 class=\"footer-page-title\">\n            Политика конфиденциальности\n        </h2>\n        <p class=\"footer-page-subtitle\">\n            Мы уверяем вас, что данные, оставленные на нашем сайте не будут подвергаться\n            распространению.\n        </p>\n        <div class=\"privacy-block\">\n            <h3>1. Общие положения</h3>\n            <p>\n                Настоящая политика обработки персональных данных составлена в соответствии с требованиями Федерального\n                закона от 27.07.2006. №152-ФЗ «О персональных данных» (далее - Закон о персональных данных) и определяет\n                порядок обработки персональных данных и меры по обеспечению безопасности персональных данных,\n                предпринимаемые ООО «AnimeZero» (далее – Оператор).\n            </p>\n            <ul>\n                <li>\n                    1.1. Оператор ставит своей важнейшей целью и условием осуществления своей деятельности соблюдение\n                    прав и свобод человека и гражданина при обработке его персональных данных, в том числе защиты прав\n                    на неприкосновенность частной жизни, личную и семейную тайну.\n                </li>\n                <li>\n                    1.2. Настоящая политика Оператора в отношении обработки персональных данных (далее – Политика)\n                    применяется ко всей информации, которую Оператор может получить о посетителях веб-сайта\n                    <a href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>2. Основные понятия, используемые в Политике</h3>\n            <ul>\n                <li>\n                    2.1. Автоматизированная обработка персональных данных – обработка персональных данных с помощью\n                    средств вычислительной техники.\n                </li>\n                <li>\n                    2.2. Блокирование персональных данных – временное прекращение обработки персональных данных (за\n                    исключением случаев, если обработка необходима для уточнения персональных данных).\n                </li>\n                <li>\n                    2.3. Веб-сайт – совокупность графических и информационных материалов, а также программ для ЭВМ и баз\n                    данных, обеспечивающих их доступность в сети интернет по сетевому адресу <a\n                    href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    2.4. Информационная система персональных данных — совокупность содержащихся в базах данных\n                    персональных данных, и обеспечивающих их обработку информационных технологий и технических средств.\n                </li>\n                <li>\n                    2.5. Обезличивание персональных данных — действия, в результате которых невозможно определить без\n                    использования дополнительной информации принадлежность персональных данных конкретному Пользователю\n                    или иному субъекту персональных данных.\n                </li>\n                <li>\n                    2.6. Обработка персональных данных – любое действие (операция) или совокупность действий (операций),\n                    совершаемых с использованием средств автоматизации или без использования таких средств с\n                    персональными данными, включая сбор, запись, систематизацию, накопление, хранение, уточнение\n                    (обновление, изменение), извлечение, использование, передачу (распространение, предоставление,\n                    доступ), обезличивание, блокирование, удаление, уничтожение персональных данных.\n                </li>\n                <li>\n                    2.7. Оператор – государственный орган, муниципальный орган, юридическое или физическое лицо,\n                    самостоятельно или совместно с другими лицами организующие и (или) осуществляющие обработку\n                    персональных данных, а также определяющие цели обработки персональных данных, состав персональных\n                    данных, подлежащих обработке, действия (операции), совершаемые с персональными данными.\n                </li>\n                <li>\n                    2.8. Персональные данные – любая информация, относящаяся прямо или косвенно к определенному или\n                    определяемому Пользователю веб-сайта <a href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    2.9. Персональные данные, разрешенные субъектом персональных данных для распространения, -\n                    персональные данные, доступ неограниченного круга лиц к которым предоставлен субъектом персональных\n                    данных путем дачи согласия на обработку персональных данных, разрешенных субъектом персональных\n                    данных для распространения в порядке, предусмотренном Законом о персональных данных (далее -\n                    персональные данные, разрешенные для распространения).\n                </li>\n                <li>\n                    2.10. Пользователь – любой посетитель веб-сайта <a\n                    href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    2.11. Предоставление персональных данных – действия, направленные на раскрытие персональных данных\n                    определенному лицу или определенному кругу лиц.\n                </li>\n                <li>\n                    2.12. Распространение персональных данных – любые действия, направленные на раскрытие персональных\n                    данных неопределенному кругу лиц (передача персональных данных) или на ознакомление с персональными\n                    данными неограниченного круга лиц, в том числе обнародование персональных данных в средствах\n                    массовой информации, размещение в информационно-телекоммуникационных сетях или предоставление\n                    доступа к персональным данным каким-либо иным способом.\n                </li>\n                <li>\n                    2.13. Трансграничная передача персональных данных – передача персональных данных на территорию\n                    иностранного государства органу власти иностранного государства, иностранному физическому или\n                    иностранному юридическому лицу.\n                </li>\n                <li>\n                    2.14. Уничтожение персональных данных – любые действия, в результате которых персональные данные\n                    уничтожаются безвозвратно с невозможностью дальнейшего восстановления содержания персональных данных\n                    в информационной системе персональных данных и (или) уничтожаются материальные носители персональных\n                    данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>3. Основные права и обязанности Оператора</h3>\n            <ul>\n                <li>\n                    3.1. Оператор имеет право:<br>\n                    – получать от субъекта персональных данных достоверные информацию и/или документы, содержащие\n                    персональные данные;<br>\n                    – в случае отзыва субъектом персональных данных согласия на обработку персональных данных Оператор\n                    вправе продолжить обработку персональных данных без согласия субъекта персональных данных при\n                    наличии оснований, указанных в Законе о персональных данных;<br>\n                    – самостоятельно определять состав и перечень мер, необходимых и достаточных для обеспечения\n                    выполнения обязанностей, предусмотренных Законом о персональных данных и принятыми в соответствии с\n                    ним нормативными правовыми актами, если иное не предусмотрено Законом о персональных данных или\n                    другими федеральными законами.\n                </li>\n                <li>\n                    3.2. Оператор обязан:<br>\n                    – предоставлять субъекту персональных данных по его просьбе информацию, касающуюся обработки его\n                    персональных данных;<br>\n                    – организовывать обработку персональных данных в порядке, установленном действующим\n                    законодательством РФ;<br>\n                    – отвечать на обращения и запросы субъектов персональных данных и их законных представителей в\n                    соответствии с требованиями Закона о персональных данных;<br>\n                    – сообщать в уполномоченный орган по защите прав субъектов персональных данных по запросу этого\n                    органа необходимую информацию в течение 30 дней с даты получения такого запроса;<br>\n                    – публиковать или иным образом обеспечивать неограниченный доступ к настоящей Политике в отношении\n                    обработки персональных данных;<br>\n                    – принимать правовые, организационные и технические меры для защиты персональных данных от\n                    неправомерного или случайного доступа к ним, уничтожения, изменения, блокирования, копирования,\n                    предоставления, распространения персональных данных, а также от иных неправомерных действий в\n                    отношении персональных данных;<br>\n                    – прекратить передачу (распространение, предоставление, доступ) персональных данных, прекратить\n                    обработку и уничтожить персональные данные в порядке и случаях, предусмотренных Законом о\n                    персональных данных;<br>\n                    – исполнять иные обязанности, предусмотренные Законом о персональных данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>4. Основные права и обязанности субъектов персональных данных</h3>\n            <ul>\n                <li>\n                    4.1. Субъекты персональных данных имеют право:<br>\n                    – получать информацию, касающуюся обработки его персональных данных, за исключением случаев,\n                    предусмотренных федеральными законами. Сведения предоставляются субъекту персональных данных\n                    Оператором в доступной форме, и в них не должны содержаться персональные данные, относящиеся к\n                    другим субъектам персональных данных, за исключением случаев, когда имеются законные основания для\n                    раскрытия таких персональных данных. Перечень информации и порядок ее получения установлен Законом о\n                    персональных данных;<br>\n                    – требовать от оператора уточнения его персональных данных, их блокирования или уничтожения в\n                    случае, если персональные данные являются неполными, устаревшими, неточными, незаконно полученными\n                    или не являются необходимыми для заявленной цели обработки, а также принимать предусмотренные\n                    законом меры по защите своих прав;<br>\n                    – выдвигать условие предварительного согласия при обработке персональных данных в целях продвижения\n                    на рынке товаров, работ и услуг;<br>\n                    – на отзыв согласия на обработку персональных данных;<br>\n                    – обжаловать в уполномоченный орган по защите прав субъектов персональных данных или в судебном\n                    порядке неправомерные действия или бездействие Оператора при обработке его персональных данных;<br>\n                    – на осуществление иных прав, предусмотренных законодательством РФ.<br>\n                </li>\n                <li>\n                    4.2. Субъекты персональных данных обязаны:\n                    – предоставлять Оператору достоверные данные о себе;<br>\n                    – сообщать Оператору об уточнении (обновлении, изменении) своих персональных данных.<br>\n                </li>\n                <li>\n                    4.3. Лица, передавшие Оператору недостоверные сведения о себе, либо сведения о другом субъекте\n                    персональных данных без согласия последнего, несут ответственность в соответствии с\n                    законодательством РФ.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>5. Оператор может обрабатывать следующие персональные данные Пользователя</h3>\n            <ul>\n                <li>5.1. Электронный адрес.</li>\n                <li>\n                    5.2. Также на сайте происходит сбор и обработка обезличенных данных о посетителях (в т.ч. файлов\n                    «cookie») с помощью сервисов интернет-статистики (Яндекс Метрика и Гугл Аналитика и других).\n                </li>\n                <li>\n                    5.3. Вышеперечисленные данные далее по тексту Политики объединены общим понятием Персональные\n                    данные.\n                </li>\n                <li>\n                    5.4. Обработка специальных категорий персональных данных, касающихся расовой, национальной\n                    принадлежности, политических взглядов, религиозных или философских убеждений, интимной жизни,\n                    Оператором\n                    не осуществляется.\n                </li>\n                <li>\n                    5.5. Обработка персональных данных, разрешенных для распространения, из числа специальных категорий\n                    персональных данных, указанных в ч. 1 ст. 10 Закона о персональных данных, допускается, если\n                    соблюдаются\n                    запреты и условия, предусмотренные ст. 10.1 Закона о персональных данных.\n                </li>\n                <li>\n                    5.6. Согласие Пользователя на обработку персональных данных, разрешенных для распространения,\n                    оформляется отдельно от других согласий на обработку его персональных данных. При этом соблюдаются\n                    условия, предусмотренные, в частности, ст. 10.1 Закона о персональных данных. Требования к\n                    содержанию\n                    такого согласия устанавливаются уполномоченным органом по защите прав субъектов персональных данных.\n                </li>\n                <ul>\n                    <li>\n                        5.6.1 Согласие на обработку персональных данных, разрешенных для распространения,\n                        Пользователь\n                        предоставляет Оператору непосредственно.\n                    </li>\n                    <li>\n                        5.6.2 Оператор обязан в срок не позднее трех рабочих дней с момента получения указанного\n                        согласия\n                        Пользователя опубликовать информацию об условиях обработки, о наличии запретов и условий на\n                        обработку\n                        неограниченным кругом лиц персональных данных, разрешенных для распространения.\n                    </li>\n                    <li>\n                        5.6.3 Передача (распространение, предоставление, доступ) персональных данных, разрешенных\n                        субъектом\n                        персональных данных для распространения, должна быть прекращена в любое время по требованию\n                        субъекта\n                        персональных данных. Данное требование должно включать в себя фамилию, имя, отчество (при\n                        наличии),\n                        контактную информацию (номер телефона, адрес электронной почты или почтовый адрес) субъекта\n                        персональных\n                        данных, а также перечень персональных данных, обработка которых подлежит прекращению.\n                        Указанные в данном\n                        требовании персональные данные могут обрабатываться только Оператором, которому оно\n                        направлено.\n                    </li>\n                    <li>\n                        5.6.4 Согласие на обработку персональных данных, разрешенных для распространения, прекращает\n                        свое\n                        действие с момента поступления Оператору требования, указанного в п. 5.6.3 настоящей\n                        Политики в\n                        отношении обработки персональных данных.\n                    </li>\n                </ul>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>6. Принципы обработки персональных данных</h3>\n            <ul>\n                <li>6.1. Обработка персональных данных осуществляется на законной и справедливой основе.</li>\n                <li>\n                    6.2. Обработка персональных данных ограничивается достижением конкретных, заранее определенных и\n                    законных целей. Не допускается обработка персональных данных, несовместимая с целями сбора\n                    персональных\n                    данных.\n                </li>\n                <li>\n                    6.3. Не допускается объединение баз данных, содержащих персональные данные, обработка которых\n                    осуществляется в целях, несовместимых между собой.\n                </li>\n                <li>6.4. Обработке подлежат только персональные данные, которые отвечают целям их обработки.</li>\n                <li>\n                    6.5. Содержание и объем обрабатываемых персональных данных соответствуют заявленным целям обработки.\n                    Не\n                    допускается избыточность обрабатываемых персональных данных по отношению к заявленным целям их\n                    обработки.\n                </li>\n                <li>\n                    6.6. При обработке персональных данных обеспечивается точность персональных данных, их\n                    достаточность, а\n                    в необходимых случаях и актуальность по отношению к целям обработки персональных данных. Оператор\n                    принимает необходимые меры и/или обеспечивает их принятие по удалению или уточнению неполных или\n                    неточных данных.\n                </li>\n                <li>\n                    6.7. Хранение персональных данных осуществляется в форме, позволяющей определить субъекта\n                    персональных\n                    данных, не дольше, чем этого требуют цели обработки персональных данных, если срок хранения\n                    персональных\n                    данных не установлен федеральным законом, договором, стороной которого, выгодоприобретателем или\n                    поручителем по которому является субъект персональных данных. Обрабатываемые персональные данные\n                    уничтожаются либо обезличиваются по достижении целей обработки или в случае утраты необходимости в\n                    достижении этих целей, если иное не предусмотрено федеральным законом.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>7. Цели обработки персональных данных</h3>\n            <ul>\n                <li>\n                    7.1. Цель обработки персональных данных Пользователя:<br>\n                    – информирование Пользователя посредством отправки электронных писем;<br>\n                    – предоставление доступа Пользователю к сервисам, информации и/или материалам, содержащимся на\n                    веб-сайте\n                    <a href=\"https://animezero.ru\">https://animezero.ru</a>.\n                </li>\n                <li>\n                    7.2. Также Оператор имеет право направлять Пользователю уведомления о новых продуктах и услугах,\n                    специальных предложениях и различных событиях. Пользователь всегда может отказаться от получения\n                    информационных сообщений, направив Оператору письмо на адрес электронной почты <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> с\n                    пометкой «Отказ от уведомлений о новых продуктах и услугах и специальных предложениях».\n                </li>\n                <li>\n                    7.3. Обезличенные данные Пользователей, собираемые с помощью сервисов интернет-статистики, служат\n                    для\n                    сбора информации о действиях Пользователей на сайте, улучшения качества сайта и его содержания.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>8. Правовые основания обработки персональных данных</h3>\n            <ul>\n                <li>\n                    8.1. Правовыми основаниями обработки персональных данных Оператором являются:<br>\n                    – перечислите нормативно-правовые акты, регулирующие отношения, связанные с вашей деятельностью,\n                    например, если ваша деятельность связана с информационными технологиями, в частности с созданием\n                    сайтов,\n                    то здесь можно указать Федеральный закон \"Об информации, информационных технологиях и о защите\n                    информации\" от 27.07.2006 N 149-ФЗ;<br>\n                    – уставные документы Оператора;<br>\n                    – договоры, заключаемые между оператором и субъектом персональных данных;<br>\n                    – федеральные законы, иные нормативно-правовые акты в сфере защиты персональных данных;<br>\n                    – согласия Пользователей на обработку их персональных данных, на обработку персональных данных,\n                    разрешенных для распространения.\n                </li>\n                <li>\n                    8.2. Оператор обрабатывает персональные данные Пользователя только в случае их заполнения и/или\n                    отправки\n                    Пользователем самостоятельно через специальные формы, расположенные на сайте https://animezero.ru\n                    или\n                    направленные Оператору посредством электронной почты. Заполняя соответствующие формы и/или отправляя\n                    свои персональные данные Оператору, Пользователь выражает свое согласие с данной Политикой.\n                </li>\n                <li>\n                    8.3. Оператор обрабатывает обезличенные данные о Пользователе в случае, если это разрешено в\n                    настройках\n                    браузера Пользователя (включено сохранение файлов «cookie» и использование технологии JavaScript).\n                </li>\n                <li>\n                    8.4. Субъект персональных данных самостоятельно принимает решение о предоставлении его персональных\n                    данных и дает согласие свободно, своей волей и в своем интересе.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>9. Условия обработки персональных данных</h3>\n            <ul>\n                <li>\n                    9.1. Обработка персональных данных осуществляется с согласия субъекта персональных данных на\n                    обработку его персональных данных.\n                </li>\n                <li>\n                    9.2. Обработка персональных данных необходима для достижения целей, предусмотренных международным\n                    договором Российской Федерации или законом, для осуществления возложенных законодательством\n                    Российской Федерации на оператора функций, полномочий и обязанностей.\n                </li>\n                <li>\n                    9.3. Обработка персональных данных необходима для осуществления правосудия, исполнения судебного\n                    акта, акта другого органа или должностного лица, подлежащих исполнению в соответствии с\n                    законодательством Российской Федерации об исполнительном производстве.\n                </li>\n                <li>\n                    9.4. Обработка персональных данных необходима для исполнения договора, стороной которого либо\n                    выгодоприобретателем или поручителем по которому является субъект персональных данных, а также для\n                    заключения договора по инициативе субъекта персональных данных или договора, по которому субъект\n                    персональных данных будет являться выгодоприобретателем или поручителем.\n                </li>\n                <li>\n                    9.5. Обработка персональных данных необходима для осуществления прав и законных интересов оператора\n                    или третьих лиц либо для достижения общественно значимых целей при условии, что при этом не\n                    нарушаются права и свободы субъекта персональных данных.\n                </li>\n                <li>\n                    9.6. Осуществляется обработка персональных данных, доступ неограниченного круга лиц к которым\n                    предоставлен субъектом персональных данных либо по его просьбе (далее – общедоступные персональные\n                    данные).\n                </li>\n                <li>\n                    9.7. Осуществляется обработка персональных данных, подлежащих опубликованию или обязательному\n                    раскрытию в соответствии с федеральным законом.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>10. Порядок сбора, хранения, передачи и других видов обработки персональных данных</h3>\n            <p>\n                Безопасность персональных данных, которые обрабатываются Оператором, обеспечивается путем реализации\n                правовых, организационных и технических мер, необходимых для выполнения в полном объеме требований\n                действующего законодательства в области защиты персональных данных.\n            </p>\n            <ul>\n                <li>\n                    10.1. Оператор обеспечивает сохранность персональных данных и принимает все возможные меры,\n                    исключающие\n                    доступ к персональным данным неуполномоченных лиц.\n                </li>\n                <li>\n                    10.2. Персональные данные Пользователя никогда, ни при каких условиях не будут переданы третьим\n                    лицам,\n                    за исключением случаев, связанных с исполнением действующего законодательства либо в случае, если\n                    субъектом персональных данных дано согласие Оператору на передачу данных третьему лицу для\n                    исполнения\n                    обязательств по гражданско-правовому договору.\n                </li>\n                <li>\n                    10.3. В случае выявления неточностей в персональных данных, Пользователь может актуализировать их\n                    самостоятельно, путем направления Оператору уведомление на адрес электронной почты Оператора\n                    <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> с пометкой «Актуализация персональных данных».\n                </li>\n                <li>\n                    10.4. Срок обработки персональных данных определяется достижением целей, для которых были собраны\n                    персональные данные, если иной срок не предусмотрен договором или действующим законодательством.\n                    Пользователь может в любой момент отозвать свое согласие на обработку персональных данных, направив\n                    Оператору уведомление посредством электронной почты на электронный адрес Оператора\n                    <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a> с\n                    пометкой «Отзыв согласия на обработку персональных данных».\n                </li>\n                <li>\n                    10.5. Вся информация, которая собирается сторонними сервисами, в том числе платежными системами,\n                    средствами связи и другими поставщиками услуг, хранится и обрабатывается указанными лицами\n                    (Операторами)\n                    в соответствии с их Пользовательским соглашением и Политикой конфиденциальности. Субъект\n                    персональных\n                    данных и/или Пользователь обязан самостоятельно своевременно ознакомиться с указанными документами.\n                    Оператор не несет ответственность за действия третьих лиц, в том числе указанных в настоящем пункте\n                    поставщиков услуг.\n                </li>\n                <li>\n                    10.6. Установленные субъектом персональных данных запреты на передачу (кроме предоставления\n                    доступа), а\n                    также на обработку или условия обработки (кроме получения доступа) персональных данных, разрешенных\n                    для\n                    распространения, не действуют в случаях обработки персональных данных в государственных,\n                    общественных и\n                    иных публичных интересах, определенных законодательством РФ.\n                </li>\n                <li>\n                    10.7. Оператор при обработке персональных данных обеспечивает конфиденциальность персональных\n                    данных.\n                </li>\n                <li>\n                    10.8. Оператор осуществляет хранение персональных данных в форме, позволяющей определить субъекта\n                    персональных данных, не дольше, чем этого требуют цели обработки персональных данных, если срок\n                    хранения\n                    персональных данных не установлен федеральным законом, договором, стороной которого,\n                    выгодоприобретателем или поручителем по которому является субъект персональных данных.\n                </li>\n                <li>\n                    10.9. Условием прекращения обработки персональных данных может являться достижение целей обработки\n                    персональных данных, истечение срока действия согласия субъекта персональных данных или отзыв\n                    согласия\n                    субъектом персональных данных, а также выявление неправомерной обработки персональных данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>11. Перечень действий, производимых Оператором с полученными персональными данными</h3>\n            <ul>\n                <li>\n                    11.1. Оператор осуществляет сбор, запись, систематизацию, накопление, хранение, уточнение\n                    (обновление,\n                    изменение), извлечение, использование, передачу (распространение, предоставление, доступ),\n                    обезличивание, блокирование, удаление и уничтожение персональных данных.\n                </li>\n                <li>\n                    11.2. Оператор осуществляет автоматизированную обработку персональных данных с получением и/или\n                    передачей полученной информации по информационно-телекоммуникационным сетям или без таковой.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>12. Трансграничная передача персональных данных</h3>\n            <ul>\n                <li>\n                    12.1. Оператор до начала осуществления трансграничной передачи персональных данных обязан убедиться\n                    в\n                    том, что иностранным государством, на территорию которого предполагается осуществлять передачу\n                    персональных данных, обеспечивается надежная защита прав субъектов персональных данных.\n                </li>\n                12.2. Трансграничная передача персональных данных на территории иностранных государств, не отвечающих\n                <li>\n                    вышеуказанным требованиям, может осуществляться только в случае наличия согласия в письменной форме\n                    субъекта персональных данных на трансграничную передачу его персональных данных и/или исполнения\n                    договора, стороной которого является субъект персональных данных.\n                </li>\n            </ul>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>13. Конфиденциальность персональных данных</h3>\n            <p>\n                Оператор и иные лица, получившие доступ к персональным данным, обязаны не раскрывать третьим лицам и не\n                распространять персональные данные без согласия субъекта персональных данных, если иное не предусмотрено\n                федеральным законом.\n            </p>\n        </div>\n        <div class=\"privacy-block\">\n            <h3>14. Заключительные положения</h3>\n            <ul>\n                <li>\n                    14.1. Пользователь может получить любые разъяснения по интересующим вопросам, касающимся обработки\n                    его персональных данных, обратившись к Оператору с помощью электронной почты <a href=\"mailto:admin@animezero.ru\">admin@animezero.ru</a>.\n                </li>\n                <li>\n                    14.2. В данном документе будут отражены любые изменения политики обработки персональных данных\n                    Оператором. Политика действует бессрочно до замены ее новой версией.\n                </li>\n                <li>\n                    14.3. Актуальная версия Политики в свободном доступе расположена в сети Интернет по адресу\n                    <a href=\"https://animezero.ru/privacy\">https://animezero.ru/privacy</a>.\n                </li>\n            </ul>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'PrivacyPolicyPage'\n};\n</script>\n\n<style scoped>\n\n.privacy-block {\n    display: flex;\n    flex-direction: column;\n    font-weight: 500;\n    font-size: 14px;\n}\n\n.privacy-block h3 {\n    font-weight: 700;\n    font-size: 18px;\n    color: #FFFFFF;\n    margin-bottom: 10px;\n}\n\n.privacy-block p {\n    margin-bottom: 10px;\n}\n\n.privacy-block ul {\n    margin: 0 0 10px 0;\n    padding-left: 20px;\n    width: 100%;\n    max-width: unset;\n}\n\n.privacy-block li {\n    margin: 0;\n}\n\n.privacy-block a {\n    color: var(--main-color);\n    text-decoration: none;\n    font-weight: 600;\n}\n\n</style>\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -56562,12 +56650,1650 @@ return Unipointer;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "VueCropper": () => (/* binding */ g),
-/* harmony export */   "default": () => (/* binding */ C),
-/* harmony export */   "globalCropper": () => (/* binding */ C)
+/* harmony export */   "VueCropper": () => (/* binding */ VueCropper),
+/* harmony export */   "default": () => (/* binding */ globalCropper),
+/* harmony export */   "globalCropper": () => (/* binding */ globalCropper)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
-const u={};u.getData=t=>new Promise(((e,i)=>{let s={};(function(t){let e=null;return new Promise(((i,s)=>{if(t.src)if(/^data\:/i.test(t.src))e=function(t){t=t.replace(/^data\:([^\;]+)\;base64,/gim,"");for(var e=atob(t),i=e.length,s=new ArrayBuffer(i),h=new Uint8Array(s),o=0;o<i;o++)h[o]=e.charCodeAt(o);return s}(t.src),i(e);else if(/^blob\:/i.test(t.src)){var h=new FileReader;h.onload=function(t){e=t.target.result,i(e)},function(t,e){var i=new XMLHttpRequest;i.open("GET",t,!0),i.responseType="blob",i.onload=function(t){200!=this.status&&0!==this.status||e(this.response)},i.send()}(t.src,(function(t){h.readAsArrayBuffer(t)}))}else{var o=new XMLHttpRequest;o.onload=function(){if(200!=this.status&&0!==this.status)throw"Could not load image";e=o.response,i(e),o=null},o.open("GET",t.src,!0),o.responseType="arraybuffer",o.send(null)}else s("img error")}))})(t).then((t=>{s.arrayBuffer=t,s.orientation=function(t){var e,i,s,h,o,r,a,c,n,p=new DataView(t),l=p.byteLength;if(255===p.getUint8(0)&&216===p.getUint8(1))for(c=2;c<l;){if(255===p.getUint8(c)&&225===p.getUint8(c+1)){r=c;break}c++}r&&(i=r+10,"Exif"===function(t,e,i){var s,h="";for(s=e,i+=e;s<i;s++)h+=String.fromCharCode(t.getUint8(s));return h}(p,r+4,4)&&((h=18761===(o=p.getUint16(i)))||19789===o)&&42===p.getUint16(i+2,h)&&(s=p.getUint32(i+4,h))>=8&&(a=i+s));if(a)for(l=p.getUint16(a,h),n=0;n<l;n++)if(c=a+12*n+2,274===p.getUint16(c,h)){c+=8,e=p.getUint16(c,h);break}return e}(t),e(s)})).catch((t=>{i(t)}))}));const g=(0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({data:function(){return{w:0,h:0,scale:1,x:0,y:0,loading:!0,trueWidth:0,trueHeight:0,move:!0,moveX:0,moveY:0,crop:!1,cropping:!1,cropW:0,cropH:0,cropOldW:0,cropOldH:0,canChangeX:!1,canChangeY:!1,changeCropTypeX:1,changeCropTypeY:1,cropX:0,cropY:0,cropChangeX:0,cropChangeY:0,cropOffsertX:0,cropOffsertY:0,support:"",touches:[],touchNow:!1,rotate:0,isIos:!1,orientation:0,imgs:"",coe:.2,scaling:!1,scalingSet:"",coeStatus:"",isCanShow:!0}},props:{img:{type:[String,Blob,null,File],default:""},outputSize:{type:Number,default:1},outputType:{type:String,default:"jpeg"},info:{type:Boolean,default:!0},canScale:{type:Boolean,default:!0},autoCrop:{type:Boolean,default:!1},autoCropWidth:{type:[Number,String],default:0},autoCropHeight:{type:[Number,String],default:0},fixed:{type:Boolean,default:!1},fixedNumber:{type:Array,default:()=>[1,1]},fixedBox:{type:Boolean,default:!1},full:{type:Boolean,default:!1},canMove:{type:Boolean,default:!0},canMoveBox:{type:Boolean,default:!0},original:{type:Boolean,default:!1},centerBox:{type:Boolean,default:!1},high:{type:Boolean,default:!0},infoTrue:{type:Boolean,default:!1},maxImgSize:{type:[Number,String],default:2e3},enlarge:{type:[Number,String],default:1},preW:{type:[Number,String],default:0},mode:{type:String,default:"contain"},limitMinSize:{type:[Number,Array,String],default:()=>10}},computed:{cropInfo(){let t={};if(t.top=this.cropOffsertY>21?"-21px":"0px",t.width=this.cropW>0?this.cropW:0,t.height=this.cropH>0?this.cropH:0,this.infoTrue){let e=1;this.high&&!this.full&&(e=window.devicePixelRatio),1!==this.enlarge&!this.full&&(e=Math.abs(Number(this.enlarge))),t.width=t.width*e,t.height=t.height*e,this.full&&(t.width=t.width/this.scale,t.height=t.height/this.scale)}return t.width=t.width.toFixed(0),t.height=t.height.toFixed(0),t},isIE:()=>!!window.ActiveXObject||"ActiveXObject"in window,passive(){return this.isIE?null:{passive:!1}}},watch:{img(){this.checkedImg()},imgs(t){""!==t&&this.reload()},cropW(){this.showPreview()},cropH(){this.showPreview()},cropOffsertX(){this.showPreview()},cropOffsertY(){this.showPreview()},scale(t,e){this.showPreview()},x(){this.showPreview()},y(){this.showPreview()},autoCrop(t){t&&this.goAutoCrop()},autoCropWidth(){this.autoCrop&&this.goAutoCrop()},autoCropHeight(){this.autoCrop&&this.goAutoCrop()},mode(){this.checkedImg()},rotate(){this.showPreview(),(this.autoCrop||this.cropW>0||this.cropH>0)&&this.goAutoCrop(this.cropW,this.cropH)}},methods:{getVersion(t){var e=navigator.userAgent.split(" "),i="";let s=0;const h=new RegExp(t,"i");for(var o=0;o<e.length;o++)h.test(e[o])&&(i=e[o]);return s=i?i.split("/")[1].split("."):["0","0","0"],s},checkOrientationImage(t,e,i,s){if(this.getVersion("chrome")[0]>=81)e=-1;else if(this.getVersion("safari")[0]>=605){const t=this.getVersion("version");t[0]>13&&t[1]>1&&(e=-1)}else{const t=navigator.userAgent.toLowerCase().match(/cpu iphone os (.*?) like mac os/);if(t){let i=t[1];i=i.split("_"),(i[0]>13||i[0]>=13&&i[1]>=4)&&(e=-1)}}let h=document.createElement("canvas"),o=h.getContext("2d");switch(o.save(),e){case 2:h.width=i,h.height=s,o.translate(i,0),o.scale(-1,1);break;case 3:h.width=i,h.height=s,o.translate(i/2,s/2),o.rotate(180*Math.PI/180),o.translate(-i/2,-s/2);break;case 4:h.width=i,h.height=s,o.translate(0,s),o.scale(1,-1);break;case 5:h.height=i,h.width=s,o.rotate(.5*Math.PI),o.scale(1,-1);break;case 6:h.width=s,h.height=i,o.translate(s/2,i/2),o.rotate(90*Math.PI/180),o.translate(-i/2,-s/2);break;case 7:h.height=i,h.width=s,o.rotate(.5*Math.PI),o.translate(i,-s),o.scale(-1,1);break;case 8:h.height=i,h.width=s,o.translate(s/2,i/2),o.rotate(-90*Math.PI/180),o.translate(-i/2,-s/2);break;default:h.width=i,h.height=s}o.drawImage(t,0,0,i,s),o.restore(),h.toBlob((t=>{let e=URL.createObjectURL(t);URL.revokeObjectURL(this.imgs),this.imgs=e}),"image/"+this.outputType,1)},checkedImg(){if(null===this.img||""===this.img)return this.imgs="",void this.clearCrop();this.loading=!0,this.scale=1,this.rotate=0,this.clearCrop();let t=new Image;if(t.onload=()=>{if(""===this.img)return this.$emit("imgLoad","error"),this.$emit("img-load","error"),!1;let e=t.width,i=t.height;u.getData(t).then((s=>{this.orientation=s.orientation||1;let h=Number(this.maxImgSize);!this.orientation&&e<h&i<h?this.imgs=this.img:(e>h&&(i=i/e*h,e=h),i>h&&(e=e/i*h,i=h),this.checkOrientationImage(t,this.orientation,e,i))}))},t.onerror=()=>{this.$emit("imgLoad","error"),this.$emit("img-load","error")},"data"!==this.img.substr(0,4)&&(t.crossOrigin=""),this.isIE){var e=new XMLHttpRequest;e.onload=function(){var e=URL.createObjectURL(this.response);t.src=e},e.open("GET",this.img,!0),e.responseType="blob",e.send()}else t.src=this.img},startMove(t){if(t.preventDefault(),this.move&&!this.crop){if(!this.canMove)return!1;this.moveX=("clientX"in t?t.clientX:t.touches[0].clientX)-this.x,this.moveY=("clientY"in t?t.clientY:t.touches[0].clientY)-this.y,t.touches?(window.addEventListener("touchmove",this.moveImg),window.addEventListener("touchend",this.leaveImg),2==t.touches.length&&(this.touches=t.touches,window.addEventListener("touchmove",this.touchScale),window.addEventListener("touchend",this.cancelTouchScale))):(window.addEventListener("mousemove",this.moveImg),window.addEventListener("mouseup",this.leaveImg)),this.$emit("imgMoving",{moving:!0,axis:this.getImgAxis()}),this.$emit("img-moving",{moving:!0,axis:this.getImgAxis()})}else this.cropping=!0,window.addEventListener("mousemove",this.createCrop),window.addEventListener("mouseup",this.endCrop),window.addEventListener("touchmove",this.createCrop),window.addEventListener("touchend",this.endCrop),this.cropOffsertX=t.offsetX?t.offsetX:t.touches[0].pageX-this.$refs.cropper.offsetLeft,this.cropOffsertY=t.offsetY?t.offsetY:t.touches[0].pageY-this.$refs.cropper.offsetTop,this.cropX="clientX"in t?t.clientX:t.touches[0].clientX,this.cropY="clientY"in t?t.clientY:t.touches[0].clientY,this.cropChangeX=this.cropOffsertX,this.cropChangeY=this.cropOffsertY,this.cropW=0,this.cropH=0},touchScale(t){t.preventDefault();let e=this.scale;var i=this.touches[0].clientX,s=this.touches[0].clientY,h=t.touches[0].clientX,o=t.touches[0].clientY,r=this.touches[1].clientX,a=this.touches[1].clientY,c=t.touches[1].clientX,n=t.touches[1].clientY,p=Math.sqrt(Math.pow(i-r,2)+Math.pow(s-a,2)),l=Math.sqrt(Math.pow(h-c,2)+Math.pow(o-n,2))-p,u=1,g=(u=(u=u/this.trueWidth>u/this.trueHeight?u/this.trueHeight:u/this.trueWidth)>.1?.1:u)*l;if(!this.touchNow){if(this.touchNow=!0,l>0?e+=Math.abs(g):l<0&&e>Math.abs(g)&&(e-=Math.abs(g)),this.touches=t.touches,setTimeout((()=>{this.touchNow=!1}),8),!this.checkoutImgAxis(this.x,this.y,e))return!1;this.scale=e}},cancelTouchScale(t){window.removeEventListener("touchmove",this.touchScale)},moveImg(t){if(t.preventDefault(),t.touches&&2===t.touches.length)return this.touches=t.touches,window.addEventListener("touchmove",this.touchScale),window.addEventListener("touchend",this.cancelTouchScale),window.removeEventListener("touchmove",this.moveImg),!1;let e,i,s="clientX"in t?t.clientX:t.touches[0].clientX,h="clientY"in t?t.clientY:t.touches[0].clientY;e=s-this.moveX,i=h-this.moveY,this.$nextTick((()=>{if(this.centerBox){let t,s,h,o,r=this.getImgAxis(e,i,this.scale),a=this.getCropAxis(),c=this.trueHeight*this.scale,n=this.trueWidth*this.scale;switch(this.rotate){case 1:case-1:case 3:case-3:t=this.cropOffsertX-this.trueWidth*(1-this.scale)/2+(c-n)/2,s=this.cropOffsertY-this.trueHeight*(1-this.scale)/2+(n-c)/2,h=t-c+this.cropW,o=s-n+this.cropH;break;default:t=this.cropOffsertX-this.trueWidth*(1-this.scale)/2,s=this.cropOffsertY-this.trueHeight*(1-this.scale)/2,h=t-n+this.cropW,o=s-c+this.cropH}r.x1>=a.x1&&(e=t),r.y1>=a.y1&&(i=s),r.x2<=a.x2&&(e=h),r.y2<=a.y2&&(i=o)}this.x=e,this.y=i,this.$emit("imgMoving",{moving:!0,axis:this.getImgAxis()}),this.$emit("img-moving",{moving:!0,axis:this.getImgAxis()})}))},leaveImg(t){window.removeEventListener("mousemove",this.moveImg),window.removeEventListener("touchmove",this.moveImg),window.removeEventListener("mouseup",this.leaveImg),window.removeEventListener("touchend",this.leaveImg),this.$emit("imgMoving",{moving:!1,axis:this.getImgAxis()}),this.$emit("img-moving",{moving:!1,axis:this.getImgAxis()})},scaleImg(){this.canScale&&window.addEventListener(this.support,this.changeSize,this.passive)},cancelScale(){this.canScale&&window.removeEventListener(this.support,this.changeSize)},changeSize(t){t.preventDefault();let e=this.scale;var i=t.deltaY||t.wheelDelta;i=navigator.userAgent.indexOf("Firefox")>0?30*i:i,this.isIE&&(i=-i);var s=this.coe,h=(s=s/this.trueWidth>s/this.trueHeight?s/this.trueHeight:s/this.trueWidth)*i;h<0?e+=Math.abs(h):e>Math.abs(h)&&(e-=Math.abs(h));let o=h<0?"add":"reduce";if(o!==this.coeStatus&&(this.coeStatus=o,this.coe=.2),this.scaling||(this.scalingSet=setTimeout((()=>{this.scaling=!1,this.coe=this.coe+=.01}),50)),this.scaling=!0,!this.checkoutImgAxis(this.x,this.y,e))return!1;this.scale=e},changeScale(t){let e=this.scale;t=t||1;var i=20;if((t*=i=i/this.trueWidth>i/this.trueHeight?i/this.trueHeight:i/this.trueWidth)>0?e+=Math.abs(t):e>Math.abs(t)&&(e-=Math.abs(t)),!this.checkoutImgAxis(this.x,this.y,e))return!1;this.scale=e},createCrop(t){t.preventDefault();var e="clientX"in t?t.clientX:t.touches?t.touches[0].clientX:0,i="clientY"in t?t.clientY:t.touches?t.touches[0].clientY:0;this.$nextTick((()=>{var t=e-this.cropX,s=i-this.cropY;if(t>0?(this.cropW=t+this.cropChangeX>this.w?this.w-this.cropChangeX:t,this.cropOffsertX=this.cropChangeX):(this.cropW=this.w-this.cropChangeX+Math.abs(t)>this.w?this.cropChangeX:Math.abs(t),this.cropOffsertX=this.cropChangeX+t>0?this.cropChangeX+t:0),this.fixed){var h=this.cropW/this.fixedNumber[0]*this.fixedNumber[1];h+this.cropOffsertY>this.h?(this.cropH=this.h-this.cropOffsertY,this.cropW=this.cropH/this.fixedNumber[1]*this.fixedNumber[0],this.cropOffsertX=t>0?this.cropChangeX:this.cropChangeX-this.cropW):this.cropH=h,this.cropOffsertY=this.cropOffsertY}else s>0?(this.cropH=s+this.cropChangeY>this.h?this.h-this.cropChangeY:s,this.cropOffsertY=this.cropChangeY):(this.cropH=this.h-this.cropChangeY+Math.abs(s)>this.h?this.cropChangeY:Math.abs(s),this.cropOffsertY=this.cropChangeY+s>0?this.cropChangeY+s:0)}))},changeCropSize(t,e,i,s,h){t.preventDefault(),window.addEventListener("mousemove",this.changeCropNow),window.addEventListener("mouseup",this.changeCropEnd),window.addEventListener("touchmove",this.changeCropNow),window.addEventListener("touchend",this.changeCropEnd),this.canChangeX=e,this.canChangeY=i,this.changeCropTypeX=s,this.changeCropTypeY=h,this.cropX="clientX"in t?t.clientX:t.touches[0].clientX,this.cropY="clientY"in t?t.clientY:t.touches[0].clientY,this.cropOldW=this.cropW,this.cropOldH=this.cropH,this.cropChangeX=this.cropOffsertX,this.cropChangeY=this.cropOffsertY,this.fixed&&this.canChangeX&&this.canChangeY&&(this.canChangeY=0),this.$emit("change-crop-size",{width:this.cropW,height:this.cropH})},changeCropNow(t){t.preventDefault();var e="clientX"in t?t.clientX:t.touches?t.touches[0].clientX:0,i="clientY"in t?t.clientY:t.touches?t.touches[0].clientY:0;let s=this.w,h=this.h,o=0,r=0;if(this.centerBox){let t=this.getImgAxis(),e=t.x2,i=t.y2;o=t.x1>0?t.x1:0,r=t.y1>0?t.y1:0,s>e&&(s=e),h>i&&(h=i)}this.$nextTick((()=>{var t=e-this.cropX,a=i-this.cropY;if(this.canChangeX&&(1===this.changeCropTypeX?this.cropOldW-t>0?(this.cropW=s-this.cropChangeX-t<=s-o?this.cropOldW-t:this.cropOldW+this.cropChangeX-o,this.cropOffsertX=s-this.cropChangeX-t<=s-o?this.cropChangeX+t:o):(this.cropW=Math.abs(t)+this.cropChangeX<=s?Math.abs(t)-this.cropOldW:s-this.cropOldW-this.cropChangeX,this.cropOffsertX=this.cropChangeX+this.cropOldW):2===this.changeCropTypeX&&(this.cropOldW+t>0?(this.cropW=this.cropOldW+t+this.cropOffsertX<=s?this.cropOldW+t:s-this.cropOffsertX,this.cropOffsertX=this.cropChangeX):(this.cropW=s-this.cropChangeX+Math.abs(t+this.cropOldW)<=s-o?Math.abs(t+this.cropOldW):this.cropChangeX-o,this.cropOffsertX=s-this.cropChangeX+Math.abs(t+this.cropOldW)<=s-o?this.cropChangeX-Math.abs(t+this.cropOldW):o))),this.canChangeY&&(1===this.changeCropTypeY?this.cropOldH-a>0?(this.cropH=h-this.cropChangeY-a<=h-r?this.cropOldH-a:this.cropOldH+this.cropChangeY-r,this.cropOffsertY=h-this.cropChangeY-a<=h-r?this.cropChangeY+a:r):(this.cropH=Math.abs(a)+this.cropChangeY<=h?Math.abs(a)-this.cropOldH:h-this.cropOldH-this.cropChangeY,this.cropOffsertY=this.cropChangeY+this.cropOldH):2===this.changeCropTypeY&&(this.cropOldH+a>0?(this.cropH=this.cropOldH+a+this.cropOffsertY<=h?this.cropOldH+a:h-this.cropOffsertY,this.cropOffsertY=this.cropChangeY):(this.cropH=h-this.cropChangeY+Math.abs(a+this.cropOldH)<=h-r?Math.abs(a+this.cropOldH):this.cropChangeY-r,this.cropOffsertY=h-this.cropChangeY+Math.abs(a+this.cropOldH)<=h-r?this.cropChangeY-Math.abs(a+this.cropOldH):r))),this.canChangeX&&this.fixed){var c=this.cropW/this.fixedNumber[0]*this.fixedNumber[1];c+this.cropOffsertY>h?(this.cropH=h-this.cropOffsertY,this.cropW=this.cropH/this.fixedNumber[1]*this.fixedNumber[0]):this.cropH=c}if(this.canChangeY&&this.fixed){var n=this.cropH/this.fixedNumber[1]*this.fixedNumber[0];n+this.cropOffsertX>s?(this.cropW=s-this.cropOffsertX,this.cropH=this.cropW/this.fixedNumber[0]*this.fixedNumber[1]):this.cropW=n}}))},checkCropLimitSize(){let{cropW:t,cropH:e,limitMinSize:i}=this,s=new Array;return s=Array.isArray[i]?i:[i,i],t=parseFloat(s[0]),e=parseFloat(s[1]),[t,e]},changeCropEnd(t){window.removeEventListener("mousemove",this.changeCropNow),window.removeEventListener("mouseup",this.changeCropEnd),window.removeEventListener("touchmove",this.changeCropNow),window.removeEventListener("touchend",this.changeCropEnd)},endCrop(){0===this.cropW&&0===this.cropH&&(this.cropping=!1),window.removeEventListener("mousemove",this.createCrop),window.removeEventListener("mouseup",this.endCrop),window.removeEventListener("touchmove",this.createCrop),window.removeEventListener("touchend",this.endCrop)},startCrop(){this.crop=!0},stopCrop(){this.crop=!1},clearCrop(){this.cropping=!1,this.cropW=0,this.cropH=0},cropMove(t){if(t.preventDefault(),!this.canMoveBox)return this.crop=!1,this.startMove(t),!1;if(t.touches&&2===t.touches.length)return this.crop=!1,this.startMove(t),this.leaveCrop(),!1;window.addEventListener("mousemove",this.moveCrop),window.addEventListener("mouseup",this.leaveCrop),window.addEventListener("touchmove",this.moveCrop),window.addEventListener("touchend",this.leaveCrop);let e,i,s="clientX"in t?t.clientX:t.touches[0].clientX,h="clientY"in t?t.clientY:t.touches[0].clientY;e=s-this.cropOffsertX,i=h-this.cropOffsertY,this.cropX=e,this.cropY=i,this.$emit("cropMoving",{moving:!0,axis:this.getCropAxis()}),this.$emit("crop-moving",{moving:!0,axis:this.getCropAxis()})},moveCrop(t,e){let i=0,s=0;t&&(t.preventDefault(),i="clientX"in t?t.clientX:t.touches[0].clientX,s="clientY"in t?t.clientY:t.touches[0].clientY),this.$nextTick((()=>{let t,h,o=i-this.cropX,r=s-this.cropY;if(e&&(o=this.cropOffsertX,r=this.cropOffsertY),t=o<=0?0:o+this.cropW>this.w?this.w-this.cropW:o,h=r<=0?0:r+this.cropH>this.h?this.h-this.cropH:r,this.centerBox){let e=this.getImgAxis();t<=e.x1&&(t=e.x1),t+this.cropW>e.x2&&(t=e.x2-this.cropW),h<=e.y1&&(h=e.y1),h+this.cropH>e.y2&&(h=e.y2-this.cropH)}this.cropOffsertX=t,this.cropOffsertY=h,this.$emit("cropMoving",{moving:!0,axis:this.getCropAxis()}),this.$emit("crop-moving",{moving:!0,axis:this.getCropAxis()})}))},getImgAxis(t,e,i){t=t||this.x,e=e||this.y,i=i||this.scale;let s={x1:0,x2:0,y1:0,y2:0},h=this.trueWidth*i,o=this.trueHeight*i;switch(this.rotate){case 0:s.x1=t+this.trueWidth*(1-i)/2,s.x2=s.x1+this.trueWidth*i,s.y1=e+this.trueHeight*(1-i)/2,s.y2=s.y1+this.trueHeight*i;break;case 1:case-1:case 3:case-3:s.x1=t+this.trueWidth*(1-i)/2+(h-o)/2,s.x2=s.x1+this.trueHeight*i,s.y1=e+this.trueHeight*(1-i)/2+(o-h)/2,s.y2=s.y1+this.trueWidth*i;break;default:s.x1=t+this.trueWidth*(1-i)/2,s.x2=s.x1+this.trueWidth*i,s.y1=e+this.trueHeight*(1-i)/2,s.y2=s.y1+this.trueHeight*i}return s},getCropAxis(){let t={x1:0,x2:0,y1:0,y2:0};return t.x1=this.cropOffsertX,t.x2=t.x1+this.cropW,t.y1=this.cropOffsertY,t.y2=t.y1+this.cropH,t},leaveCrop(t){window.removeEventListener("mousemove",this.moveCrop),window.removeEventListener("mouseup",this.leaveCrop),window.removeEventListener("touchmove",this.moveCrop),window.removeEventListener("touchend",this.leaveCrop),this.$emit("cropMoving",{moving:!1,axis:this.getCropAxis()}),this.$emit("crop-moving",{moving:!1,axis:this.getCropAxis()})},getCropChecked(t){let e=document.createElement("canvas"),i=new Image,s=this.rotate,h=this.trueWidth,o=this.trueHeight,r=this.cropOffsertX,a=this.cropOffsertY;function c(t,i){e.width=Math.round(t),e.height=Math.round(i)}i.onload=()=>{if(0!==this.cropW){let t=e.getContext("2d"),n=1;this.high&!this.full&&(n=window.devicePixelRatio),1!==this.enlarge&!this.full&&(n=Math.abs(Number(this.enlarge)));let p=this.cropW*n,l=this.cropH*n,u=h*this.scale*n,g=o*this.scale*n,d=(this.x-r+this.trueWidth*(1-this.scale)/2)*n,m=(this.y-a+this.trueHeight*(1-this.scale)/2)*n;switch(c(p,l),t.save(),s){case 0:this.full?(c(p/this.scale,l/this.scale),t.drawImage(i,d/this.scale,m/this.scale,u/this.scale,g/this.scale)):t.drawImage(i,d,m,u,g);break;case 1:case-3:this.full?(c(p/this.scale,l/this.scale),d=d/this.scale+(u/this.scale-g/this.scale)/2,m=m/this.scale+(g/this.scale-u/this.scale)/2,t.rotate(90*s*Math.PI/180),t.drawImage(i,m,-d-g/this.scale,u/this.scale,g/this.scale)):(d+=(u-g)/2,m+=(g-u)/2,t.rotate(90*s*Math.PI/180),t.drawImage(i,m,-d-g,u,g));break;case 2:case-2:this.full?(c(p/this.scale,l/this.scale),t.rotate(90*s*Math.PI/180),d/=this.scale,m/=this.scale,t.drawImage(i,-d-u/this.scale,-m-g/this.scale,u/this.scale,g/this.scale)):(t.rotate(90*s*Math.PI/180),t.drawImage(i,-d-u,-m-g,u,g));break;case 3:case-1:this.full?(c(p/this.scale,l/this.scale),d=d/this.scale+(u/this.scale-g/this.scale)/2,m=m/this.scale+(g/this.scale-u/this.scale)/2,t.rotate(90*s*Math.PI/180),t.drawImage(i,-m-u/this.scale,d,u/this.scale,g/this.scale)):(d+=(u-g)/2,m+=(g-u)/2,t.rotate(90*s*Math.PI/180),t.drawImage(i,-m-u,d,u,g));break;default:this.full?(c(p/this.scale,l/this.scale),t.drawImage(i,d/this.scale,m/this.scale,u/this.scale,g/this.scale)):t.drawImage(i,d,m,u,g)}t.restore()}else{let t=h*this.scale,r=o*this.scale,a=e.getContext("2d");switch(a.save(),s){case 0:c(t,r),a.drawImage(i,0,0,t,r);break;case 1:case-3:c(r,t),a.rotate(90*s*Math.PI/180),a.drawImage(i,0,-r,t,r);break;case 2:case-2:c(t,r),a.rotate(90*s*Math.PI/180),a.drawImage(i,-t,-r,t,r);break;case 3:case-1:c(r,t),a.rotate(90*s*Math.PI/180),a.drawImage(i,-t,0,t,r);break;default:c(t,r),a.drawImage(i,0,0,t,r)}a.restore()}t(e)},"data"!==this.img.substr(0,4)&&(i.crossOrigin="Anonymous"),i.src=this.imgs},getCropData(t){this.getCropChecked((e=>{t(e.toDataURL("image/"+this.outputType,this.outputSize))}))},getCropBlob(t){this.getCropChecked((e=>{e.toBlob((e=>t(e)),"image/"+this.outputType,this.outputSize)}))},showPreview(){if(!this.isCanShow)return!1;this.isCanShow=!1,setTimeout((()=>{this.isCanShow=!0}),16);let t=this.cropW,e=this.cropH,i=this.scale;var s={};s.div={width:`${t}px`,height:`${e}px`};let h=(this.x-this.cropOffsertX)/i,o=(this.y-this.cropOffsertY)/i;s.w=t,s.h=e,s.url=this.imgs,s.img={width:`${this.trueWidth}px`,height:`${this.trueHeight}px`,transform:`scale(${i})translate3d(${h}px, ${o}px, 0px)rotateZ(${90*this.rotate}deg)`},s.html=`\n      <div class="show-preview" style="width: ${s.w}px; height: ${s.h}px,; overflow: hidden">\n        <div style="width: ${t}px; height: ${e}px">\n          <img src=${s.url} style="width: ${this.trueWidth}px; height: ${this.trueHeight}px; transform:\n          scale(${i})translate3d(${h}px, ${o}px, 0px)rotateZ(${90*this.rotate}deg)">\n        </div>\n      </div>`,this.$emit("realTime",s),this.$emit("real-time",s)},reload(){let t=new Image;t.onload=()=>{this.w=parseFloat(window.getComputedStyle(this.$refs.cropper).width),this.h=parseFloat(window.getComputedStyle(this.$refs.cropper).height),this.trueWidth=t.width,this.trueHeight=t.height,this.original?this.scale=1:this.scale=this.checkedMode(),this.$nextTick((()=>{this.x=-(this.trueWidth-this.trueWidth*this.scale)/2+(this.w-this.trueWidth*this.scale)/2,this.y=-(this.trueHeight-this.trueHeight*this.scale)/2+(this.h-this.trueHeight*this.scale)/2,this.loading=!1,this.autoCrop&&this.goAutoCrop(),this.$emit("img-load","success"),this.$emit("imgLoad","success"),setTimeout((()=>{this.showPreview()}),20)}))},t.onerror=()=>{this.$emit("imgLoad","error"),this.$emit("img-load","error")},t.src=this.imgs},checkedMode(){let t=1,e=this.trueWidth,i=this.trueHeight;const s=this.mode.split(" ");switch(s[0]){case"contain":this.trueWidth>this.w&&(t=this.w/this.trueWidth),this.trueHeight*t>this.h&&(t=this.h/this.trueHeight);break;case"cover":e=this.w,t=e/this.trueWidth,i*=t,i<this.h&&(i=this.h,t=i/this.trueHeight);break;default:try{let h=s[0];if(-1!==h.search("px")){h=h.replace("px",""),e=parseFloat(h);const o=e/this.trueWidth;let r=1,a=s[1];-1!==a.search("px")&&(a=a.replace("px",""),i=parseFloat(a),r=i/this.trueHeight),t=Math.min(o,r)}if(-1!==h.search("%")&&(h=h.replace("%",""),e=parseFloat(h)/100*this.w,t=e/this.trueWidth),2===s.length&&"auto"===h){let e=s[1];-1!==e.search("px")&&(e=e.replace("px",""),i=parseFloat(e),t=i/this.trueHeight),-1!==e.search("%")&&(e=e.replace("%",""),i=parseFloat(e)/100*this.h,t=i/this.trueHeight)}}catch(h){t=1}}return t},goAutoCrop(t,e){if(""===this.imgs||null===this.imgs)return;this.clearCrop(),this.cropping=!0;let i=this.w,s=this.h;if(this.centerBox){const t=Math.abs(this.rotate)%2>0;let e=(t?this.trueHeight:this.trueWidth)*this.scale,h=(t?this.trueWidth:this.trueHeight)*this.scale;i=e<i?e:i,s=h<s?h:s}var h=t||parseFloat(this.autoCropWidth),o=e||parseFloat(this.autoCropHeight);0!==h&&0!==o||(h=.8*i,o=.8*s),h=h>i?i:h,o=o>s?s:o,this.fixed&&(o=h/this.fixedNumber[0]*this.fixedNumber[1]),o>this.h&&(h=(o=this.h)/this.fixedNumber[1]*this.fixedNumber[0]),this.changeCrop(h,o)},changeCrop(t,e){if(this.centerBox){let i=this.getImgAxis();t>i.x2-i.x1&&(e=(t=i.x2-i.x1)/this.fixedNumber[0]*this.fixedNumber[1]),e>i.y2-i.y1&&(t=(e=i.y2-i.y1)/this.fixedNumber[1]*this.fixedNumber[0])}this.cropW=t,this.cropH=e,this.checkCropLimitSize(),this.$nextTick((()=>{this.cropOffsertX=(this.w-this.cropW)/2,this.cropOffsertY=(this.h-this.cropH)/2,this.centerBox&&this.moveCrop(null,!0)}))},refresh(){this.img,this.imgs="",this.scale=1,this.crop=!1,this.rotate=0,this.w=0,this.h=0,this.trueWidth=0,this.trueHeight=0,this.clearCrop(),this.$nextTick((()=>{this.checkedImg()}))},rotateLeft(){this.rotate=this.rotate<=-3?0:this.rotate-1},rotateRight(){this.rotate=this.rotate>=3?0:this.rotate+1},rotateClear(){this.rotate=0},checkoutImgAxis(t,e,i){t=t||this.x,e=e||this.y,i=i||this.scale;let s=!0;if(this.centerBox){let h=this.getImgAxis(t,e,i),o=this.getCropAxis();h.x1>=o.x1&&(s=!1),h.x2<=o.x2&&(s=!1),h.y1>=o.y1&&(s=!1),h.y2<=o.y2&&(s=!1)}return s}},mounted(){this.support="onwheel"in document.createElement("div")?"wheel":void 0!==document.onmousewheel?"mousewheel":"DOMMouseScroll";let t=this;var e=navigator.userAgent;this.isIOS=!!e.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/),HTMLCanvasElement.prototype.toBlob||Object.defineProperty(HTMLCanvasElement.prototype,"toBlob",{value:function(e,i,s){for(var h=atob(this.toDataURL(i,s).split(",")[1]),o=h.length,r=new Uint8Array(o),a=0;a<o;a++)r[a]=h.charCodeAt(a);e(new Blob([r],{type:t.type||"image/png"}))}}),this.showPreview(),this.checkedImg()},destroyed(){window.removeEventListener("mousemove",this.moveCrop),window.removeEventListener("mouseup",this.leaveCrop),window.removeEventListener("touchmove",this.moveCrop),window.removeEventListener("touchend",this.leaveCrop),this.cancelScale()}});(0,vue__WEBPACK_IMPORTED_MODULE_0__.pushScopeId)("data-v-48aab112");const d={key:0,class:"cropper-box"},m=["src"],f={class:"cropper-view-box"},w=["src"],v={key:1};(0,vue__WEBPACK_IMPORTED_MODULE_0__.popScopeId)(),g.render=function(t,e,i,u,g,C){return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div",{class:"vue-cropper",ref:"cropper",onMouseover:e[28]||(e[28]=(...e)=>t.scaleImg&&t.scaleImg(...e)),onMouseout:e[29]||(e[29]=(...e)=>t.cancelScale&&t.cancelScale(...e))},[t.imgs?((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div",d,[(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div",{class:"cropper-box-canvas",style:(0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)({width:t.trueWidth+"px",height:t.trueHeight+"px",transform:"scale("+t.scale+","+t.scale+") translate3d("+t.x/t.scale+"px,"+t.y/t.scale+"px,0)rotateZ("+90*t.rotate+"deg)"})},[(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img",{src:t.imgs,alt:"cropper-img",ref:"cropperImg"},null,8,m)],4),[[vue__WEBPACK_IMPORTED_MODULE_0__.vShow,!t.loading]])])):(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("",!0),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div",{class:(0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["cropper-drag-box",{"cropper-move":t.move&&!t.crop,"cropper-crop":t.crop,"cropper-modal":t.cropping}]),onMousedown:e[0]||(e[0]=(...e)=>t.startMove&&t.startMove(...e)),onTouchstart:e[1]||(e[1]=(...e)=>t.startMove&&t.startMove(...e))},null,34),(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div",{class:"cropper-crop-box",style:(0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)({width:t.cropW+"px",height:t.cropH+"px",transform:"translate3d("+t.cropOffsertX+"px,"+t.cropOffsertY+"px,0)"})},[(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",f,[(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img",{style:(0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)({width:t.trueWidth+"px",height:t.trueHeight+"px",transform:"scale("+t.scale+","+t.scale+") translate3d("+(t.x-t.cropOffsertX)/t.scale+"px,"+(t.y-t.cropOffsertY)/t.scale+"px,0)rotateZ("+90*t.rotate+"deg)"}),src:t.imgs,alt:"cropper-img"},null,12,w)]),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"cropper-face cropper-move",onMousedown:e[2]||(e[2]=(...e)=>t.cropMove&&t.cropMove(...e)),onTouchstart:e[3]||(e[3]=(...e)=>t.cropMove&&t.cropMove(...e))},null,32),t.info?((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span",{key:0,class:"crop-info",style:(0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)({top:t.cropInfo.top})},(0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(t.cropInfo.width)+" × "+(0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(t.cropInfo.height),5)):(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("",!0),t.fixedBox?(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("",!0):((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span",v,[(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-line line-w",onMousedown:e[4]||(e[4]=e=>t.changeCropSize(e,!1,!0,0,1)),onTouchstart:e[5]||(e[5]=e=>t.changeCropSize(e,!1,!0,0,1))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-line line-a",onMousedown:e[6]||(e[6]=e=>t.changeCropSize(e,!0,!1,1,0)),onTouchstart:e[7]||(e[7]=e=>t.changeCropSize(e,!0,!1,1,0))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-line line-s",onMousedown:e[8]||(e[8]=e=>t.changeCropSize(e,!1,!0,0,2)),onTouchstart:e[9]||(e[9]=e=>t.changeCropSize(e,!1,!0,0,2))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-line line-d",onMousedown:e[10]||(e[10]=e=>t.changeCropSize(e,!0,!1,2,0)),onTouchstart:e[11]||(e[11]=e=>t.changeCropSize(e,!0,!1,2,0))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-point point1",onMousedown:e[12]||(e[12]=e=>t.changeCropSize(e,!0,!0,1,1)),onTouchstart:e[13]||(e[13]=e=>t.changeCropSize(e,!0,!0,1,1))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-point point2",onMousedown:e[14]||(e[14]=e=>t.changeCropSize(e,!1,!0,0,1)),onTouchstart:e[15]||(e[15]=e=>t.changeCropSize(e,!1,!0,0,1))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-point point3",onMousedown:e[16]||(e[16]=e=>t.changeCropSize(e,!0,!0,2,1)),onTouchstart:e[17]||(e[17]=e=>t.changeCropSize(e,!0,!0,2,1))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-point point4",onMousedown:e[18]||(e[18]=e=>t.changeCropSize(e,!0,!1,1,0)),onTouchstart:e[19]||(e[19]=e=>t.changeCropSize(e,!0,!1,1,0))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-point point5",onMousedown:e[20]||(e[20]=e=>t.changeCropSize(e,!0,!1,2,0)),onTouchstart:e[21]||(e[21]=e=>t.changeCropSize(e,!0,!1,2,0))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-point point6",onMousedown:e[22]||(e[22]=e=>t.changeCropSize(e,!0,!0,1,2)),onTouchstart:e[23]||(e[23]=e=>t.changeCropSize(e,!0,!0,1,2))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-point point7",onMousedown:e[24]||(e[24]=e=>t.changeCropSize(e,!1,!0,0,2)),onTouchstart:e[25]||(e[25]=e=>t.changeCropSize(e,!1,!0,0,2))},null,32),(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span",{class:"crop-point point8",onMousedown:e[26]||(e[26]=e=>t.changeCropSize(e,!0,!0,2,2)),onTouchstart:e[27]||(e[27]=e=>t.changeCropSize(e,!0,!0,2,2))},null,32)]))],4),[[vue__WEBPACK_IMPORTED_MODULE_0__.vShow,t.cropping]])],544)},g.__scopeId="data-v-48aab112";"undefined"!=typeof window&&window.Vue&&window.Vue.createApp({}).component("VueCropper",g);const C={version:"1.0.2",install:function(t){t.component("VueCropper",g)},VueCropper:g};
+
+const Exif = {};
+Exif.getData = (img) => new Promise((reslove, reject) => {
+  let obj = {};
+  getImageData(img).then((data) => {
+    obj.arrayBuffer = data;
+    obj.orientation = getOrientation(data);
+    reslove(obj);
+  }).catch((error) => {
+    reject(error);
+  });
+});
+function getImageData(img) {
+  let data = null;
+  return new Promise((reslove, reject) => {
+    if (img.src) {
+      if (/^data\:/i.test(img.src)) {
+        data = base64ToArrayBuffer(img.src);
+        reslove(data);
+      } else if (/^blob\:/i.test(img.src)) {
+        var fileReader = new FileReader();
+        fileReader.onload = function(e) {
+          data = e.target.result;
+          reslove(data);
+        };
+        objectURLToBlob(img.src, function(blob) {
+          fileReader.readAsArrayBuffer(blob);
+        });
+      } else {
+        var http = new XMLHttpRequest();
+        http.onload = function() {
+          if (this.status == 200 || this.status === 0) {
+            data = http.response;
+            reslove(data);
+          } else {
+            throw "Could not load image";
+          }
+          http = null;
+        };
+        http.open("GET", img.src, true);
+        http.responseType = "arraybuffer";
+        http.send(null);
+      }
+    } else {
+      reject("img error");
+    }
+  });
+}
+function objectURLToBlob(url, callback) {
+  var http = new XMLHttpRequest();
+  http.open("GET", url, true);
+  http.responseType = "blob";
+  http.onload = function(e) {
+    if (this.status == 200 || this.status === 0) {
+      callback(this.response);
+    }
+  };
+  http.send();
+}
+function base64ToArrayBuffer(base64) {
+  base64 = base64.replace(/^data\:([^\;]+)\;base64,/gmi, "");
+  var binary = atob(base64);
+  var len = binary.length;
+  var buffer = new ArrayBuffer(len);
+  var view = new Uint8Array(buffer);
+  for (var i = 0; i < len; i++) {
+    view[i] = binary.charCodeAt(i);
+  }
+  return buffer;
+}
+function getStringFromCharCode(dataView, start, length) {
+  var str = "";
+  var i;
+  for (i = start, length += start; i < length; i++) {
+    str += String.fromCharCode(dataView.getUint8(i));
+  }
+  return str;
+}
+function getOrientation(arrayBuffer) {
+  var dataView = new DataView(arrayBuffer);
+  var length = dataView.byteLength;
+  var orientation;
+  var exifIDCode;
+  var tiffOffset;
+  var firstIFDOffset;
+  var littleEndian;
+  var endianness;
+  var app1Start;
+  var ifdStart;
+  var offset;
+  var i;
+  if (dataView.getUint8(0) === 255 && dataView.getUint8(1) === 216) {
+    offset = 2;
+    while (offset < length) {
+      if (dataView.getUint8(offset) === 255 && dataView.getUint8(offset + 1) === 225) {
+        app1Start = offset;
+        break;
+      }
+      offset++;
+    }
+  }
+  if (app1Start) {
+    exifIDCode = app1Start + 4;
+    tiffOffset = app1Start + 10;
+    if (getStringFromCharCode(dataView, exifIDCode, 4) === "Exif") {
+      endianness = dataView.getUint16(tiffOffset);
+      littleEndian = endianness === 18761;
+      if (littleEndian || endianness === 19789) {
+        if (dataView.getUint16(tiffOffset + 2, littleEndian) === 42) {
+          firstIFDOffset = dataView.getUint32(tiffOffset + 4, littleEndian);
+          if (firstIFDOffset >= 8) {
+            ifdStart = tiffOffset + firstIFDOffset;
+          }
+        }
+      }
+    }
+  }
+  if (ifdStart) {
+    length = dataView.getUint16(ifdStart, littleEndian);
+    for (i = 0; i < length; i++) {
+      offset = ifdStart + i * 12 + 2;
+      if (dataView.getUint16(offset, littleEndian) === 274) {
+        offset += 8;
+        orientation = dataView.getUint16(offset, littleEndian);
+        break;
+      }
+    }
+  }
+  return orientation;
+}
+var vueCropper_vue_vue_type_style_index_0_scoped_true_lang = "";
+var _export_sfc = (sfc, props) => {
+  const target = sfc.__vccOpts || sfc;
+  for (const [key, val] of props) {
+    target[key] = val;
+  }
+  return target;
+};
+const _sfc_main = (0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
+  data: function() {
+    return {
+      w: 0,
+      h: 0,
+      scale: 1,
+      x: 0,
+      y: 0,
+      loading: true,
+      trueWidth: 0,
+      trueHeight: 0,
+      move: true,
+      moveX: 0,
+      moveY: 0,
+      crop: false,
+      cropping: false,
+      cropW: 0,
+      cropH: 0,
+      cropOldW: 0,
+      cropOldH: 0,
+      canChangeX: false,
+      canChangeY: false,
+      changeCropTypeX: 1,
+      changeCropTypeY: 1,
+      cropX: 0,
+      cropY: 0,
+      cropChangeX: 0,
+      cropChangeY: 0,
+      cropOffsertX: 0,
+      cropOffsertY: 0,
+      support: "",
+      touches: [],
+      touchNow: false,
+      rotate: 0,
+      isIos: false,
+      orientation: 0,
+      imgs: "",
+      coe: 0.2,
+      scaling: false,
+      scalingSet: "",
+      coeStatus: "",
+      isCanShow: true
+    };
+  },
+  props: {
+    img: {
+      type: [String, Blob, null, File],
+      default: ""
+    },
+    outputSize: {
+      type: Number,
+      default: 1
+    },
+    outputType: {
+      type: String,
+      default: "jpeg"
+    },
+    info: {
+      type: Boolean,
+      default: true
+    },
+    canScale: {
+      type: Boolean,
+      default: true
+    },
+    autoCrop: {
+      type: Boolean,
+      default: false
+    },
+    autoCropWidth: {
+      type: [Number, String],
+      default: 0
+    },
+    autoCropHeight: {
+      type: [Number, String],
+      default: 0
+    },
+    fixed: {
+      type: Boolean,
+      default: false
+    },
+    fixedNumber: {
+      type: Array,
+      default: () => {
+        return [1, 1];
+      }
+    },
+    fixedBox: {
+      type: Boolean,
+      default: false
+    },
+    full: {
+      type: Boolean,
+      default: false
+    },
+    canMove: {
+      type: Boolean,
+      default: true
+    },
+    canMoveBox: {
+      type: Boolean,
+      default: true
+    },
+    original: {
+      type: Boolean,
+      default: false
+    },
+    centerBox: {
+      type: Boolean,
+      default: false
+    },
+    high: {
+      type: Boolean,
+      default: true
+    },
+    infoTrue: {
+      type: Boolean,
+      default: false
+    },
+    maxImgSize: {
+      type: [Number, String],
+      default: 2e3
+    },
+    enlarge: {
+      type: [Number, String],
+      default: 1
+    },
+    preW: {
+      type: [Number, String],
+      default: 0
+    },
+    mode: {
+      type: String,
+      default: "contain"
+    },
+    limitMinSize: {
+      type: [Number, Array, String],
+      default: () => {
+        return 10;
+      }
+    }
+  },
+  computed: {
+    cropInfo() {
+      let obj = {};
+      obj.top = this.cropOffsertY > 21 ? "-21px" : "0px";
+      obj.width = this.cropW > 0 ? this.cropW : 0;
+      obj.height = this.cropH > 0 ? this.cropH : 0;
+      if (this.infoTrue) {
+        let dpr = 1;
+        if (this.high && !this.full) {
+          dpr = window.devicePixelRatio;
+        }
+        if (this.enlarge !== 1 & !this.full) {
+          dpr = Math.abs(Number(this.enlarge));
+        }
+        obj.width = obj.width * dpr;
+        obj.height = obj.height * dpr;
+        if (this.full) {
+          obj.width = obj.width / this.scale;
+          obj.height = obj.height / this.scale;
+        }
+      }
+      obj.width = obj.width.toFixed(0);
+      obj.height = obj.height.toFixed(0);
+      return obj;
+    },
+    isIE() {
+      const isIE = !!window.ActiveXObject || "ActiveXObject" in window;
+      return isIE;
+    },
+    passive() {
+      return this.isIE ? null : {
+        passive: false
+      };
+    }
+  },
+  watch: {
+    img() {
+      this.checkedImg();
+    },
+    imgs(val) {
+      if (val === "") {
+        return;
+      }
+      this.reload();
+    },
+    cropW() {
+      this.showPreview();
+    },
+    cropH() {
+      this.showPreview();
+    },
+    cropOffsertX() {
+      this.showPreview();
+    },
+    cropOffsertY() {
+      this.showPreview();
+    },
+    scale(val, oldVal) {
+      this.showPreview();
+    },
+    x() {
+      this.showPreview();
+    },
+    y() {
+      this.showPreview();
+    },
+    autoCrop(val) {
+      if (val) {
+        this.goAutoCrop();
+      }
+    },
+    autoCropWidth() {
+      if (this.autoCrop) {
+        this.goAutoCrop();
+      }
+    },
+    autoCropHeight() {
+      if (this.autoCrop) {
+        this.goAutoCrop();
+      }
+    },
+    mode() {
+      this.checkedImg();
+    },
+    rotate() {
+      this.showPreview();
+      if (this.autoCrop) {
+        this.goAutoCrop(this.cropW, this.cropH);
+      } else {
+        if (this.cropW > 0 || this.cropH > 0) {
+          this.goAutoCrop(this.cropW, this.cropH);
+        }
+      }
+    }
+  },
+  methods: {
+    getVersion(name) {
+      var arr = navigator.userAgent.split(" ");
+      var chromeVersion = "";
+      let result = 0;
+      const reg = new RegExp(name, "i");
+      for (var i = 0; i < arr.length; i++) {
+        if (reg.test(arr[i]))
+          chromeVersion = arr[i];
+      }
+      if (chromeVersion) {
+        result = chromeVersion.split("/")[1].split(".");
+      } else {
+        result = ["0", "0", "0"];
+      }
+      return result;
+    },
+    checkOrientationImage(img, orientation, width, height) {
+      if (this.getVersion("chrome")[0] >= 81) {
+        orientation = -1;
+      } else {
+        if (this.getVersion("safari")[0] >= 605) {
+          const safariVersion = this.getVersion("version");
+          if (safariVersion[0] > 13 && safariVersion[1] > 1) {
+            orientation = -1;
+          }
+        } else {
+          const isIos = navigator.userAgent.toLowerCase().match(/cpu iphone os (.*?) like mac os/);
+          if (isIos) {
+            let version = isIos[1];
+            version = version.split("_");
+            if (version[0] > 13 || version[0] >= 13 && version[1] >= 4) {
+              orientation = -1;
+            }
+          }
+        }
+      }
+      let canvas = document.createElement("canvas");
+      let ctx = canvas.getContext("2d");
+      ctx.save();
+      switch (orientation) {
+        case 2:
+          canvas.width = width;
+          canvas.height = height;
+          ctx.translate(width, 0);
+          ctx.scale(-1, 1);
+          break;
+        case 3:
+          canvas.width = width;
+          canvas.height = height;
+          ctx.translate(width / 2, height / 2);
+          ctx.rotate(180 * Math.PI / 180);
+          ctx.translate(-width / 2, -height / 2);
+          break;
+        case 4:
+          canvas.width = width;
+          canvas.height = height;
+          ctx.translate(0, height);
+          ctx.scale(1, -1);
+          break;
+        case 5:
+          canvas.height = width;
+          canvas.width = height;
+          ctx.rotate(0.5 * Math.PI);
+          ctx.scale(1, -1);
+          break;
+        case 6:
+          canvas.width = height;
+          canvas.height = width;
+          ctx.translate(height / 2, width / 2);
+          ctx.rotate(90 * Math.PI / 180);
+          ctx.translate(-width / 2, -height / 2);
+          break;
+        case 7:
+          canvas.height = width;
+          canvas.width = height;
+          ctx.rotate(0.5 * Math.PI);
+          ctx.translate(width, -height);
+          ctx.scale(-1, 1);
+          break;
+        case 8:
+          canvas.height = width;
+          canvas.width = height;
+          ctx.translate(height / 2, width / 2);
+          ctx.rotate(-90 * Math.PI / 180);
+          ctx.translate(-width / 2, -height / 2);
+          break;
+        default:
+          canvas.width = width;
+          canvas.height = height;
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+      ctx.restore();
+      canvas.toBlob((blob) => {
+        let data = URL.createObjectURL(blob);
+        URL.revokeObjectURL(this.imgs);
+        this.imgs = data;
+      }, "image/" + this.outputType, 1);
+    },
+    checkedImg() {
+      if (this.img === null || this.img === "") {
+        this.imgs = "";
+        this.clearCrop();
+        return;
+      }
+      this.loading = true;
+      this.scale = 1;
+      this.rotate = 0;
+      this.clearCrop();
+      let img = new Image();
+      img.onload = () => {
+        if (this.img === "") {
+          this.$emit("img-load", "error");
+          return false;
+        }
+        let width = img.width;
+        let height = img.height;
+        Exif.getData(img).then((data) => {
+          this.orientation = data.orientation || 1;
+          let max = Number(this.maxImgSize);
+          if (!this.orientation && width < max & height < max) {
+            this.imgs = this.img;
+            return;
+          }
+          if (width > max) {
+            height = height / width * max;
+            width = max;
+          }
+          if (height > max) {
+            width = width / height * max;
+            height = max;
+          }
+          this.checkOrientationImage(img, this.orientation, width, height);
+        });
+      };
+      img.onerror = () => {
+        this.$emit("img-load", "error");
+      };
+      if (this.img.substr(0, 4) !== "data") {
+        img.crossOrigin = "";
+      }
+      if (this.isIE) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          var url = URL.createObjectURL(this.response);
+          img.src = url;
+        };
+        xhr.open("GET", this.img, true);
+        xhr.responseType = "blob";
+        xhr.send();
+      } else {
+        img.src = this.img;
+      }
+    },
+    startMove(e) {
+      e.preventDefault();
+      if (this.move && !this.crop) {
+        if (!this.canMove) {
+          return false;
+        }
+        this.moveX = ("clientX" in e ? e.clientX : e.touches[0].clientX) - this.x;
+        this.moveY = ("clientY" in e ? e.clientY : e.touches[0].clientY) - this.y;
+        if (e.touches) {
+          window.addEventListener("touchmove", this.moveImg);
+          window.addEventListener("touchend", this.leaveImg);
+          if (e.touches.length == 2) {
+            this.touches = e.touches;
+            window.addEventListener("touchmove", this.touchScale);
+            window.addEventListener("touchend", this.cancelTouchScale);
+          }
+        } else {
+          window.addEventListener("mousemove", this.moveImg);
+          window.addEventListener("mouseup", this.leaveImg);
+        }
+        this.$emit("imgMoving", {
+          moving: true,
+          axis: this.getImgAxis()
+        });
+        this.$emit("img-moving", {
+          moving: true,
+          axis: this.getImgAxis()
+        });
+      } else {
+        this.cropping = true;
+        window.addEventListener("mousemove", this.createCrop);
+        window.addEventListener("mouseup", this.endCrop);
+        window.addEventListener("touchmove", this.createCrop);
+        window.addEventListener("touchend", this.endCrop);
+        this.cropOffsertX = e.offsetX ? e.offsetX : e.touches[0].pageX - this.$refs.cropper.offsetLeft;
+        this.cropOffsertY = e.offsetY ? e.offsetY : e.touches[0].pageY - this.$refs.cropper.offsetTop;
+        this.cropX = "clientX" in e ? e.clientX : e.touches[0].clientX;
+        this.cropY = "clientY" in e ? e.clientY : e.touches[0].clientY;
+        this.cropChangeX = this.cropOffsertX;
+        this.cropChangeY = this.cropOffsertY;
+        this.cropW = 0;
+        this.cropH = 0;
+      }
+    },
+    touchScale(e) {
+      e.preventDefault();
+      let scale = this.scale;
+      var oldTouch1 = {
+        x: this.touches[0].clientX,
+        y: this.touches[0].clientY
+      };
+      var newTouch1 = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      };
+      var oldTouch2 = {
+        x: this.touches[1].clientX,
+        y: this.touches[1].clientY
+      };
+      var newTouch2 = {
+        x: e.touches[1].clientX,
+        y: e.touches[1].clientY
+      };
+      var oldL = Math.sqrt(Math.pow(oldTouch1.x - oldTouch2.x, 2) + Math.pow(oldTouch1.y - oldTouch2.y, 2));
+      var newL = Math.sqrt(Math.pow(newTouch1.x - newTouch2.x, 2) + Math.pow(newTouch1.y - newTouch2.y, 2));
+      var cha = newL - oldL;
+      var coe = 1;
+      coe = coe / this.trueWidth > coe / this.trueHeight ? coe / this.trueHeight : coe / this.trueWidth;
+      coe = coe > 0.1 ? 0.1 : coe;
+      var num = coe * cha;
+      if (!this.touchNow) {
+        this.touchNow = true;
+        if (cha > 0) {
+          scale += Math.abs(num);
+        } else if (cha < 0) {
+          scale > Math.abs(num) ? scale -= Math.abs(num) : scale;
+        }
+        this.touches = e.touches;
+        setTimeout(() => {
+          this.touchNow = false;
+        }, 8);
+        if (!this.checkoutImgAxis(this.x, this.y, scale)) {
+          return false;
+        }
+        this.scale = scale;
+      }
+    },
+    cancelTouchScale(e) {
+      window.removeEventListener("touchmove", this.touchScale);
+    },
+    moveImg(e) {
+      e.preventDefault();
+      if (e.touches && e.touches.length === 2) {
+        this.touches = e.touches;
+        window.addEventListener("touchmove", this.touchScale);
+        window.addEventListener("touchend", this.cancelTouchScale);
+        window.removeEventListener("touchmove", this.moveImg);
+        return false;
+      }
+      let nowX = "clientX" in e ? e.clientX : e.touches[0].clientX;
+      let nowY = "clientY" in e ? e.clientY : e.touches[0].clientY;
+      let changeX, changeY;
+      changeX = nowX - this.moveX;
+      changeY = nowY - this.moveY;
+      this.$nextTick(() => {
+        if (this.centerBox) {
+          let axis = this.getImgAxis(changeX, changeY, this.scale);
+          let cropAxis = this.getCropAxis();
+          let imgW = this.trueHeight * this.scale;
+          let imgH = this.trueWidth * this.scale;
+          let maxLeft, maxTop, maxRight, maxBottom;
+          switch (this.rotate) {
+            case 1:
+            case -1:
+            case 3:
+            case -3:
+              maxLeft = this.cropOffsertX - this.trueWidth * (1 - this.scale) / 2 + (imgW - imgH) / 2;
+              maxTop = this.cropOffsertY - this.trueHeight * (1 - this.scale) / 2 + (imgH - imgW) / 2;
+              maxRight = maxLeft - imgW + this.cropW;
+              maxBottom = maxTop - imgH + this.cropH;
+              break;
+            default:
+              maxLeft = this.cropOffsertX - this.trueWidth * (1 - this.scale) / 2;
+              maxTop = this.cropOffsertY - this.trueHeight * (1 - this.scale) / 2;
+              maxRight = maxLeft - imgH + this.cropW;
+              maxBottom = maxTop - imgW + this.cropH;
+              break;
+          }
+          if (axis.x1 >= cropAxis.x1) {
+            changeX = maxLeft;
+          }
+          if (axis.y1 >= cropAxis.y1) {
+            changeY = maxTop;
+          }
+          if (axis.x2 <= cropAxis.x2) {
+            changeX = maxRight;
+          }
+          if (axis.y2 <= cropAxis.y2) {
+            changeY = maxBottom;
+          }
+        }
+        this.x = changeX;
+        this.y = changeY;
+        this.$emit("imgMoving", {
+          moving: true,
+          axis: this.getImgAxis()
+        });
+        this.$emit("img-moving", {
+          moving: true,
+          axis: this.getImgAxis()
+        });
+      });
+    },
+    leaveImg(e) {
+      window.removeEventListener("mousemove", this.moveImg);
+      window.removeEventListener("touchmove", this.moveImg);
+      window.removeEventListener("mouseup", this.leaveImg);
+      window.removeEventListener("touchend", this.leaveImg);
+      this.$emit("imgMoving", {
+        moving: false,
+        axis: this.getImgAxis()
+      });
+      this.$emit("img-moving", {
+        moving: false,
+        axis: this.getImgAxis()
+      });
+    },
+    scaleImg() {
+      if (this.canScale) {
+        window.addEventListener(this.support, this.changeSize, this.passive);
+      }
+    },
+    cancelScale() {
+      if (this.canScale) {
+        window.removeEventListener(this.support, this.changeSize);
+      }
+    },
+    changeSize(e) {
+      e.preventDefault();
+      let scale = this.scale;
+      var change = e.deltaY || e.wheelDelta;
+      var isFirefox = navigator.userAgent.indexOf("Firefox");
+      change = isFirefox > 0 ? change * 30 : change;
+      if (this.isIE) {
+        change = -change;
+      }
+      var coe = this.coe;
+      coe = coe / this.trueWidth > coe / this.trueHeight ? coe / this.trueHeight : coe / this.trueWidth;
+      var num = coe * change;
+      num < 0 ? scale += Math.abs(num) : scale > Math.abs(num) ? scale -= Math.abs(num) : scale;
+      let status = num < 0 ? "add" : "reduce";
+      if (status !== this.coeStatus) {
+        this.coeStatus = status;
+        this.coe = 0.2;
+      }
+      if (!this.scaling) {
+        this.scalingSet = setTimeout(() => {
+          this.scaling = false;
+          this.coe = this.coe += 0.01;
+        }, 50);
+      }
+      this.scaling = true;
+      if (!this.checkoutImgAxis(this.x, this.y, scale)) {
+        return false;
+      }
+      this.scale = scale;
+    },
+    changeScale(num) {
+      let scale = this.scale;
+      num = num || 1;
+      var coe = 20;
+      coe = coe / this.trueWidth > coe / this.trueHeight ? coe / this.trueHeight : coe / this.trueWidth;
+      num = num * coe;
+      num > 0 ? scale += Math.abs(num) : scale > Math.abs(num) ? scale -= Math.abs(num) : scale;
+      if (!this.checkoutImgAxis(this.x, this.y, scale)) {
+        return false;
+      }
+      this.scale = scale;
+    },
+    createCrop(e) {
+      e.preventDefault();
+      var nowX = "clientX" in e ? e.clientX : e.touches ? e.touches[0].clientX : 0;
+      var nowY = "clientY" in e ? e.clientY : e.touches ? e.touches[0].clientY : 0;
+      this.$nextTick(() => {
+        var fw = nowX - this.cropX;
+        var fh = nowY - this.cropY;
+        if (fw > 0) {
+          this.cropW = fw + this.cropChangeX > this.w ? this.w - this.cropChangeX : fw;
+          this.cropOffsertX = this.cropChangeX;
+        } else {
+          this.cropW = this.w - this.cropChangeX + Math.abs(fw) > this.w ? this.cropChangeX : Math.abs(fw);
+          this.cropOffsertX = this.cropChangeX + fw > 0 ? this.cropChangeX + fw : 0;
+        }
+        if (!this.fixed) {
+          if (fh > 0) {
+            this.cropH = fh + this.cropChangeY > this.h ? this.h - this.cropChangeY : fh;
+            this.cropOffsertY = this.cropChangeY;
+          } else {
+            this.cropH = this.h - this.cropChangeY + Math.abs(fh) > this.h ? this.cropChangeY : Math.abs(fh);
+            this.cropOffsertY = this.cropChangeY + fh > 0 ? this.cropChangeY + fh : 0;
+          }
+        } else {
+          var fixedHeight = this.cropW / this.fixedNumber[0] * this.fixedNumber[1];
+          if (fixedHeight + this.cropOffsertY > this.h) {
+            this.cropH = this.h - this.cropOffsertY;
+            this.cropW = this.cropH / this.fixedNumber[1] * this.fixedNumber[0];
+            if (fw > 0) {
+              this.cropOffsertX = this.cropChangeX;
+            } else {
+              this.cropOffsertX = this.cropChangeX - this.cropW;
+            }
+          } else {
+            this.cropH = fixedHeight;
+          }
+          this.cropOffsertY = this.cropOffsertY;
+        }
+      });
+    },
+    changeCropSize(e, w, h, typeW, typeH) {
+      e.preventDefault();
+      window.addEventListener("mousemove", this.changeCropNow);
+      window.addEventListener("mouseup", this.changeCropEnd);
+      window.addEventListener("touchmove", this.changeCropNow);
+      window.addEventListener("touchend", this.changeCropEnd);
+      this.canChangeX = w;
+      this.canChangeY = h;
+      this.changeCropTypeX = typeW;
+      this.changeCropTypeY = typeH;
+      this.cropX = "clientX" in e ? e.clientX : e.touches[0].clientX;
+      this.cropY = "clientY" in e ? e.clientY : e.touches[0].clientY;
+      this.cropOldW = this.cropW;
+      this.cropOldH = this.cropH;
+      this.cropChangeX = this.cropOffsertX;
+      this.cropChangeY = this.cropOffsertY;
+      if (this.fixed) {
+        if (this.canChangeX && this.canChangeY) {
+          this.canChangeY = 0;
+        }
+      }
+      this.$emit("change-crop-size", {
+        width: this.cropW,
+        height: this.cropH
+      });
+    },
+    changeCropNow(e) {
+      e.preventDefault();
+      var nowX = "clientX" in e ? e.clientX : e.touches ? e.touches[0].clientX : 0;
+      var nowY = "clientY" in e ? e.clientY : e.touches ? e.touches[0].clientY : 0;
+      let wrapperW = this.w;
+      let wrapperH = this.h;
+      let minX = 0;
+      let minY = 0;
+      if (this.centerBox) {
+        let axis = this.getImgAxis();
+        let imgW = axis.x2;
+        let imgH = axis.y2;
+        minX = axis.x1 > 0 ? axis.x1 : 0;
+        minY = axis.y1 > 0 ? axis.y1 : 0;
+        if (wrapperW > imgW) {
+          wrapperW = imgW;
+        }
+        if (wrapperH > imgH) {
+          wrapperH = imgH;
+        }
+      }
+      this.$nextTick(() => {
+        var fw = nowX - this.cropX;
+        var fh = nowY - this.cropY;
+        if (this.canChangeX) {
+          if (this.changeCropTypeX === 1) {
+            if (this.cropOldW - fw > 0) {
+              this.cropW = wrapperW - this.cropChangeX - fw <= wrapperW - minX ? this.cropOldW - fw : this.cropOldW + this.cropChangeX - minX;
+              this.cropOffsertX = wrapperW - this.cropChangeX - fw <= wrapperW - minX ? this.cropChangeX + fw : minX;
+            } else {
+              this.cropW = Math.abs(fw) + this.cropChangeX <= wrapperW ? Math.abs(fw) - this.cropOldW : wrapperW - this.cropOldW - this.cropChangeX;
+              this.cropOffsertX = this.cropChangeX + this.cropOldW;
+            }
+          } else if (this.changeCropTypeX === 2) {
+            if (this.cropOldW + fw > 0) {
+              this.cropW = this.cropOldW + fw + this.cropOffsertX <= wrapperW ? this.cropOldW + fw : wrapperW - this.cropOffsertX;
+              this.cropOffsertX = this.cropChangeX;
+            } else {
+              this.cropW = wrapperW - this.cropChangeX + Math.abs(fw + this.cropOldW) <= wrapperW - minX ? Math.abs(fw + this.cropOldW) : this.cropChangeX - minX;
+              this.cropOffsertX = wrapperW - this.cropChangeX + Math.abs(fw + this.cropOldW) <= wrapperW - minX ? this.cropChangeX - Math.abs(fw + this.cropOldW) : minX;
+            }
+          }
+        }
+        if (this.canChangeY) {
+          if (this.changeCropTypeY === 1) {
+            if (this.cropOldH - fh > 0) {
+              this.cropH = wrapperH - this.cropChangeY - fh <= wrapperH - minY ? this.cropOldH - fh : this.cropOldH + this.cropChangeY - minY;
+              this.cropOffsertY = wrapperH - this.cropChangeY - fh <= wrapperH - minY ? this.cropChangeY + fh : minY;
+            } else {
+              this.cropH = Math.abs(fh) + this.cropChangeY <= wrapperH ? Math.abs(fh) - this.cropOldH : wrapperH - this.cropOldH - this.cropChangeY;
+              this.cropOffsertY = this.cropChangeY + this.cropOldH;
+            }
+          } else if (this.changeCropTypeY === 2) {
+            if (this.cropOldH + fh > 0) {
+              this.cropH = this.cropOldH + fh + this.cropOffsertY <= wrapperH ? this.cropOldH + fh : wrapperH - this.cropOffsertY;
+              this.cropOffsertY = this.cropChangeY;
+            } else {
+              this.cropH = wrapperH - this.cropChangeY + Math.abs(fh + this.cropOldH) <= wrapperH - minY ? Math.abs(fh + this.cropOldH) : this.cropChangeY - minY;
+              this.cropOffsertY = wrapperH - this.cropChangeY + Math.abs(fh + this.cropOldH) <= wrapperH - minY ? this.cropChangeY - Math.abs(fh + this.cropOldH) : minY;
+            }
+          }
+        }
+        if (this.canChangeX && this.fixed) {
+          var fixedHeight = this.cropW / this.fixedNumber[0] * this.fixedNumber[1];
+          if (fixedHeight + this.cropOffsertY > wrapperH) {
+            this.cropH = wrapperH - this.cropOffsertY;
+            this.cropW = this.cropH / this.fixedNumber[1] * this.fixedNumber[0];
+          } else {
+            this.cropH = fixedHeight;
+          }
+        }
+        if (this.canChangeY && this.fixed) {
+          var fixedWidth = this.cropH / this.fixedNumber[1] * this.fixedNumber[0];
+          if (fixedWidth + this.cropOffsertX > wrapperW) {
+            this.cropW = wrapperW - this.cropOffsertX;
+            this.cropH = this.cropW / this.fixedNumber[0] * this.fixedNumber[1];
+          } else {
+            this.cropW = fixedWidth;
+          }
+        }
+      });
+    },
+    checkCropLimitSize() {
+      let { cropW, cropH, limitMinSize } = this;
+      let limitMinNum = new Array();
+      if (!Array.isArray[limitMinSize]) {
+        limitMinNum = [limitMinSize, limitMinSize];
+      } else {
+        limitMinNum = limitMinSize;
+      }
+      cropW = parseFloat(limitMinNum[0]);
+      cropH = parseFloat(limitMinNum[1]);
+      return [cropW, cropH];
+    },
+    changeCropEnd(e) {
+      window.removeEventListener("mousemove", this.changeCropNow);
+      window.removeEventListener("mouseup", this.changeCropEnd);
+      window.removeEventListener("touchmove", this.changeCropNow);
+      window.removeEventListener("touchend", this.changeCropEnd);
+    },
+    endCrop() {
+      if (this.cropW === 0 && this.cropH === 0) {
+        this.cropping = false;
+      }
+      window.removeEventListener("mousemove", this.createCrop);
+      window.removeEventListener("mouseup", this.endCrop);
+      window.removeEventListener("touchmove", this.createCrop);
+      window.removeEventListener("touchend", this.endCrop);
+    },
+    startCrop() {
+      this.crop = true;
+    },
+    stopCrop() {
+      this.crop = false;
+    },
+    clearCrop() {
+      this.cropping = false;
+      this.cropW = 0;
+      this.cropH = 0;
+    },
+    cropMove(e) {
+      e.preventDefault();
+      if (!this.canMoveBox) {
+        this.crop = false;
+        this.startMove(e);
+        return false;
+      }
+      if (e.touches && e.touches.length === 2) {
+        this.crop = false;
+        this.startMove(e);
+        this.leaveCrop();
+        return false;
+      }
+      window.addEventListener("mousemove", this.moveCrop);
+      window.addEventListener("mouseup", this.leaveCrop);
+      window.addEventListener("touchmove", this.moveCrop);
+      window.addEventListener("touchend", this.leaveCrop);
+      let x = "clientX" in e ? e.clientX : e.touches[0].clientX;
+      let y = "clientY" in e ? e.clientY : e.touches[0].clientY;
+      let newX, newY;
+      newX = x - this.cropOffsertX;
+      newY = y - this.cropOffsertY;
+      this.cropX = newX;
+      this.cropY = newY;
+      this.$emit("cropMoving", {
+        moving: true,
+        axis: this.getCropAxis()
+      });
+      this.$emit("crop-moving", {
+        moving: true,
+        axis: this.getCropAxis()
+      });
+    },
+    moveCrop(e, isMove) {
+      let nowX = 0;
+      let nowY = 0;
+      if (e) {
+        e.preventDefault();
+        nowX = "clientX" in e ? e.clientX : e.touches[0].clientX;
+        nowY = "clientY" in e ? e.clientY : e.touches[0].clientY;
+      }
+      this.$nextTick(() => {
+        let cx, cy;
+        let fw = nowX - this.cropX;
+        let fh = nowY - this.cropY;
+        if (isMove) {
+          fw = this.cropOffsertX;
+          fh = this.cropOffsertY;
+        }
+        if (fw <= 0) {
+          cx = 0;
+        } else if (fw + this.cropW > this.w) {
+          cx = this.w - this.cropW;
+        } else {
+          cx = fw;
+        }
+        if (fh <= 0) {
+          cy = 0;
+        } else if (fh + this.cropH > this.h) {
+          cy = this.h - this.cropH;
+        } else {
+          cy = fh;
+        }
+        if (this.centerBox) {
+          let axis = this.getImgAxis();
+          if (cx <= axis.x1) {
+            cx = axis.x1;
+          }
+          if (cx + this.cropW > axis.x2) {
+            cx = axis.x2 - this.cropW;
+          }
+          if (cy <= axis.y1) {
+            cy = axis.y1;
+          }
+          if (cy + this.cropH > axis.y2) {
+            cy = axis.y2 - this.cropH;
+          }
+        }
+        this.cropOffsertX = cx;
+        this.cropOffsertY = cy;
+        this.$emit("cropMoving", {
+          moving: true,
+          axis: this.getCropAxis()
+        });
+        this.$emit("crop-moving", {
+          moving: true,
+          axis: this.getCropAxis()
+        });
+      });
+    },
+    getImgAxis(x, y, scale) {
+      x = x || this.x;
+      y = y || this.y;
+      scale = scale || this.scale;
+      let obj = {
+        x1: 0,
+        x2: 0,
+        y1: 0,
+        y2: 0
+      };
+      let imgW = this.trueWidth * scale;
+      let imgH = this.trueHeight * scale;
+      switch (this.rotate) {
+        case 0:
+          obj.x1 = x + this.trueWidth * (1 - scale) / 2;
+          obj.x2 = obj.x1 + this.trueWidth * scale;
+          obj.y1 = y + this.trueHeight * (1 - scale) / 2;
+          obj.y2 = obj.y1 + this.trueHeight * scale;
+          break;
+        case 1:
+        case -1:
+        case 3:
+        case -3:
+          obj.x1 = x + this.trueWidth * (1 - scale) / 2 + (imgW - imgH) / 2;
+          obj.x2 = obj.x1 + this.trueHeight * scale;
+          obj.y1 = y + this.trueHeight * (1 - scale) / 2 + (imgH - imgW) / 2;
+          obj.y2 = obj.y1 + this.trueWidth * scale;
+          break;
+        default:
+          obj.x1 = x + this.trueWidth * (1 - scale) / 2;
+          obj.x2 = obj.x1 + this.trueWidth * scale;
+          obj.y1 = y + this.trueHeight * (1 - scale) / 2;
+          obj.y2 = obj.y1 + this.trueHeight * scale;
+          break;
+      }
+      return obj;
+    },
+    getCropAxis() {
+      let obj = {
+        x1: 0,
+        x2: 0,
+        y1: 0,
+        y2: 0
+      };
+      obj.x1 = this.cropOffsertX;
+      obj.x2 = obj.x1 + this.cropW;
+      obj.y1 = this.cropOffsertY;
+      obj.y2 = obj.y1 + this.cropH;
+      return obj;
+    },
+    leaveCrop(e) {
+      window.removeEventListener("mousemove", this.moveCrop);
+      window.removeEventListener("mouseup", this.leaveCrop);
+      window.removeEventListener("touchmove", this.moveCrop);
+      window.removeEventListener("touchend", this.leaveCrop);
+      this.$emit("cropMoving", {
+        moving: false,
+        axis: this.getCropAxis()
+      });
+      this.$emit("crop-moving", {
+        moving: false,
+        axis: this.getCropAxis()
+      });
+    },
+    getCropChecked(cb) {
+      let canvas = document.createElement("canvas");
+      let img = new Image();
+      let rotate = this.rotate;
+      let trueWidth = this.trueWidth;
+      let trueHeight = this.trueHeight;
+      let cropOffsertX = this.cropOffsertX;
+      let cropOffsertY = this.cropOffsertY;
+      img.onload = () => {
+        if (this.cropW !== 0) {
+          let ctx = canvas.getContext("2d");
+          let dpr = 1;
+          if (this.high & !this.full) {
+            dpr = window.devicePixelRatio;
+          }
+          if (this.enlarge !== 1 & !this.full) {
+            dpr = Math.abs(Number(this.enlarge));
+          }
+          let width = this.cropW * dpr;
+          let height = this.cropH * dpr;
+          let imgW = trueWidth * this.scale * dpr;
+          let imgH = trueHeight * this.scale * dpr;
+          let dx = (this.x - cropOffsertX + this.trueWidth * (1 - this.scale) / 2) * dpr;
+          let dy = (this.y - cropOffsertY + this.trueHeight * (1 - this.scale) / 2) * dpr;
+          setCanvasSize(width, height);
+          ctx.save();
+          switch (rotate) {
+            case 0:
+              if (!this.full) {
+                ctx.drawImage(img, dx, dy, imgW, imgH);
+              } else {
+                setCanvasSize(width / this.scale, height / this.scale);
+                ctx.drawImage(img, dx / this.scale, dy / this.scale, imgW / this.scale, imgH / this.scale);
+              }
+              break;
+            case 1:
+            case -3:
+              if (!this.full) {
+                dx = dx + (imgW - imgH) / 2;
+                dy = dy + (imgH - imgW) / 2;
+                ctx.rotate(rotate * 90 * Math.PI / 180);
+                ctx.drawImage(img, dy, -dx - imgH, imgW, imgH);
+              } else {
+                setCanvasSize(width / this.scale, height / this.scale);
+                dx = dx / this.scale + (imgW / this.scale - imgH / this.scale) / 2;
+                dy = dy / this.scale + (imgH / this.scale - imgW / this.scale) / 2;
+                ctx.rotate(rotate * 90 * Math.PI / 180);
+                ctx.drawImage(img, dy, -dx - imgH / this.scale, imgW / this.scale, imgH / this.scale);
+              }
+              break;
+            case 2:
+            case -2:
+              if (!this.full) {
+                ctx.rotate(rotate * 90 * Math.PI / 180);
+                ctx.drawImage(img, -dx - imgW, -dy - imgH, imgW, imgH);
+              } else {
+                setCanvasSize(width / this.scale, height / this.scale);
+                ctx.rotate(rotate * 90 * Math.PI / 180);
+                dx = dx / this.scale;
+                dy = dy / this.scale;
+                ctx.drawImage(img, -dx - imgW / this.scale, -dy - imgH / this.scale, imgW / this.scale, imgH / this.scale);
+              }
+              break;
+            case 3:
+            case -1:
+              if (!this.full) {
+                dx = dx + (imgW - imgH) / 2;
+                dy = dy + (imgH - imgW) / 2;
+                ctx.rotate(rotate * 90 * Math.PI / 180);
+                ctx.drawImage(img, -dy - imgW, dx, imgW, imgH);
+              } else {
+                setCanvasSize(width / this.scale, height / this.scale);
+                dx = dx / this.scale + (imgW / this.scale - imgH / this.scale) / 2;
+                dy = dy / this.scale + (imgH / this.scale - imgW / this.scale) / 2;
+                ctx.rotate(rotate * 90 * Math.PI / 180);
+                ctx.drawImage(img, -dy - imgW / this.scale, dx, imgW / this.scale, imgH / this.scale);
+              }
+              break;
+            default:
+              if (!this.full) {
+                ctx.drawImage(img, dx, dy, imgW, imgH);
+              } else {
+                setCanvasSize(width / this.scale, height / this.scale);
+                ctx.drawImage(img, dx / this.scale, dy / this.scale, imgW / this.scale, imgH / this.scale);
+              }
+          }
+          ctx.restore();
+        } else {
+          let width = trueWidth * this.scale;
+          let height = trueHeight * this.scale;
+          let ctx = canvas.getContext("2d");
+          ctx.save();
+          switch (rotate) {
+            case 0:
+              setCanvasSize(width, height);
+              ctx.drawImage(img, 0, 0, width, height);
+              break;
+            case 1:
+            case -3:
+              setCanvasSize(height, width);
+              ctx.rotate(rotate * 90 * Math.PI / 180);
+              ctx.drawImage(img, 0, -height, width, height);
+              break;
+            case 2:
+            case -2:
+              setCanvasSize(width, height);
+              ctx.rotate(rotate * 90 * Math.PI / 180);
+              ctx.drawImage(img, -width, -height, width, height);
+              break;
+            case 3:
+            case -1:
+              setCanvasSize(height, width);
+              ctx.rotate(rotate * 90 * Math.PI / 180);
+              ctx.drawImage(img, -width, 0, width, height);
+              break;
+            default:
+              setCanvasSize(width, height);
+              ctx.drawImage(img, 0, 0, width, height);
+          }
+          ctx.restore();
+        }
+        cb(canvas);
+      };
+      var s = this.img.substr(0, 4);
+      if (s !== "data") {
+        img.crossOrigin = "Anonymous";
+      }
+      img.src = this.imgs;
+      function setCanvasSize(width, height) {
+        canvas.width = Math.round(width);
+        canvas.height = Math.round(height);
+      }
+    },
+    getCropData(cb) {
+      this.getCropChecked((data) => {
+        cb(data.toDataURL("image/" + this.outputType, this.outputSize));
+      });
+    },
+    getCropBlob(cb) {
+      this.getCropChecked((data) => {
+        data.toBlob((blob) => cb(blob), "image/" + this.outputType, this.outputSize);
+      });
+    },
+    showPreview() {
+      if (this.isCanShow) {
+        this.isCanShow = false;
+        setTimeout(() => {
+          this.isCanShow = true;
+        }, 16);
+      } else {
+        return false;
+      }
+      let w = this.cropW;
+      let h = this.cropH;
+      let scale = this.scale;
+      var obj = {};
+      obj.div = {
+        width: `${w}px`,
+        height: `${h}px`
+      };
+      let transformX = (this.x - this.cropOffsertX) / scale;
+      let transformY = (this.y - this.cropOffsertY) / scale;
+      let transformZ = 0;
+      obj.w = w;
+      obj.h = h;
+      obj.url = this.imgs;
+      obj.img = {
+        width: `${this.trueWidth}px`,
+        height: `${this.trueHeight}px`,
+        transform: `scale(${scale})translate3d(${transformX}px, ${transformY}px, ${transformZ}px)rotateZ(${this.rotate * 90}deg)`
+      };
+      obj.html = `
+      <div class="show-preview" style="width: ${obj.w}px; height: ${obj.h}px,; overflow: hidden">
+        <div style="width: ${w}px; height: ${h}px">
+          <img src=${obj.url} style="width: ${this.trueWidth}px; height: ${this.trueHeight}px; transform:
+          scale(${scale})translate3d(${transformX}px, ${transformY}px, ${transformZ}px)rotateZ(${this.rotate * 90}deg)">
+        </div>
+      </div>`;
+      this.$emit("realTime", obj);
+      this.$emit("real-time", obj);
+    },
+    reload() {
+      let img = new Image();
+      img.onload = () => {
+        this.w = parseFloat(window.getComputedStyle(this.$refs.cropper).width);
+        this.h = parseFloat(window.getComputedStyle(this.$refs.cropper).height);
+        this.trueWidth = img.width;
+        this.trueHeight = img.height;
+        if (!this.original) {
+          this.scale = this.checkedMode();
+        } else {
+          this.scale = 1;
+        }
+        this.$nextTick(() => {
+          this.x = -(this.trueWidth - this.trueWidth * this.scale) / 2 + (this.w - this.trueWidth * this.scale) / 2;
+          this.y = -(this.trueHeight - this.trueHeight * this.scale) / 2 + (this.h - this.trueHeight * this.scale) / 2;
+          this.loading = false;
+          if (this.autoCrop) {
+            this.goAutoCrop();
+          }
+          this.$emit("img-load", "success");
+          this.$emit("imgLoad", "success");
+          setTimeout(() => {
+            this.showPreview();
+          }, 20);
+        });
+      };
+      img.onerror = () => {
+        this.$emit("imgLoad", "error");
+        this.$emit("img-load", "error");
+      };
+      img.src = this.imgs;
+    },
+    checkedMode() {
+      let scale = 1;
+      let imgW = this.trueWidth;
+      let imgH = this.trueHeight;
+      const arr = this.mode.split(" ");
+      switch (arr[0]) {
+        case "contain":
+          if (this.trueWidth > this.w) {
+            scale = this.w / this.trueWidth;
+          }
+          if (this.trueHeight * scale > this.h) {
+            scale = this.h / this.trueHeight;
+          }
+          break;
+        case "cover":
+          imgW = this.w;
+          scale = imgW / this.trueWidth;
+          imgH = imgH * scale;
+          if (imgH < this.h) {
+            imgH = this.h;
+            scale = imgH / this.trueHeight;
+          }
+          break;
+        default:
+          try {
+            let str = arr[0];
+            if (str.search("px") !== -1) {
+              str = str.replace("px", "");
+              imgW = parseFloat(str);
+              const scaleX = imgW / this.trueWidth;
+              let scaleY = 1;
+              let strH = arr[1];
+              if (strH.search("px") !== -1) {
+                strH = strH.replace("px", "");
+                imgH = parseFloat(strH);
+                scaleY = imgH / this.trueHeight;
+              }
+              scale = Math.min(scaleX, scaleY);
+            }
+            if (str.search("%") !== -1) {
+              str = str.replace("%", "");
+              imgW = parseFloat(str) / 100 * this.w;
+              scale = imgW / this.trueWidth;
+            }
+            if (arr.length === 2 && str === "auto") {
+              let str2 = arr[1];
+              if (str2.search("px") !== -1) {
+                str2 = str2.replace("px", "");
+                imgH = parseFloat(str2);
+                scale = imgH / this.trueHeight;
+              }
+              if (str2.search("%") !== -1) {
+                str2 = str2.replace("%", "");
+                imgH = parseFloat(str2) / 100 * this.h;
+                scale = imgH / this.trueHeight;
+              }
+            }
+          } catch (error) {
+            scale = 1;
+          }
+      }
+      return scale;
+    },
+    goAutoCrop(cw, ch) {
+      if (this.imgs === "" || this.imgs === null)
+        return;
+      this.clearCrop();
+      this.cropping = true;
+      let maxWidth = this.w;
+      let maxHeight = this.h;
+      if (this.centerBox) {
+        const switchWH = Math.abs(this.rotate) % 2 > 0;
+        let imgW = (switchWH ? this.trueHeight : this.trueWidth) * this.scale;
+        let imgH = (switchWH ? this.trueWidth : this.trueHeight) * this.scale;
+        maxWidth = imgW < maxWidth ? imgW : maxWidth;
+        maxHeight = imgH < maxHeight ? imgH : maxHeight;
+      }
+      var w = cw ? cw : parseFloat(this.autoCropWidth);
+      var h = ch ? ch : parseFloat(this.autoCropHeight);
+      if (w === 0 || h === 0) {
+        w = maxWidth * 0.8;
+        h = maxHeight * 0.8;
+      }
+      w = w > maxWidth ? maxWidth : w;
+      h = h > maxHeight ? maxHeight : h;
+      if (this.fixed) {
+        h = w / this.fixedNumber[0] * this.fixedNumber[1];
+      }
+      if (h > this.h) {
+        h = this.h;
+        w = h / this.fixedNumber[1] * this.fixedNumber[0];
+      }
+      this.changeCrop(w, h);
+    },
+    changeCrop(w, h) {
+      if (this.centerBox) {
+        let axis = this.getImgAxis();
+        if (w > axis.x2 - axis.x1) {
+          w = axis.x2 - axis.x1;
+          h = w / this.fixedNumber[0] * this.fixedNumber[1];
+        }
+        if (h > axis.y2 - axis.y1) {
+          h = axis.y2 - axis.y1;
+          w = h / this.fixedNumber[1] * this.fixedNumber[0];
+        }
+      }
+      this.cropW = w;
+      this.cropH = h;
+      this.checkCropLimitSize();
+      this.$nextTick(() => {
+        this.cropOffsertX = (this.w - this.cropW) / 2;
+        this.cropOffsertY = (this.h - this.cropH) / 2;
+        if (this.centerBox) {
+          this.moveCrop(null, true);
+        }
+      });
+    },
+    refresh() {
+      this.img;
+      this.imgs = "";
+      this.scale = 1;
+      this.crop = false;
+      this.rotate = 0;
+      this.w = 0;
+      this.h = 0;
+      this.trueWidth = 0;
+      this.trueHeight = 0;
+      this.clearCrop();
+      this.$nextTick(() => {
+        this.checkedImg();
+      });
+    },
+    rotateLeft() {
+      this.rotate = this.rotate <= -3 ? 0 : this.rotate - 1;
+    },
+    rotateRight() {
+      this.rotate = this.rotate >= 3 ? 0 : this.rotate + 1;
+    },
+    rotateClear() {
+      this.rotate = 0;
+    },
+    checkoutImgAxis(x, y, scale) {
+      x = x || this.x;
+      y = y || this.y;
+      scale = scale || this.scale;
+      let canGo = true;
+      if (this.centerBox) {
+        let axis = this.getImgAxis(x, y, scale);
+        let cropAxis = this.getCropAxis();
+        if (axis.x1 >= cropAxis.x1) {
+          canGo = false;
+        }
+        if (axis.x2 <= cropAxis.x2) {
+          canGo = false;
+        }
+        if (axis.y1 >= cropAxis.y1) {
+          canGo = false;
+        }
+        if (axis.y2 <= cropAxis.y2) {
+          canGo = false;
+        }
+      }
+      return canGo;
+    }
+  },
+  mounted() {
+    this.support = "onwheel" in document.createElement("div") ? "wheel" : document.onmousewheel !== void 0 ? "mousewheel" : "DOMMouseScroll";
+    let that = this;
+    var u = navigator.userAgent;
+    this.isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+    if (!HTMLCanvasElement.prototype.toBlob) {
+      Object.defineProperty(HTMLCanvasElement.prototype, "toBlob", {
+        value: function(callback, type, quality) {
+          var binStr = atob(this.toDataURL(type, quality).split(",")[1]), len = binStr.length, arr = new Uint8Array(len);
+          for (var i = 0; i < len; i++) {
+            arr[i] = binStr.charCodeAt(i);
+          }
+          callback(new Blob([arr], { type: that.type || "image/png" }));
+        }
+      });
+    }
+    this.showPreview();
+    this.checkedImg();
+  },
+  destroyed() {
+    window.removeEventListener("mousemove", this.moveCrop);
+    window.removeEventListener("mouseup", this.leaveCrop);
+    window.removeEventListener("touchmove", this.moveCrop);
+    window.removeEventListener("touchend", this.leaveCrop);
+    this.cancelScale();
+  }
+});
+const _hoisted_1 = {
+  key: 0,
+  class: "cropper-box"
+};
+const _hoisted_2 = ["src"];
+const _hoisted_3 = { class: "cropper-view-box" };
+const _hoisted_4 = ["src"];
+const _hoisted_5 = { key: 1 };
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+    class: "vue-cropper",
+    ref: "cropper",
+    onMouseover: _cache[28] || (_cache[28] = (...args) => _ctx.scaleImg && _ctx.scaleImg(...args)),
+    onMouseout: _cache[29] || (_cache[29] = (...args) => _ctx.cancelScale && _ctx.cancelScale(...args))
+  }, [
+    _ctx.imgs ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+        class: "cropper-box-canvas",
+        style: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)({
+          "width": _ctx.trueWidth + "px",
+          "height": _ctx.trueHeight + "px",
+          "transform": "scale(" + _ctx.scale + "," + _ctx.scale + ") translate3d(" + _ctx.x / _ctx.scale + "px," + _ctx.y / _ctx.scale + "px,0)rotateZ(" + _ctx.rotate * 90 + "deg)"
+        })
+      }, [
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+          src: _ctx.imgs,
+          alt: "cropper-img",
+          ref: "cropperImg"
+        }, null, 8, _hoisted_2)
+      ], 4), [
+        [vue__WEBPACK_IMPORTED_MODULE_0__.vShow, !_ctx.loading]
+      ])
+    ])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("", true),
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+      class: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["cropper-drag-box", { "cropper-move": _ctx.move && !_ctx.crop, "cropper-crop": _ctx.crop, "cropper-modal": _ctx.cropping }]),
+      onMousedown: _cache[0] || (_cache[0] = (...args) => _ctx.startMove && _ctx.startMove(...args)),
+      onTouchstart: _cache[1] || (_cache[1] = (...args) => _ctx.startMove && _ctx.startMove(...args))
+    }, null, 34),
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+      class: "cropper-crop-box",
+      style: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)({
+        "width": _ctx.cropW + "px",
+        "height": _ctx.cropH + "px",
+        "transform": "translate3d(" + _ctx.cropOffsertX + "px," + _ctx.cropOffsertY + "px,0)"
+      })
+    }, [
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_3, [
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+          style: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)({
+            "width": _ctx.trueWidth + "px",
+            "height": _ctx.trueHeight + "px",
+            "transform": "scale(" + _ctx.scale + "," + _ctx.scale + ") translate3d(" + (_ctx.x - _ctx.cropOffsertX) / _ctx.scale + "px," + (_ctx.y - _ctx.cropOffsertY) / _ctx.scale + "px,0)rotateZ(" + _ctx.rotate * 90 + "deg)"
+          }),
+          src: _ctx.imgs,
+          alt: "cropper-img"
+        }, null, 12, _hoisted_4)
+      ]),
+      (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+        class: "cropper-face cropper-move",
+        onMousedown: _cache[2] || (_cache[2] = (...args) => _ctx.cropMove && _ctx.cropMove(...args)),
+        onTouchstart: _cache[3] || (_cache[3] = (...args) => _ctx.cropMove && _ctx.cropMove(...args))
+      }, null, 32),
+      _ctx.info ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", {
+        key: 0,
+        class: "crop-info",
+        style: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)({ "top": _ctx.cropInfo.top })
+      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.cropInfo.width) + " \xD7 " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.cropInfo.height), 5)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("", true),
+      !_ctx.fixedBox ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_5, [
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-line line-w",
+          onMousedown: _cache[4] || (_cache[4] = ($event) => _ctx.changeCropSize($event, false, true, 0, 1)),
+          onTouchstart: _cache[5] || (_cache[5] = ($event) => _ctx.changeCropSize($event, false, true, 0, 1))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-line line-a",
+          onMousedown: _cache[6] || (_cache[6] = ($event) => _ctx.changeCropSize($event, true, false, 1, 0)),
+          onTouchstart: _cache[7] || (_cache[7] = ($event) => _ctx.changeCropSize($event, true, false, 1, 0))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-line line-s",
+          onMousedown: _cache[8] || (_cache[8] = ($event) => _ctx.changeCropSize($event, false, true, 0, 2)),
+          onTouchstart: _cache[9] || (_cache[9] = ($event) => _ctx.changeCropSize($event, false, true, 0, 2))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-line line-d",
+          onMousedown: _cache[10] || (_cache[10] = ($event) => _ctx.changeCropSize($event, true, false, 2, 0)),
+          onTouchstart: _cache[11] || (_cache[11] = ($event) => _ctx.changeCropSize($event, true, false, 2, 0))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-point point1",
+          onMousedown: _cache[12] || (_cache[12] = ($event) => _ctx.changeCropSize($event, true, true, 1, 1)),
+          onTouchstart: _cache[13] || (_cache[13] = ($event) => _ctx.changeCropSize($event, true, true, 1, 1))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-point point2",
+          onMousedown: _cache[14] || (_cache[14] = ($event) => _ctx.changeCropSize($event, false, true, 0, 1)),
+          onTouchstart: _cache[15] || (_cache[15] = ($event) => _ctx.changeCropSize($event, false, true, 0, 1))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-point point3",
+          onMousedown: _cache[16] || (_cache[16] = ($event) => _ctx.changeCropSize($event, true, true, 2, 1)),
+          onTouchstart: _cache[17] || (_cache[17] = ($event) => _ctx.changeCropSize($event, true, true, 2, 1))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-point point4",
+          onMousedown: _cache[18] || (_cache[18] = ($event) => _ctx.changeCropSize($event, true, false, 1, 0)),
+          onTouchstart: _cache[19] || (_cache[19] = ($event) => _ctx.changeCropSize($event, true, false, 1, 0))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-point point5",
+          onMousedown: _cache[20] || (_cache[20] = ($event) => _ctx.changeCropSize($event, true, false, 2, 0)),
+          onTouchstart: _cache[21] || (_cache[21] = ($event) => _ctx.changeCropSize($event, true, false, 2, 0))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-point point6",
+          onMousedown: _cache[22] || (_cache[22] = ($event) => _ctx.changeCropSize($event, true, true, 1, 2)),
+          onTouchstart: _cache[23] || (_cache[23] = ($event) => _ctx.changeCropSize($event, true, true, 1, 2))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-point point7",
+          onMousedown: _cache[24] || (_cache[24] = ($event) => _ctx.changeCropSize($event, false, true, 0, 2)),
+          onTouchstart: _cache[25] || (_cache[25] = ($event) => _ctx.changeCropSize($event, false, true, 0, 2))
+        }, null, 32),
+        (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          class: "crop-point point8",
+          onMousedown: _cache[26] || (_cache[26] = ($event) => _ctx.changeCropSize($event, true, true, 2, 2)),
+          onTouchstart: _cache[27] || (_cache[27] = ($event) => _ctx.changeCropSize($event, true, true, 2, 2))
+        }, null, 32)
+      ])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("", true)
+    ], 4), [
+      [vue__WEBPACK_IMPORTED_MODULE_0__.vShow, _ctx.cropping]
+    ])
+  ], 544);
+}
+var VueCropper = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-be5e5ddc"]]);
+const install = function(Vue) {
+  Vue.component("VueCropper", VueCropper);
+};
+if (typeof window !== "undefined" && window.Vue) {
+  window.Vue.createApp({}).component("VueCropper", VueCropper);
+}
+const globalCropper = {
+  version: "1.0.3",
+  install,
+  VueCropper
+};
+
 
 
 /***/ }),
@@ -59277,9 +61003,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "withScopeId": () => (/* reexport safe */ _vue_runtime_dom__WEBPACK_IMPORTED_MODULE_0__.withScopeId)
 /* harmony export */ });
 /* harmony import */ var _vue_runtime_dom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/runtime-dom */ "./node_modules/@vue/runtime-dom/dist/runtime-dom.esm-bundler.js");
-/* harmony import */ var _vue_runtime_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vue/runtime-dom */ "./node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js");
+/* harmony import */ var _vue_runtime_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/runtime-dom */ "./node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js");
 /* harmony import */ var _vue_compiler_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @vue/compiler-dom */ "./node_modules/@vue/compiler-dom/dist/compiler-dom.esm-bundler.js");
-/* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
+/* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 
 
 
@@ -59288,7 +61014,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function initDev() {
     {
-        (0,_vue_runtime_dom__WEBPACK_IMPORTED_MODULE_2__.initCustomFormatter)();
+        (0,_vue_runtime_dom__WEBPACK_IMPORTED_MODULE_1__.initCustomFormatter)();
     }
 }
 
@@ -59298,13 +61024,13 @@ if ((true)) {
 }
 const compileCache = Object.create(null);
 function compileToFunction(template, options) {
-    if (!(0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isString)(template)) {
+    if (!(0,_vue_shared__WEBPACK_IMPORTED_MODULE_2__.isString)(template)) {
         if (template.nodeType) {
             template = template.innerHTML;
         }
         else {
-            ( true) && (0,_vue_runtime_dom__WEBPACK_IMPORTED_MODULE_2__.warn)(`invalid template option: `, template);
-            return _vue_shared__WEBPACK_IMPORTED_MODULE_1__.NOOP;
+            ( true) && (0,_vue_runtime_dom__WEBPACK_IMPORTED_MODULE_1__.warn)(`invalid template option: `, template);
+            return _vue_shared__WEBPACK_IMPORTED_MODULE_2__.NOOP;
         }
     }
     const key = template;
@@ -59315,7 +61041,7 @@ function compileToFunction(template, options) {
     if (template[0] === '#') {
         const el = document.querySelector(template);
         if (( true) && !el) {
-            (0,_vue_runtime_dom__WEBPACK_IMPORTED_MODULE_2__.warn)(`Template element not found or is empty: ${template}`);
+            (0,_vue_runtime_dom__WEBPACK_IMPORTED_MODULE_1__.warn)(`Template element not found or is empty: ${template}`);
         }
         // __UNSAFE__
         // Reason: potential execution of JS expressions in in-DOM template.
@@ -59323,7 +61049,7 @@ function compileToFunction(template, options) {
         // by the server, the template should not contain any user data.
         template = el ? el.innerHTML : ``;
     }
-    const { code } = (0,_vue_compiler_dom__WEBPACK_IMPORTED_MODULE_3__.compile)(template, (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.extend)({
+    const { code } = (0,_vue_compiler_dom__WEBPACK_IMPORTED_MODULE_3__.compile)(template, (0,_vue_shared__WEBPACK_IMPORTED_MODULE_2__.extend)({
         hoistStatic: true,
         onError: ( true) ? onError : 0,
         onWarn: ( true) ? e => onError(e, true) : 0
@@ -59333,8 +61059,8 @@ function compileToFunction(template, options) {
             ? err.message
             : `Template compilation error: ${err.message}`;
         const codeFrame = err.loc &&
-            (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.generateCodeFrame)(template, err.loc.start.offset, err.loc.end.offset);
-        (0,_vue_runtime_dom__WEBPACK_IMPORTED_MODULE_2__.warn)(codeFrame ? `${message}\n${codeFrame}` : message);
+            (0,_vue_shared__WEBPACK_IMPORTED_MODULE_2__.generateCodeFrame)(template, err.loc.start.offset, err.loc.end.offset);
+        (0,_vue_runtime_dom__WEBPACK_IMPORTED_MODULE_1__.warn)(codeFrame ? `${message}\n${codeFrame}` : message);
     }
     // The wildcard import results in a huge object with every export
     // with keys that cannot be mangled, and can be quite heavy size-wise.
@@ -59344,7 +61070,7 @@ function compileToFunction(template, options) {
     render._rc = true;
     return (compileCache[key] = render);
 }
-(0,_vue_runtime_dom__WEBPACK_IMPORTED_MODULE_2__.registerRuntimeCompiler)(compileToFunction);
+(0,_vue_runtime_dom__WEBPACK_IMPORTED_MODULE_1__.registerRuntimeCompiler)(compileToFunction);
 
 
 

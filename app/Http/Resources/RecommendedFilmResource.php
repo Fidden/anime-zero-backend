@@ -18,7 +18,7 @@ class RecommendedFilmResource extends JsonResource
         return [
             'id' => $this->id,
             'film' => $this->film,
-            'poster' => Storage::url($this->poster),
+            'poster' => $this->poster ? Storage::url($this->poster) : null,
         ];
     }
 }
