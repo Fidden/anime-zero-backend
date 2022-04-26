@@ -167,15 +167,18 @@ class ParseJob implements ShouldQueue
 
     public function getRating($result): int|float
     {
-        if ($this->getProperty($result['material_data'], 'kinopoisk_rating'))
-            return $result['material_data']['kinopoisk_rating'];
-        else if ($this->getProperty($result['material_data'], 'imdb_rating'))
-            return $result['material_data']['imdb_rating'];
-        else if ($this->getProperty($result['material_data'], 'shikimori_rating'))
-            return $result['material_data']['shikimori_rating'];
-        else if ($this->getProperty($result['material_data'], 'mydramalist_rating'))
-            return $result['material_data']['mydramalist_rating'];
-        return 0;
+        $ratings = [
+            $this->getProperty($result['material_data'], 'mydramalist_rating', 0),
+            $this->getProperty($result['material_data'], 'kinopoisk_rating', 0),
+            $this->getProperty($result['material_data'], 'imdb_rating', 0),
+            $this->getProperty($result['material_data'], 'shikimori_rating', 0)
+        ];
+
+        $non_zero = array_filter($ratings, function ($key) use ($ratings) {
+            return $ratings[$key] > 0;
+        });
+
+        return array_sum($non_zero) / count($non_zero);
     }
 
     public function getFilmStatus(array $kodik_data): array

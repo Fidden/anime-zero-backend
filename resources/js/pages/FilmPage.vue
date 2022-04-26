@@ -1,83 +1,83 @@
 <template>
-  <div class="film-page-container">
-    <div class="film-page-poster-block">
-      <img
-        :src="item.poster"
-        :alt="item.title"
-      >
-      <div
-        v-if="$page.props.user"
-        class="film-actions"
-      >
-        <button
-          v-if="isWantedWatch"
-          @click="removeWantWatch"
-        >
-          <i class="fal fa-minus" />Не буду
-          смотреть
-        </button>
-        <button
-          v-else
-          @click="addWantWatch"
-        >
-          <i class="fal fa-plus" />Буду смотреть
-        </button>
-        <i
-          v-if="isWatched"
-          class="fal fa-check"
-          @click="removeWatched"
-        />
-        <i
-          v-else
-          class="fas fa-eye"
-          @click="addWatched"
-        />
-      </div>
+    <div class="film-page-container">
+        <div class="film-page-poster-block">
+            <img
+                :src="item.poster"
+                :alt="item.title"
+            >
+            <div
+                v-if="$page.props.user"
+                class="film-actions"
+            >
+                <button
+                    v-if="isWantedWatch"
+                    @click="removeWantWatch"
+                >
+                    <i class="fal fa-minus"/>Не буду
+                    смотреть
+                </button>
+                <button
+                    v-else
+                    @click="addWantWatch"
+                >
+                    <i class="fal fa-plus"/>Буду смотреть
+                </button>
+                <i
+                    v-if="isWatched"
+                    class="fal fa-check"
+                    @click="removeWatched"
+                />
+                <i
+                    v-else
+                    class="fas fa-eye"
+                    @click="addWatched"
+                />
+            </div>
+        </div>
+        <div class="film-page-main-block">
+            <h3>{{ item.title }}</h3>
+            <h4>{{ item.title_orig }}</h4>
+            <iframe
+                class="film-iframe"
+                :src="item.player_link"
+                frameborder="0"
+                allowfullscreen
+            />
+            <h2 v-if="item.description">
+                Описание
+            </h2>
+            <p
+                v-if="item.description"
+                class="film-description"
+            >
+                {{ item.description }}
+            </p>
+            <h2>О фильме</h2>
+            <div class="film-page-info-container">
+                <div
+                    v-if="item.year"
+                    class="film-page-info-block"
+                >
+                    <h5>Год выпуска</h5>
+                    <h4>{{ item.year }}</h4>
+                </div>
+                <div
+                    v-if="item.duration"
+                    class="film-page-info-block"
+                >
+                    <h5>Длительность</h5>
+                    <h4>{{ item.duration }} мин</h4>
+                </div>
+                <div
+                    v-if="getGenres"
+                    class="film-page-info-block"
+                >
+                    <h5>Жанры</h5>
+                    <h4>{{ getGenres }}</h4>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="film-page-main-block">
-      <h3>{{ item.title }}</h3>
-      <h4>{{ item.title_orig }}</h4>
-      <iframe
-        class="film-iframe"
-        :src="item.player_link"
-        frameborder="0"
-        allowfullscreen
-      />
-      <h2 v-if="item.description">
-        Описание
-      </h2>
-      <p
-        v-if="item.description"
-        class="film-description"
-      >
-        {{ item.description }}
-      </p>
-      <h2>О фильме</h2>
-      <div class="film-page-info-container">
-        <div
-          v-if="item.year"
-          class="film-page-info-block"
-        >
-          <h5>Год выпуска</h5>
-          <h4>{{ item.year }}</h4>
-        </div>
-        <div
-          v-if="item.duration"
-          class="film-page-info-block"
-        >
-          <h5>Длительность</h5>
-          <h4>{{ item.duration }} мин</h4>
-        </div>
-        <div
-          v-if="getGenres"
-          class="film-page-info-block"
-        >
-          <h5>Жанры</h5>
-          <h4>{{ getGenres }}</h4>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>

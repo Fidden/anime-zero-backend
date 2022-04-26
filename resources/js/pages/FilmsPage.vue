@@ -190,6 +190,8 @@ export default {
             Object.keys(this.filters).forEach(key => {
                 this.filters[key] = [];
             });
+
+            this.applyFilters();
         },
         restoreFilters() {
             let url = {};

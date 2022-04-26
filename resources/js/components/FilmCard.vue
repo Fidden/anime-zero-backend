@@ -21,14 +21,17 @@
             v-if="item.rating"
             class="film-card-rating"
         >
-            {{ item.rating }}
+            {{ getRating(item.rating) }}
         </div>
     </InertiaLink>
 </template>
 
 <script>
+import FilmRatingMixin from '../mixins/FilmRatingMixin';
+
 export default {
     name: 'FilmCard',
+    mixins: [FilmRatingMixin],
     props: {
         item: {
             type: Object,

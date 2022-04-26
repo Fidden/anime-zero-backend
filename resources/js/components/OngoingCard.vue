@@ -12,8 +12,8 @@
                 <span class="genre-title">Жанры: </span>{{ getGenres }}
             </p>
             <p class="rating">
-                <span class="rating-title">Возрастной рейтинг: </span>
-                <span class="rating-year">{{ item.rating }}</span>
+                <span class="rating-title">Рейтинг: </span>
+                <span class="rating-year">{{ getRating(item.rating) }}</span>
             </p>
             <BaseButton
                 v-if="$page.props.user"
@@ -27,10 +27,12 @@
 
 <script>
 import BaseButton from './BaseButton';
+import FilmRatingMixin from '../mixins/FilmRatingMixin';
 
 export default {
     name: 'OngoingCard',
     components: {BaseButton},
+    mixins: [FilmRatingMixin],
     props: {
         item: {
             type: Object,

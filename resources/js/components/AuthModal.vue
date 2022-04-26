@@ -21,7 +21,7 @@
                     v-if="modal.state === modal.enum.LOGIN"
                     class="modal-window-body"
                 >
-                    <h3>Войдите, что бы получить доступ к дополнительным возможностям</h3>
+                    <h3>Войдите, чтобы получить доступ к дополнительным возможностям</h3>
                     <ul class="validation-errors">
                         <li
                             v-for="(error, index) in $page.props.errors"
@@ -64,7 +64,7 @@
                     v-if="modal.state === modal.enum.REGISTER"
                     class="modal-window-body"
                 >
-                    <h3>Зарегистрируйтесь, что бы получить доступ к дополнительным возможностям</h3>
+                    <h3>Зарегистрируйтесь, чтобы получить доступ к дополнительным возможностям</h3>
                     <ul class="validation-errors">
                         <li
                             v-for="(error, index) in $page.props.errors"
@@ -92,7 +92,7 @@
                         <input
                             v-model="registerForm.password_repeat"
                             type="password"
-                            placeholder="Повтор пароля"
+                            placeholder="Подтверждение пароля"
                             class="last-input"
                         >
                         <BaseButton class="register-button">
@@ -127,6 +127,14 @@
                     >
                         Отправить повторно
                     </BaseButton>
+                    <div class="modal-window-additional">
+                        <p @click="$root.setModalState(modal.enum.REGISTER)">
+                            Регистрация
+                        </p>
+                        <p @click="$root.setModalState(modal.enum.PASSWORD_RESET)">
+                            Забыли пароль
+                        </p>
+                    </div>
                 </div>
                 <div
                     v-if="modal.state === modal.enum.PASSWORD_RESET"

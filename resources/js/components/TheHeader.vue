@@ -133,7 +133,7 @@ export default {
     height: 38px;
     margin: 0 16px 0 30px;
     position: relative;
-    z-index: 500;
+    z-index: 100;
 }
 
 .search-bar input {
