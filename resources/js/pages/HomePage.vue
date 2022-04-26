@@ -227,7 +227,7 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 19px;
 }
 
 .main-poster-section-title h3 {
@@ -245,7 +245,8 @@ export default {
 .main-poster-title {
     font-size: 32px;
     font-weight: 500;
-    margin-bottom: 30px;
+    margin-bottom: 29px;
+    line-height: 38px;
 }
 
 .main-poster-title span {

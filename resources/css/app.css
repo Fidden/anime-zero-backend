@@ -114,6 +114,46 @@ img {
     width: 100%;
 }
 
+.footer-page-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 100px;
+}
+
+.footer-page-head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 26px;
+}
+
+.footer-page-head h3 {
+    font-weight: 700;
+    font-size: 19px;
+    border-bottom: 2px solid var(--main-color);
+    margin-right: 7px;
+}
+
+.footer-page-head p {
+    color: #808080;
+    font-weight: 500;
+    font-size: 16px;
+    transform: translateY(3px);
+}
+
+.footer-page-title {
+    font-weight: 500;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.footer-page-subtitle {
+    font-weight: 500;
+    font-size: 16px;
+    color: #7F7F7F;
+    margin-bottom: 20px;
+}
+
 @media (max-width: 550px) {
     .mobile {
         display: block;

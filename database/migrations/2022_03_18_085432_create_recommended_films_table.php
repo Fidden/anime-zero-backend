@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('recommended_films', function (Blueprint $table) {
             $table->id();
             $table->foreignId('film_id')->constrained('films');
-            $table->string('poster');
+            $table->string('poster')->nullable();
             $table->timestamps();
         });
     }

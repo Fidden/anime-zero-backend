@@ -1,13 +1,13 @@
 <template>
-    <div class="copyright-container">
-        <div class="copyright-head">
+    <div class="footer-page-container">
+        <div class="footer-page-head">
             <h3>Anime Zero</h3>
             <p>/ Для правообладателей</p>
         </div>
-        <h2 class="copyright-title">
+        <h2 class="footer-page-title">
             Информация для правообладателей
         </h2>
-        <p class="copyright-subtitle">
+        <p class="footer-page-subtitle">
             Деятельность сайта AnimeZero осуществляется в соответствии с законодательством РФ в области защиты
             информации и авторских прав на предоставляемый контент.
         </p>
@@ -30,7 +30,7 @@
             </p>
             <p>
                 Для этого вы можете обратиться в поддержку или отправить сообщение на нашу корпоративную почту
-                admin@animezero.ru со следующим содержанием:
+                <a href="mailto:admin@animezero.ru">admin@animezero.ru</a> со следующим содержанием:
             </p>
             <ul>
                 <li>Контактные данные</li>
@@ -102,6 +102,12 @@ export default {
 
 .copyright-body li {
     margin: 0;
+}
+
+.copyright-body a {
+    color: var(--main-color);
+    text-decoration: none;
+    font-weight: 600;
 }
 
 </style>

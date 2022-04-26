@@ -9,13 +9,13 @@
             <ul>
                 <li>
                     <InertiaLink :href="route('home')">
-Главная
-</InertiaLink>
+                        Главная
+                    </InertiaLink>
                 </li>
                 <li>
                     <InertiaLink :href="route('films', {type: 'Фильм'})">
-Фильмы
-</InertiaLink>
+                        Фильмы
+                    </InertiaLink>
                 </li>
                 <li>
                     <InertiaLink :href="route('films', {type: 'Сериал'})">
@@ -27,10 +27,25 @@
         <div class="footer-block">
             <h3>Пользователям и партнёрам</h3>
             <ul>
-                <li><a href="#">Сотрудничество</a></li>
-                <li><a href="#">О проекте</a></li>
-                <li><a href="#">Политика конфиденциальности</a></li>
-                <li><a href="#">Для правообладателей</a></li>
+                <li>
+                    <InertiaLink :href="route('partners')">
+                        Сотрудничество
+                    </InertiaLink>
+                </li><li>
+                    <InertiaLink :href="route('about-us')">
+                        О проекте
+                    </InertiaLink>
+                </li>
+                <li>
+                    <InertiaLink :href="route('privacy')">
+                        Политика конфиденциальности
+                    </InertiaLink>
+                </li>
+                <li>
+                    <InertiaLink :href="route('copy-right')">
+                        Для правообладателей
+                    </InertiaLink>
+                </li>
             </ul>
         </div>
         <div class="footer-block">

@@ -142,7 +142,7 @@ export default {
                 rating: this.order.rating.toString(),
                 title: this.order.title.toString(),
             });
-        },
+        }
     },
     mounted() {
         this.restoreFilters();

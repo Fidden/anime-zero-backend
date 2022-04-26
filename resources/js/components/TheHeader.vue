@@ -112,6 +112,7 @@ export default {
     background: var(--background);
     margin-top: 5px;
     position: relative;
+    margin-bottom: 10px;
 }
 
 .header-title {

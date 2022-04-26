@@ -1,13 +1,10 @@
 <?php
 
-use App\Http\Controllers\{
-    CopyrightPageController,
-    FilmController,
+use App\Http\Controllers\{FilmController,
     FilmParserController,
     FilmSearchPageController,
     FilmsPageController,
     HomePageController,
-    PrivacyPageController,
     TrackedFilmController,
     UserAvatarController,
     UserController,
@@ -15,19 +12,19 @@ use App\Http\Controllers\{
     UserFilmWantToWatchController,
     UserFilmWatchedController,
     WantToWatchFilmController,
-    WatchedFilmController,
-};
-
+    WatchedFilmController,};
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\{Password, Route,};
+use Inertia\Inertia;
 
 Route::get('/', HomePageController::class)->name('home');
 Route::get('/films', FilmsPageController::class)->name('films');
 Route::get('/parse', [FilmParserController::class, 'store']);
-Route::get('/privacy', PrivacyPageController::class)->name('privacy');
-Route::get('/copy-right', CopyrightPageController::class)->name('copy-right');
+Route::get('/privacy', fn() => Inertia::render('PrivacyPolicyPage'))->name('privacy');
+Route::get('/copy-right', fn() => Inertia::render('CopyrightPage'))->name('copy-right');
+Route::get('/about-us', fn() => Inertia::render('AboutUsPage'))->name('about-us');
+Route::get('/partners', fn() => Inertia::render('PartnersPage'))->name('partners');
 
 Route::prefix('/film')->group(function () {
     Route::get('/{film}', [FilmController::class, 'show'])->name('film.show');

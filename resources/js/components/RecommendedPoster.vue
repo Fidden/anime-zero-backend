@@ -4,12 +4,12 @@
         as="div"
         class="poster">
         <img
-            :src="item.film.poster"
+            :src="poster"
             :alt="item.film.title"
         >
         <div class="poster-text-box">
             <h3>{{ item.film.title }}</h3>
-            <p>{{ item.film.description }}...</p>
+            <p>{{ item.film.description }}</p>
         </div>
         <BaseButton>Смотреть</BaseButton>
         <div class="backdrop"/>
@@ -23,6 +23,11 @@ export default {
         item: {
             type: Object,
             required: true,
+        }
+    },
+    computed: {
+        poster() {
+            return this.item.poster || this.item.film.poster;
         }
     }
 };
@@ -61,6 +66,19 @@ export default {
 .poster-text-box p {
     font-weight: 500;
     font-size: 14px;
+    -webkit-line-clamp: 4;
+    display: -webkit-box;
+    line-height: 17px;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.poster-text-box h3 {
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 27px;
+    margin-bottom: 15px;
 }
 
 .backdrop {

@@ -1,140 +1,140 @@
 <template>
-  <div class="profile-bar">
-    <div class="profile-bar-avatar">
-      <img
-        v-if="user.avatar"
-        :src="user.avatar"
-        :alt="user.login"
-      >
-      <i
-        v-else
-        class="fal fa-user"
-      />
-      <button
-        class="profile-bar-avatar-upload"
-        @click="openCropper"
-      >
-        <i class="fal fa-upload" /> Загрузить
-      </button>
-    </div>
-    <p class="profile-login">
-      {{ user.login }}
-    </p>
-    <p class="profile-email">
-      {{ user.email }}
-    </p>
-    <div class="profile-bar-sections-buttons">
-      <InertiaLink
-        v-for="section in profile_sections"
-        :key="section.id"
-        :class="{'active': $page.url === getRelativeUrl(section.route)}"
-        as="p"
-        :href="section.route"
-      >
-        {{ section.name }}
-      </InertiaLink>
-    </div>
-    <!--todo: make as component-->
-    <div
-      v-show="cropper.open"
-      class="image-cropper-container"
-      @click.self="closeCropper"
-    >
-      <div class="image-cropper-block">
-        <vueCropper
-          ref="cropper"
-          :img="cropper.image"
-          output-type="webp"
-          :auto-crop="true"
-          :can-move="true"
-          :can-move-box="false"
-          :auto-crop-width="250"
-          :auto-crop-height="250"
-          :fixed-box="true"
-          :center-box="true"
-        />
-
-        <input
-          ref="uploadImg"
-          type="file"
-          accept="image/png, image/jpeg, image/gif, image/jpg"
-          @change="uploadImg($event)"
+    <div class="profile-bar">
+        <div class="profile-bar-avatar">
+            <img
+                v-if="user.avatar"
+                :src="user.avatar"
+                :alt="user.login"
+            >
+            <i
+                v-else
+                class="fal fa-user"
+            />
+            <button
+                class="profile-bar-avatar-upload"
+                @click="openCropper"
+            >
+                <i class="fal fa-upload"/> Загрузить
+            </button>
+        </div>
+        <p class="profile-login">
+            {{ user.login }}
+        </p>
+        <p class="profile-email">
+            {{ user.email }}
+        </p>
+        <div class="profile-bar-sections-buttons">
+            <InertiaLink
+                v-for="section in profile_sections"
+                :key="section.id"
+                :class="{'active': $page.url === getRelativeUrl(section.route)}"
+                as="p"
+                :href="section.route"
+            >
+                {{ section.name }}
+            </InertiaLink>
+        </div>
+        <!--todo: make as component-->
+        <div
+            v-show="cropper.open"
+            class="image-cropper-container"
+            @click.self="closeCropper"
         >
+            <div class="image-cropper-block">
+                <vueCropper
+                    ref="cropper"
+                    :img="cropper.image"
+                    output-type="webp"
+                    :auto-crop="true"
+                    :can-move="true"
+                    :can-move-box="false"
+                    :auto-crop-width="250"
+                    :auto-crop-height="250"
+                    :fixed-box="true"
+                    :center-box="true"
+                />
 
-        <BaseButton @click="uploadUserAvatar">
-          Сохранить
-        </BaseButton>
-      </div>
+                <input
+                    ref="uploadImg"
+                    type="file"
+                    accept="image/png, image/jpeg, image/gif, image/jpg"
+                    @change="uploadImg($event)"
+                >
+
+                <BaseButton @click="uploadUserAvatar">
+                    Сохранить
+                </BaseButton>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
 export default {
-	name: 'AccountProfileBar',
-	data() {
-		return {
-			cropper: {
-				open: false,
-				image: null,
-			},
-			profile_sections: [
-				{id: 0, name: 'Настройки', route: this.route('user.account')},
-				{id: 1, name: 'Недавно просмотренные', route: this.route('user.watched')},
-				{id: 2, name: 'Буду смотреть', route: this.route('user.want-to-watch')},
-				{id: 3, name: 'Отслеживаемое', route: this.route('user.tracked')},
-			]
-		};
-	},
-	computed: {
-		user() {
-			return this.$page.props.user;
-		}
-	},
-	methods: {
-		openCropper() {
-			this.cropper.open = true;
-			this.$refs.uploadImg.click();
-		},
-		closeCropper() {
-			this.cropper.open = false;
-			this.cropper.image = null;
-		},
-		uploadUserAvatar() {
-			this.$refs.cropper.getCropData(data => {
-				this.$inertia.put(this.route('user-avatar.update'), {
-					image: data,
-				},
-				{
-					onSuccess: this.closeCropper,
-				});
-			});
-		},
-		uploadImg(e) {
-			let file = e.target.files[0];
-			if (!/\.(jpg|jpeg|png|JPG|PNG)$/.test(e.target.value)) {
-				alert('Поддерживаются только jpeg,jpg,png');
-				return false;
-			}
-			let reader = new FileReader();
-			reader.onload = e => {
-				let data;
-				if (typeof e.target.result === 'object') {
-					data = window.URL.createObjectURL(new Blob([e.target.result]));
-				} else {
-					data = e.target.result;
-				}
+    name: 'AccountProfileBar',
+    data() {
+        return {
+            cropper: {
+                open: false,
+                image: null,
+            },
+            profile_sections: [
+                {id: 0, name: 'Настройки', route: this.route('user.account')},
+                {id: 1, name: 'Недавно просмотренные', route: this.route('user.watched')},
+                {id: 2, name: 'Буду смотреть', route: this.route('user.want-to-watch')},
+                {id: 3, name: 'Отслеживаемое', route: this.route('user.tracked')},
+            ]
+        };
+    },
+    computed: {
+        user() {
+            return this.$page.props.user;
+        }
+    },
+    methods: {
+        openCropper() {
+            this.cropper.open = true;
+            this.$refs.uploadImg.click();
+        },
+        closeCropper() {
+            this.cropper.open = false;
+            this.cropper.image = null;
+        },
+        uploadUserAvatar() {
+            this.$refs.cropper.getCropData(data => {
+                this.$inertia.put(this.route('user-avatar.update'), {
+                        image: data,
+                    },
+                    {
+                        onSuccess: this.closeCropper,
+                    });
+            });
+        },
+        uploadImg(e) {
+            let file = e.target.files[0];
+            if (!/\.(jpg|jpeg|png|JPG|PNG)$/.test(e.target.value)) {
+                alert('Поддерживаются только jpeg,jpg,png');
+                return false;
+            }
+            let reader = new FileReader();
+            reader.onload = e => {
+                let data;
+                if (typeof e.target.result === 'object') {
+                    data = window.URL.createObjectURL(new Blob([e.target.result]));
+                } else {
+                    data = e.target.result;
+                }
 
-				this.cropper.image = data;
+                this.cropper.image = data;
 
-				this.$refs.uploadImg.value = '';
-			};
-			reader.readAsArrayBuffer(file);
-		},
-		getRelativeUrl(value) {
-			return value.replace(this.route().t.url, '');
-		}
-	},
+                this.$refs.uploadImg.value = '';
+            };
+            reader.readAsArrayBuffer(file);
+        },
+        getRelativeUrl(value) {
+            return value.replace(this.route().t.url, '');
+        }
+    },
 
 };
 </script>

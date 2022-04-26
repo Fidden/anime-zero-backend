@@ -1,13 +1,13 @@
 <template>
-    <div class="privacy-container">
-        <div class="privacy-head">
+    <div class="footer-page-container">
+        <div class="footer-page-head">
             <h3>Anime Zero</h3>
             <p>/ Политика конфиденциальности</p>
         </div>
-        <h2 class="privacy-title">
+        <h2 class="footer-page-title">
             Политика конфиденциальности
         </h2>
-        <p class="privacy-subtitle">
+        <p class="footer-page-subtitle">
             Мы уверяем вас, что данные, оставленные на нашем сайте не будут подвергаться
             распространению.
         </p>
@@ -525,39 +525,6 @@ export default {
 </script>
 
 <style scoped>
-.privacy-head {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 100px;
-    margin-bottom: 26px;
-}
-
-.privacy-head h3 {
-    font-weight: 700;
-    font-size: 19px;
-    border-bottom: 2px solid var(--main-color);
-    margin-right: 5px;
-}
-
-.privacy-head p {
-    color: #808080;
-    font-weight: 500;
-    font-size: 16px;
-}
-
-.privacy-title {
-    font-weight: 500;
-    font-size: 32px;
-    margin-bottom: 20px;
-}
-
-.privacy-subtitle {
-    font-weight: 500;
-    font-size: 16px;
-    color: #7F7F7F;
-    margin-bottom: 20px;
-}
 
 .privacy-block {
     display: flex;

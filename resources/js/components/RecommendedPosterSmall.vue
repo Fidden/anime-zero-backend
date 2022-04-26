@@ -4,7 +4,7 @@
         as="div"
         class="poster-small">
         <img
-            :src="item.film.poster"
+            :src="poster"
             :alt="item.film.title"
         >
         <div class="poster-info">
@@ -12,7 +12,7 @@
                 {{ item.film.title }}
             </p>
             <p class="poster-description">
-                {{ description }} ...
+                {{ item.film.description }}
             </p>
         </div>
     </InertiaLink>
@@ -29,8 +29,8 @@ export default {
         }
     },
     computed: {
-        description() {
-            return this.item.film.description;
+        poster() {
+            return this.item.poster || this.item.film.poster;
         }
     }
 };
@@ -64,9 +64,14 @@ export default {
 }
 
 .poster-description {
-    overflow: hidden;
     font-size: 14px;
     color: #B7B7B7;
+    -webkit-line-clamp: 9;
+    display: -webkit-box;
+    line-height: 15px;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     text-overflow: ellipsis;
 }
+
 </style>
