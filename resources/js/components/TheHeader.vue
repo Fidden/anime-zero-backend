@@ -72,30 +72,34 @@
         </BaseButton>
         <BaseButton
             v-else
-            @click="$root.openModal"
+            @click="setModalOpen(true)"
         >
             <i class="fal fa-sign-out"/>Вход
         </BaseButton>
-        <AuthModal/>
     </header>
 </template>
 
 <script>
-import AuthModal from './AuthModal';
 import MobileBurger from './MobileBurger';
 import MobileSearch from './MobileSearch';
 import searchFilmMixin from '../mixins/SearchFilmMixin';
 import LoadingAnimation from '../components/LoadingAnimation';
 import TheHeaderNav from './TheHeaderNav';
+import {mapActions} from 'vuex';
 
 export default {
     name: 'TheHeader',
-    components: {TheHeaderNav, MobileSearch, MobileBurger, AuthModal, LoadingAnimation},
+    components: {TheHeaderNav, MobileSearch, MobileBurger, LoadingAnimation},
     mixins: [searchFilmMixin],
     computed: {
         user() {
             return this.$page.props.user;
         }
+    },
+    methods: {
+        ...mapActions([
+            'setModalOpen'
+        ])
     }
 };
 </script>

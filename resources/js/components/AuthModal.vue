@@ -2,13 +2,13 @@
     <div
         v-if="modal.open"
         class="black-out"
-        @mousedown.self="$root.closeModal"
+        @mousedown.self="setModalOpen(false)"
     >
         <transition name="shadow">
             <div class="modal-window">
                 <i
                     class="fal fa-times fa-lg"
-                    @click="$root.closeModal"
+                    @click="setModalOpen(false)"
                 />
                 <img
                     src="/img/modal.svg"
@@ -20,6 +20,7 @@
                 <div
                     v-if="modal.state === modal.enum.LOGIN"
                     class="modal-window-body"
+                    @cancel="isStateEquals"
                 >
                     <h3>Войдите, чтобы получить доступ к дополнительным возможностям</h3>
                     <ul class="validation-errors">
@@ -52,10 +53,10 @@
                         <BaseButton>Войти</BaseButton>
                     </form>
                     <div class="modal-window-additional">
-                        <p @click="$root.setModalState(modal.enum.REGISTER)">
+                        <p @click="setModalState(modal.enum.REGISTER)">
                             Регистрация
                         </p>
-                        <p @click="$root.setModalState(modal.enum.PASSWORD_RESET)">
+                        <p @click="setModalState(modal.enum.PASSWORD_RESET)">
                             Забыли пароль
                         </p>
                     </div>
@@ -100,10 +101,10 @@
                         </BaseButton>
                     </form>
                     <div class="modal-window-additional">
-                        <p @click="$root.setModalState(modal.enum.LOGIN)">
+                        <p @click="setModalState(modal.enum.LOGIN)">
                             Авторизация
                         </p>
-                        <p @click="$root.setModalState(modal.enum.PASSWORD_RESET)">
+                        <p @click="setModalState(modal.enum.PASSWORD_RESET)">
                             Забыли пароль
                         </p>
                     </div>
@@ -128,10 +129,10 @@
                         Отправить повторно
                     </BaseButton>
                     <div class="modal-window-additional">
-                        <p @click="$root.setModalState(modal.enum.REGISTER)">
-                            Регистрация
+                        <p @click="setModalState(modal.enum.LOGIN)">
+                            Авторизация
                         </p>
-                        <p @click="$root.setModalState(modal.enum.PASSWORD_RESET)">
+                        <p @click="setModalState(modal.enum.PASSWORD_RESET)">
                             Забыли пароль
                         </p>
                     </div>
@@ -149,9 +150,9 @@
                             {{ error }}
                         </li>
                     </ul>
-                    <form>
+                    <form @submit.prevent="forgotPassword">
                         <input
-                            v-model="registerForm.email"
+                            v-model="passwordResetForm.email"
                             class="reset-password"
                             type="email"
                             placeholder="Email"
@@ -159,10 +160,18 @@
 
                         <BaseButton
                             class="ok-btn"
-                            @click="forgotPassword">
+                        >
                             Сбросить пароль
                         </BaseButton>
                     </form>
+                    <div class="modal-window-additional">
+                        <p @click="setModalState(modal.enum.LOGIN)">
+                            Авторизация
+                        </p>
+                        <p @click="setModalState(modal.enum.PASSWORD_RESET)">
+                            Забыли пароль
+                        </p>
+                    </div>
                 </div>
             </div>
         </transition>
@@ -172,6 +181,7 @@
 <script>
 import {useForm} from '@inertiajs/inertia-vue3';
 import BaseButton from './BaseButton';
+import {mapActions} from 'vuex';
 //todo: перенести в Layout
 export default {
     name: 'AuthModal',
@@ -197,32 +207,32 @@ export default {
     },
     computed: {
         modal() {
-            return this.$root.modal;
+            return this.$store.state.authModal;
         }
     },
     methods: {
         loginUser() {
             this.authForm.post(this.route('user.login'), {
                 onSuccess: () => {
-                    this.$root.closeModal();
+                    this.setModalOpen(false);
                 }
             });
         },
         registerUser() {
-            this.registerForm.post(this.route('user.store'),
-                {
-                    onSuccess: () => {
-                        this.$root.openModal();
-                        this.$root.setModalState(this.modal.enum.EMAIL_VERIFY);
-                    }
-                });
+            this.registerForm.post(this.route('user.store'));
+            this.setModalOpen(true);
+            this.setModalState(this.modal.enum.EMAIL_VERIFY);
         },
         resendEmail() {
             this.$inertia.post(this.route('verification.send'));
         },
         forgotPassword() {
             this.passwordResetForm.post(this.route('password.email'));
-        }
+        },
+        ...mapActions([
+            'setModalOpen',
+            'setModalState',
+        ])
     }
 };
 </script>

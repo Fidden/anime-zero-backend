@@ -1,10 +1,18 @@
 <template>
     <div class="notification-container">
         <transition-group name="notify">
-            <div class="notification-block" v-for="note in notifications" @click="$root.removeNotify(note.id)">
-                <i class="fal fa-times fa-lg"></i>
-                <h4 v-if="note.title">{{ note.title }}</h4>
-                <p v-if="note.body">{{ note.body }}</p>
+            <div
+                v-for="note in notifications"
+                :key="note.id"
+                class="notification-block"
+                @click="$store.dispatch('removeNotification', note.id)">
+                <i class="fal fa-times fa-lg"/>
+                <h4 v-if="note.title">
+                    {{ note.title }}
+                </h4>
+                <p v-if="note.body">
+                    {{ note.body }}
+                </p>
             </div>
         </transition-group>
     </div>
@@ -12,13 +20,13 @@
 
 <script>
 export default {
-    name: "Notification",
+    name: 'Notification',
     computed: {
         notifications() {
-            return this.$root.notifications;
+            return this.$store.state.notification;
         }
     }
-}
+};
 </script>
 
 <style scoped>
@@ -26,9 +34,9 @@ export default {
     display: flex;
     flex-direction: column;
     position: fixed;
-    width: 100vw;
+    width: fit-content;
     height: 100vh;
-    left: 0;
+    right: 0;
     top: 0;
     align-items: flex-end;
     padding: 20px;
@@ -62,6 +70,7 @@ export default {
     transition: 0.5s;
     transform: translateX(0);
 }
+
 .notify-enter, .notify-leave-to {
     opacity: 0;
     transform: translateX(150%);

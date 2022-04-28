@@ -1,5 +1,7 @@
 export default {
-    state: [],
+    state: [
+        {id: 0, title: 'Title', body: 'some body text'},
+    ],
     mutations: {
         ADD_NOTIFICATION(state, value) {
             state.push(value);
@@ -17,6 +19,7 @@ export default {
     actions: {
         addNotification({commit}, value) {
             commit('ADD_NOTIFICATION', value);
+            setTimeout(() => commit('POP_NOTIFICATION'), 5000);
         },
         popNotification({commit}) {
             commit('POP_NOTIFICATION');
@@ -28,4 +31,4 @@ export default {
             commit('REMOVE_NOTIFICATION_BY_INDEX', index);
         }
     }
-}
+};

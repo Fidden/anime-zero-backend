@@ -1,6 +1,4 @@
 import Layout from './TheLayout';
-
-require('./bootstrap');
 // Components
 import BaseButton from './components/BaseButton';
 
@@ -14,13 +12,13 @@ import {Ziggy} from 'ziggy';
 import axios from 'axios';
 import 'vue-cropper/dist/index.css';
 import VueCropper from 'vue-cropper';
-
-//Mixins
-import modalWindowMixin from './mixins/ModalWindowMixin';
-import notificationMixin from './mixins/NotificationMixin';
+import store from './store/store';
 
 //Directives
 import ClickOutside from './directives/ClickOutside';
+
+require('./bootstrap');
+
 
 createInertiaApp({
     resolve: name => {
@@ -30,7 +28,6 @@ createInertiaApp({
     },
     setup({el, App, props, plugin}) {
         const app = createApp({
-            mixins: [modalWindowMixin, notificationMixin],
             render: () => h(App, props),
         });
 
@@ -40,6 +37,7 @@ createInertiaApp({
         app.component('InertiaLink', InertiaLink);
 
         app.use(plugin);
+        app.use(store);
         app.use(VueCropper);
         app.use(ZiggyVue, Ziggy);
         app.mount(el);

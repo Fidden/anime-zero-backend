@@ -98,8 +98,8 @@
         </div>
         <div class="films-block-body films-block-body-big">
             <RecommendedPoster
-:item="films.recommended[0]"
-style="grid-area: first"/>
+                :item="films.recommended[0]"
+                style="grid-area: first"/>
             <RecommendedPosterSmall
                 :item="films.recommended[1]"
                 style="grid-area: second"/>
@@ -151,6 +151,7 @@ import OngoingCard from '../components/OngoingCard';
 import Flickity from 'vue-flickity';
 import RecommendedPosterSmall from '../components/RecommendedPosterSmall';
 import RecommendedPoster from '../components/RecommendedPoster';
+import {mapActions} from 'vuex';
 
 export default {
     name: 'HomePage',
@@ -182,13 +183,13 @@ export default {
     },
     mounted() {
         if (this.$page.props.flash.message === 'email-verification-required') {
-            this.$root.setModalState(this.$root.modal.enum.EMAIL_VERIFY);
-            this.$root.openModal();
+            this.setModalState(this.$store.state.authModal.enum.EMAIL_VERIFY);
+            this.setModalOpen(true);
         }
 
         if (this.$page.props.flash.message === 'auth-required') {
-            this.$root.setModalState(this.$root.modal.enum.LOGIN);
-            this.$root.openModal();
+            this.setModalState(this.$store.state.authModal.enum.LOGIN);
+            this.setModalOpen(true);
         }
     },
     methods: {
@@ -200,7 +201,11 @@ export default {
                 return this.$inertia.get(this.route('films'));
 
             this.$inertia.get(this.route('film.show', this.films.best[this.selected_poster].id));
-        }
+        },
+        ...mapActions([
+            'setModalState',
+            'setModalOpen'
+        ])
     }
 };
 </script>
