@@ -54,6 +54,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(TrackedFilm::class);
     }
 
+    public function wantToWatch(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WantToWatchFilm::class);
+    }
+
+    public function watchedFilms(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WatchedFilm::class);
+    }
+
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);

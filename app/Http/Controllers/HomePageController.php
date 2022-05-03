@@ -15,7 +15,7 @@ class HomePageController extends Controller
             'films' => [
                 'best' => FilmResource::collection(
                     Film::orderBy('rating', 'desc')
-                        ->limit(9)
+                        ->limit(12)
                         ->get()),
 
                 'newest' => FilmResource::collection(

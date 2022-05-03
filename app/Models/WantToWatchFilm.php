@@ -31,4 +31,9 @@ class WantToWatchFilm extends Model
         'user_id',
         'film_id',
     ];
+
+    public function film(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Film::class, 'id', 'film_id');
+    }
 }

@@ -14,8 +14,7 @@
 import AuthModal from './components/AuthModal';
 import TheHeader from './components/TheHeader';
 import TheFooter from './components/TheFooter';
-import Notification from './components/Notification';
-import {mapActions} from 'vuex';
+import Notification from './components/TheNotification';
 
 export default {
     name: 'TheLayout',

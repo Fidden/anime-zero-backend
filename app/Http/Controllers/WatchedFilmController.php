@@ -28,7 +28,8 @@ class WatchedFilmController extends Controller
      */
     public function destroy(int $film_id): RedirectResponse
     {
-        WatchedFilm::where([['user_id', auth()->id()], ['film_id', $film_id]])->delete();
+        $user = auth()->user();
+        $user->watchedFilms()->where('film_id', $film_id)->delete();
         return redirect()->back();
     }
 }

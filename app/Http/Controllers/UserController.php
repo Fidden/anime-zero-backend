@@ -33,7 +33,7 @@ class UserController extends Controller
             return redirect()->back()->with('message', 'email-verify-send');
         }
 
-        return redirect()->route('home')->with('message', 'Упс! Что то пошло не так');
+        return redirect()->route('home')->with('notification', 'Упс! Что то пошло не так');
     }
 
     /**
@@ -42,8 +42,9 @@ class UserController extends Controller
      */
     public function login(UserLoginRequest $request): \Illuminate\Http\RedirectResponse
     {
-        if (auth()->attempt($request->only('login', 'password')) ||
-            auth()->attempt($request->only('email', 'password'))) {
+        //todo: fix this
+        if (auth()->attempt(['login' => $request->login, 'password' => $request->password])
+            || auth()->attempt(['email' => $request->login, 'password' => $request->password])) {
             $request->session()->regenerate();
             return redirect()->route('user.account');
         }
@@ -59,12 +60,15 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request): \Illuminate\Http\RedirectResponse
     {
         $user = auth()->user();
+
+        if (\Hash::make($request->password_old) != $user->password)
+            return redirect()->withErrors(['password' => 'Неверный старый пароль.']);
+
         $user->update([
             'login' => $request->login,
             'email' => $request->email,
             'password' => $request->password_new,
         ]);
-        $user->save();
 
         return redirect()->back();
     }
@@ -74,7 +78,6 @@ class UserController extends Controller
      */
     public function logout(): \Illuminate\Http\RedirectResponse
     {
-        session()->flush();
         auth()->logout();
         return redirect()->route('home');
     }

@@ -46,6 +46,7 @@ export default {
     position: absolute;
     left: 0;
     top: 0;
+    object-fit: cover;
 }
 
 .poster button {
@@ -90,4 +91,28 @@ export default {
     background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 120%);
     z-index: 100;
 }
+
+@media (max-width: 550px) {
+    .poster-text-box {
+        left: 20px;
+        top: 20px;
+        width: calc(100% - 40px);
+        height: calc(100% - 40px);
+        display: flex;
+        flex-direction: row;
+    }
+
+    .poster-text-box h3 {
+        margin: auto 0 0 0;
+    }
+
+    .poster-text-box p {
+        display: none;
+    }
+
+    .poster button {
+        display: none;
+    }
+}
+
 </style>

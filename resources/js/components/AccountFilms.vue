@@ -1,27 +1,29 @@
 <template>
-  <div class="profile-container">
-    <div
-      v-if="!films.data.length"
-      class="films-empty"
-    >
-      <img
-        src="/img/hmm_emoji.webp"
-        alt="hmm"
-      >
-      <h3>Хм, похоже тут ничего нет...</h3>
+    <div class="profile-container">
+        <div
+            v-if="!films.data.length"
+            class="films-empty"
+        >
+            <img
+                src="/img/hmm_emoji.webp"
+                alt="hmm"
+            >
+            <h3>Хм, похоже тут ничего нет...</h3>
+        </div>
+        <div
+            v-else
+            class="films-container"
+        >
+            <AccountFilmCard
+                v-for="film in films.data"
+                :key="film.id"
+                :item="film"
+            />
+        </div>
+        <Pagination
+            v-if="films.meta"
+            :meta="films.meta"/>
     </div>
-    <div
-      v-else
-      class="films-container"
-    >
-      <AccountFilmCard
-        v-for="film in films.data"
-        :key="film.id"
-        :item="film"
-      />
-    </div>
-    <Pagination :meta="films.meta" />
-  </div>
 </template>
 
 <script>
@@ -29,14 +31,14 @@ import AccountFilmCard from './AccountFilmCard';
 import Pagination from './BasePagination';
 
 export default {
-	name: 'AccountFilms',
-	components: {AccountFilmCard, Pagination},
-	props: {
-		films: {
+    name: 'AccountFilms',
+    components: {AccountFilmCard, Pagination},
+    props: {
+        films: {
             type: Object,
             required: true,
         },
-	}
+    }
 };
 </script>
 

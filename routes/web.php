@@ -5,6 +5,7 @@ use App\Http\Controllers\{FilmController,
     FilmSearchPageController,
     FilmsPageController,
     HomePageController,
+    PasswordResetController,
     TrackedFilmController,
     UserAvatarController,
     UserController,
@@ -12,7 +13,7 @@ use App\Http\Controllers\{FilmController,
     UserFilmWantToWatchController,
     UserFilmWatchedController,
     WantToWatchFilmController,
-    WatchedFilmController,};
+    WatchedFilmController};
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Password, Route,};
@@ -89,3 +90,17 @@ Route::post('/forgot-password', function (Request $request) {
         ? back()->with(['status' => __($status)])
         : back()->withErrors(['email' => __($status)]);
 })->middleware('guest')->name('password.email');
+
+Route::get('/reset-password/{token}', function ($token, Request $request) {
+    return redirect()->route('home')->with([
+        'message' => [
+            'token' => $token,
+            'email' => $request->email,
+        ]]);
+})
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password', PasswordResetController::class)
+    ->middleware('guest')
+    ->name('password.update');

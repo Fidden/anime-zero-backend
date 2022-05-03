@@ -20,7 +20,7 @@ mix.alias({
 
 mix.disableNotifications();
 
-mix.copy('resources/img/', 'public/img');
+mix.copyDirectory('resources/img', 'public/img');
 
 mix.js('resources/js/app.js', 'public/js')
     .vue()

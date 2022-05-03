@@ -17,8 +17,10 @@ class FilmSearchPageController extends Controller
     public function __invoke(string $query): \Inertia\Response
     {
         return Inertia::render('FilmSearch', [
-            'films' => FilmResource::collection(Film::where('title', 'like', "%{$query}%")
-                ->orWhere('title_orig', 'like', "%{$query}%")->paginate(20))
+            'films' => FilmResource::collection(
+                Film::where('title', 'like', "%{$query}%")
+                ->orWhere('title_orig', 'like', "%{$query}%")->paginate(20)
+            )
         ]);
     }
 }

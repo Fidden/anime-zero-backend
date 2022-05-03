@@ -1,7 +1,5 @@
 export default {
-    state: [
-        {id: 0, title: 'Title', body: 'some body text'},
-    ],
+    state: [],
     mutations: {
         ADD_NOTIFICATION(state, value) {
             state.push(value);

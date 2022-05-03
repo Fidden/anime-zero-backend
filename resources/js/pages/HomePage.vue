@@ -17,39 +17,18 @@
                 </BaseButton>
             </div>
         </div>
-        <Flickity
-            v-if="films.best.length"
-            ref="flickity"
-            :options="flickity.bestFilmSlider"
-            class="flickity"
-        >
-            <div
+        <div class="main-poster-grid">
+            <InertiaLink
                 v-for="best in films.best"
                 :key="best.id"
-                class="carousel-cell"
-            >
-                <InertiaLink
-                    :href="route('film.show', best.id)"
-                    as="img"
-                    class="gallery-cell-img"
-                    :src="best.poster"
-                    :alt="best.title"
-                />
-            </div>
-        </Flickity>
-        <div class="main-poster-grid">
-            <div
-                v-for="(best, index) in films.best"
-                :key="best.id"
+                :href="route('film.show', best.id)"
                 class="image-block"
-                :class="{'selected-poster': index === selected_poster}"
-                @click="selectPoster(index)"
             >
                 <img
                     :src="best.poster"
                     :alt="best.title"
                 >
-            </div>
+            </InertiaLink>
         </div>
     </div>
     <div class="main-films-block">
@@ -191,16 +170,18 @@ export default {
             this.setModalState(this.$store.state.authModal.enum.LOGIN);
             this.setModalOpen(true);
         }
+
+        if (this.$page.props.flash?.message?.token) {
+            this.setModalState(this.$store.state.authModal.enum.PASSWORD_CHANGE);
+            this.setModalOpen(true);
+        }
     },
     methods: {
         selectPoster(id) {
             this.selected_poster = id;
         },
         watchFilm() {
-            if (this.selected_poster === -1)
-                return this.$inertia.get(this.route('films'));
-
-            this.$inertia.get(this.route('film.show', this.films.best[this.selected_poster].id));
+            this.$inertia.get(this.route('films'));
         },
         ...mapActions([
             'setModalState',
@@ -277,12 +258,23 @@ export default {
 .image-block {
     border-radius: 10px;
     overflow: hidden;
-    transition: 0.5s;
     cursor: pointer;
+    transition: border 0.3s;
+    animation-name: scroll;
+    animation-duration: 80s;
+    animation-iteration-count: infinite;
 }
 
-.image-block:nth-child(2), .image-block:nth-child(5), .image-block:nth-child(8) {
-    transform: translateY(-55%);
+.image-block:hover {
+    border: 5px solid var(--main-color);
+    transition: border 0.3s;
+}
+
+.image-block:nth-child(2), .image-block:nth-child(5), .image-block:nth-child(8), .image-block:nth-child(11) {
+    transform: translateY(-85%);
+    animation-name: scroll-even;
+    animation-duration: 110s;
+    animation-iteration-count: infinite;
 }
 
 .main-films-block {
@@ -396,6 +388,34 @@ export default {
 
 .flickity {
     display: none;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateY(-20%);
+    }
+
+    50% {
+        transform: translateY(40%);
+    }
+
+    100% {
+        transform: translateY(-20%);
+    }
+}
+
+@keyframes scroll-even {
+    0% {
+        transform: translateY(-85%);
+    }
+
+    50% {
+        transform: translateY(95%);
+    }
+
+    100% {
+        transform: translateY(-85%);
+    }
 }
 
 @media (max-width: 550px) {

@@ -163,6 +163,10 @@ img {
         flex-direction: column;
     }
 
+    .footer-page-container {
+        padding: 0 20px;
+    }
+
     ::-webkit-scrollbar {
         display: none;
     }
@@ -172,9 +176,11 @@ img {
     0% {
         transform: translate(-100%, -100%);
     }
+
     80% {
         transform: translate(-100%, -100%) scale(50);
     }
+
     100% {
         transform: translate(-100%, -100%) scale(50);
         opacity: 0;

@@ -32,9 +32,4 @@ class UserLoginRequest extends FormRequest
             'password' => 'required|string|max:32',
         ];
     }
-
-    public function passedValidation()
-    {
-        $this->merge(['email' => $this->login]);
-    }
 }

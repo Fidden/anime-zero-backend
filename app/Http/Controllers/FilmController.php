@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FilmSearchQueryRequest;
 use App\Http\Resources\FilmResource;
-use App\Models\{Film, WantToWatchFilm, WatchedFilm};
+use App\Models\{Film};
 use Inertia\Inertia;
 
 class FilmController extends Controller
@@ -18,13 +18,10 @@ class FilmController extends Controller
     public function show(Film $film): \Inertia\Response
     {
         $user = auth()->user();
-        if ($user)
-            $condition = [['user_id', $user->id], ['film_id', $film->id]];
-
         return Inertia::render('FilmPage', [
             'item' => FilmResource::make($film),
-            'isWantedWatch' => $user && WantToWatchFilm::where($condition)->exists(),
-            'isWatched' => $user && WatchedFilm::where($condition)->exists(),
+            'isWantedWatch' => $user && $user->wantToWatch()->where('film_id', $film->id)->exists(),
+            'isWatched' => $user && $user->watchedFilms()->where('film_id', $film->id)->exists(),
         ]);
     }
 

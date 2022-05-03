@@ -47,7 +47,7 @@ export default {
 .poster-small img {
     width: 160px;
     margin-right: 20px;
-    object-fit: scale-down;
+    object-fit: cover;
 }
 
 .poster-info {

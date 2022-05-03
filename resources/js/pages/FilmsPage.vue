@@ -11,6 +11,7 @@
 
             <BaseSelect
                 title="Статус"
+                :single="true"
                 :options="statuses"
                 :backup="filters.statuses"
                 @change="setStatuses"
@@ -57,12 +58,20 @@
             </button>
         </div>
     </div>
-    <div class="films-container">
+    <div
+        v-if="films.data.length"
+        class="films-container"
+    >
         <FilmCard
             v-for="film in films.data"
             :key="film.id"
             :item="film"
         />
+    </div>
+    <div
+        v-else
+        class="nothing-was-found">
+        <h2><i class="fal fa-2x fa-search"/>По вашему запросу ничего не нашлось</h2>
     </div>
     <Pagination
         class="films-pagination"
@@ -120,12 +129,10 @@ export default {
                     {id: 6, name: '1980-1989'},
                 ],
                 rating: [
-                    {id: 0, name: 'По умолчанию'},
                     {id: 1, name: 'По убыванию'},
                     {id: 2, name: 'По возрастанию'},
                 ],
                 title: [
-                    {id: 0, name: 'По умолчанию'},
                     {id: 1, name: 'По убыванию (Я-а)'},
                     {id: 2, name: 'По возрастанию (А-я)'},
                 ]
@@ -248,6 +255,25 @@ export default {
     grid-template-rows: 1fr;
     grid-template-columns: repeat(6, 1fr);
     margin-bottom: 60px;
+}
+
+.nothing-was-found {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 100px;
+}
+
+.nothing-was-found h2 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.nothing-was-found i {
+    margin-right: 10px;
 }
 
 .controls-container {

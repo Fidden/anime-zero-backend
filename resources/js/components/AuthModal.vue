@@ -173,6 +173,56 @@
                         </p>
                     </div>
                 </div>
+                <div
+                    v-if="modal.state === modal.enum.PASSWORD_CHANGE"
+                    class="modal-window-body"
+                >
+                    <h3>Придумайте новый пароль</h3>
+                    <ul class="validation-errors">
+                        <li
+                            v-for="(error, index) in $page.props.errors"
+                            :key="index"
+                        >
+                            {{ error }}
+                        </li>
+                    </ul>
+                    <form @submit.prevent="forgotPassword">
+                        <input
+                            v-model="passwordResetForm.email"
+                            class="reset-password"
+                            type="email"
+                            placeholder="Email"
+                        >
+
+                        <input
+                            v-model="passwordResetForm.email"
+                            class="reset-password"
+                            type="email"
+                            placeholder="Email"
+                        >
+
+                        <BaseButton
+                            class="ok-btn"
+                        >
+                            Сбросить пароль
+                        </BaseButton>
+                    </form>
+                    <div class="modal-window-additional">
+                        <p @click="setModalState(modal.enum.LOGIN)">
+                            Авторизация
+                        </p>
+                        <p @click="setModalState(modal.enum.PASSWORD_RESET)">
+                            Забыли пароль
+                        </p>
+                    </div>
+                </div>
+                <div
+                    v-if="modal.state === modal.enum.LOADING"
+                    class="modal-window-body modal-loading"
+                >
+                    <LoadingAnimation/>
+                    <p>Подождите...</p>
+                </div>
             </div>
         </transition>
     </div>
@@ -182,10 +232,11 @@
 import {useForm} from '@inertiajs/inertia-vue3';
 import BaseButton from './BaseButton';
 import {mapActions} from 'vuex';
+import LoadingAnimation from './LoadingAnimation';
 //todo: перенести в Layout
 export default {
     name: 'AuthModal',
-    components: {BaseButton},
+    components: {LoadingAnimation, BaseButton},
     setup() {
         const authForm = useForm({
             login: null,
@@ -203,7 +254,13 @@ export default {
             email: null,
         });
 
-        return {authForm, registerForm, passwordResetForm};
+        const passwordChangeForm = useForm({
+            password: null,
+            password_repeat: null,
+            email: null,
+        });
+
+        return {authForm, registerForm, passwordResetForm, passwordChangeForm};
     },
     computed: {
         modal() {
@@ -219,9 +276,12 @@ export default {
             });
         },
         registerUser() {
-            this.registerForm.post(this.route('user.store'));
-            this.setModalOpen(true);
-            this.setModalState(this.modal.enum.EMAIL_VERIFY);
+            this.setModalState(this.modal.enum.LOADING);
+            this.registerForm.post(this.route('user.store'), {
+                onSuccess: () => {
+                    this.setModalState(this.modal.enum.EMAIL_VERIFY);
+                }
+            });
         },
         resendEmail() {
             this.$inertia.post(this.route('verification.send'));
@@ -291,6 +351,18 @@ export default {
 
 .modal-window-body {
     padding: 20px;
+}
+
+.modal-loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 30px;
+}
+
+.modal-loading p {
+    margin-top: 20px;
 }
 
 .modal-window-body h3 {

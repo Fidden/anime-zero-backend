@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\FilmResource;
-use App\Models\{
-    Film,
-    WantToWatchFilm
-};
+use App\Http\Resources\WantToWatchResource;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -20,9 +16,9 @@ class UserFilmWantToWatchController extends Controller
      */
     public function __invoke(Request $request): \Inertia\Response
     {
+        $user = auth()->user();
         return Inertia::render('AccountFilmsPage', [
-            'films' => FilmResource::collection(
-                Film::whereIn('id', WantToWatchFilm::where('user_id', auth()->id())->pluck('film_id'))->paginate(10))
+            'films' => WantToWatchResource::collection($user->wantToWatch()->paginate(10))
         ]);
     }
 }

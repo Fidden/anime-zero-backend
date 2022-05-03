@@ -3,15 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FilmsPageIndexRequest;
-use App\Http\Resources\ContentTypeResource;
-use App\Http\Resources\FilmResource;
-use App\Http\Resources\GenreResource;
-use App\Http\Resources\StatusResource;
-use App\Models\ContentType;
-use App\Models\Film;
-use App\Models\FilmGenre;
-use App\Models\Genre;
-use App\Models\Status;
+use App\Http\Resources\{ContentTypeResource, FilmResource, GenreResource, StatusResource};
+use App\Models\{ContentType, Film, FilmGenre, Genre, Status};
 use Illuminate\Database\Eloquent\Builder;
 use Inertia\Inertia;
 
@@ -25,7 +18,7 @@ class FilmsPageController extends Controller
      */
     public function __invoke(FilmsPageIndexRequest $request): \Inertia\Response
     {
-        $films = Film::select("*")
+        $films = Film::query()
             ->when($request->has('genres'), function (Builder $query) use ($request) {
                 $query->whereIn('id',
                     FilmGenre::whereIn('genre_id',
