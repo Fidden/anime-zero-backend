@@ -149,7 +149,7 @@ footer {
     margin-top: 10px;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
     footer {
         flex-direction: column;
         align-items: center;

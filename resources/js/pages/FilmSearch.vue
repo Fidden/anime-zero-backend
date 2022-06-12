@@ -37,7 +37,7 @@ main h2 {
     margin-top: 40px;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
     main {
         padding: 0 20px;
     }

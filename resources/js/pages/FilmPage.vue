@@ -247,7 +247,7 @@ export default {
     font-weight: 400;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
     .film-page-container {
         flex-direction: column;
     }

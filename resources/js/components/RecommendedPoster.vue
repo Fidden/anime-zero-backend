@@ -92,7 +92,7 @@ export default {
     z-index: 100;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
     .poster-text-box {
         left: 20px;
         top: 20px;

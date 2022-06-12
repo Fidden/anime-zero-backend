@@ -40,7 +40,7 @@ export default {
 }
 
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
     .header-nav {
         display: none;
     }

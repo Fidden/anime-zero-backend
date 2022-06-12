@@ -27,7 +27,7 @@ mix.js('resources/js/app.js', 'public/js')
     .sourceMaps(false, 'source-map')
     .postCss('resources/css/app.css', 'public/css')
     .eslint({
-        fix: true,
+        fix: false,
         extensions: ['js', 'vue'],
         exclude: ['node_modules', 'vendor', 'resources/js/bootstrap.js'],
         overrideConfig: {

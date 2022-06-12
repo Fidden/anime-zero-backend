@@ -274,7 +274,7 @@ input[type='file'] {
     display: none;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
     .profile-bar {
         margin: 0 auto;
         text-align: center;

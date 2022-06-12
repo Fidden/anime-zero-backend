@@ -21,7 +21,7 @@ class HomePageController extends Controller
                 'newest' => FilmResource::collection(
                     Film::orderBy('year', 'desc')
                         ->orderBy('rating', 'desc')
-                        ->limit(6)
+                        ->limit(12)
                         ->get()),
 
                 'ongoing' => FilmResource::collection(

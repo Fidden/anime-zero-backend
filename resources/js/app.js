@@ -2,7 +2,6 @@ import Layout from './TheLayout';
 // Components
 import BaseButton from './components/BaseButton';
 
-
 // Packets
 import {createApp, h} from 'vue';
 import {createInertiaApp} from '@inertiajs/inertia-vue3';

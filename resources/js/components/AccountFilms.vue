@@ -76,7 +76,7 @@ export default {
     gap: 20px;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
 
     .films-empty {
         height: 40vh;

@@ -42,23 +42,15 @@
             </BaseButton>
         </div>
         <div class="films-block-body">
-            <FilmCard
-                v-for="film in films.newest"
-                :key="film.id"
-                :item="film"
-            />
-        </div>
-        <div class="films-block-body mobile">
             <Flickity
                 v-if="films.newest.length"
                 ref="flickity"
-                class="flickity flickity-films"
                 :options="flickity.filmsSlider"
             >
                 <div
                     v-for="film in films.newest"
                     :key="film.id"
-                    class="carousel-cell carousel-cell-films"
+                    class="carousel-cell"
                 >
                     <FilmCard :item="film"/>
                 </div>
@@ -145,15 +137,9 @@ export default {
         return {
             selected_poster: -1,
             flickity: {
-                bestFilmSlider: {
-                    initialIndex: 3,
-                    prevNextButtons: false,
-                    pageDots: false,
-                    wrapAround: true
-                },
                 filmsSlider: {
                     initialIndex: 1,
-                    prevNextButtons: false,
+                    prevNextButtons: true,
                     pageDots: false,
                     wrapAround: true
                 }
@@ -318,17 +304,15 @@ export default {
 }
 
 .films-block-body {
+    display: flex;
+    flex-direction: row;
     margin-top: 40px;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: 1fr;
-    grid-auto-flow: row;
-    justify-content: space-between;
-    gap: 0 20px;
 }
 
 .films-block-body-big {
+    display: grid;
     grid-template-rows: repeat(2, 250px);
+    grid-template-columns: repeat(6, 1fr);
     grid-template-areas:
         "first first first first second second"
         "first first first first third third";
@@ -390,6 +374,11 @@ export default {
     display: none;
 }
 
+.carousel-cell {
+    width: 180px;
+    margin-right: 20px;
+}
+
 @keyframes scroll {
     0% {
         transform: translateY(-20%);
@@ -418,7 +407,7 @@ export default {
     }
 }
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
     .main-poster-block {
         flex-direction: column;
     }
@@ -443,15 +432,6 @@ export default {
         height: 290px;
     }
 
-    .carousel-cell {
-        width: 120px;
-        margin-right: 18px;
-    }
-
-    .carousel-cell-films {
-        width: 180px;
-    }
-
     .main-poster-info {
         width: 100%;
         margin-bottom: 20px;
@@ -461,10 +441,6 @@ export default {
         padding: 40px 20px;
     }
 
-    .films-block-body {
-        display: none;
-    }
-
     .films-block-body.mobile {
         display: block;
     }
@@ -472,7 +448,7 @@ export default {
     .films-block-body.films-block-body-big {
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: repeat(3, 1fr);
+        grid-template-rows: 350px 1fr 1fr;
         grid-template-areas:
                             "first"
                             "second"
@@ -517,6 +493,32 @@ export default {
         margin-bottom: 10px;
     }
 
+}
+
+@media (max-width: 1000px) and (min-width: 768px) {
+    .main-poster-grid {
+        transform: rotate(20deg) translateX(10px);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1280px) {
+    .main-poster-info {
+        flex-shrink: 0;
+        margin-right: 40px;
+    }
+
+    .films-block-body-big {
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: repeat(3, 250px);
+        grid-template-areas:
+        "first first first first first first"
+        "first first first first first first"
+        "second second second third third third"
+    }
+
+    .ongoing-block {
+        grid-template-rows: 1fr;
+    }
 }
 
 </style>

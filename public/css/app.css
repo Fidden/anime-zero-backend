@@ -384,6 +384,30 @@ img {
     display: none;
 }
 
+.flickity-enabled {
+    width: 100%;
+}
+
+.flickity-button {
+    background: none !important;
+    outline: none !important;
+    border: none !important;
+}
+
+.flickity-button-icon {
+    fill: #646464 !important;
+}
+
+.flickity-prev-next-button.next {
+    right: 0 !important;
+    transform: translate(110%, -110%) !important;
+}
+
+.flickity-prev-next-button.previous {
+    left: 0 !important;
+    transform: translate(-110%, -110%) !important;
+}
+
 .account-container {
     display: flex;
     flex-direction: row;
@@ -431,7 +455,7 @@ img {
     margin-bottom: 20px;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
     .mobile {
         display: block;
     }
@@ -446,6 +470,12 @@ img {
 
     ::-webkit-scrollbar {
         display: none;
+    }
+}
+
+@media (max-width: 1280px) and (min-width: 768px) {
+    body {
+        padding: 7px 13px 20px 13px;
     }
 }
 

@@ -226,7 +226,7 @@ export default {
     border-radius: 3px;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
     header {
         padding: 10px 20px;
     }

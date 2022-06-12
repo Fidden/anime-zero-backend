@@ -283,7 +283,7 @@ export default {
     justify-content: space-between;
 }
 
-@media (max-width: 550px) {
+@media (max-width: 768px) {
     .films-filter-container {
         margin-top: 5px;
     }
