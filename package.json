@@ -11,7 +11,13 @@
         "eslint": "./node_modules/.bin/eslint resources/js/**/*.js"
     },
     "devDependencies": {
+        "@inertiajs/inertia": "^0.11.0",
+        "@inertiajs/inertia-vue3": "^0.6.0",
+        "@inertiajs/progress": "^0.2.7",
+        "@typescript-eslint/eslint-plugin": "^5.35.1",
+        "@typescript-eslint/parser": "^5.35.1",
         "axios": "^0.25",
+        "axois": "^0.0.1-security",
         "browser-sync": "^2.27.7",
         "browser-sync-webpack-plugin": "^2.3.0",
         "eslint": "^8.10.0",
@@ -22,17 +28,17 @@
         "laravel-mix-webp-watched": "^1.0.4",
         "lodash": "^4.17.19",
         "postcss": "^8.1.14",
-        "vue-loader": "^17.0.0",
-        "webpack-cli": "^4.9.2"
-    },
-    "dependencies": {
-        "@inertiajs/inertia": "^0.11.0",
-        "@inertiajs/inertia-vue3": "^0.6.0",
-        "axois": "^0.0.1-security",
         "process": "^0.11.10",
         "vue": "^3.2.29",
         "vue-cropper": "^1.0.2",
         "vue-flickity": "^1.2.1",
-        "vuex": "^4.0.2"
+        "vue-loader": "^17.0.0",
+        "vuex": "^4.0.2",
+        "webpack-cli": "^4.9.2"
+    },
+    "dependencies": {
+        "@inertiajs/server": "^0.1.0",
+        "@vue/server-renderer": "^3.2.38",
+        "webpack-node-externals": "^3.0.0"
     }
 }
