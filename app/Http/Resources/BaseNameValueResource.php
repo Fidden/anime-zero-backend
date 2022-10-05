@@ -6,7 +6,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Resources\Json\JsonResource;
 use JsonSerializable;
 
-class FilmStatusResource extends JsonResource
+class BaseNameValueResource extends JsonResource
 {
     public function toArray($request): array|Arrayable|JsonSerializable
     {
