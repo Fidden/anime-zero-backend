@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class FilmStatus extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'value',
+    ];
 }
