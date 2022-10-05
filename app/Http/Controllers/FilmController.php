@@ -2,39 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FilmSearchQueryRequest;
+use App\Http\Requests\FilmIndexRequest;
+use App\Http\Requests\FilmSearchRequest;
 use App\Http\Resources\FilmResource;
-use App\Models\{Film};
-use Inertia\Inertia;
+use App\Http\Services\ResponseService;
+use App\Models\Film;
+use App\Models\FilmGenre;
+use App\Models\FilmStatus;
+use App\Models\FilmType;
+use App\Models\Genre;
+use Illuminate\Database\Eloquent\Builder;
 
 class FilmController extends Controller
 {
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\Film $film
-     * @return \Inertia\Response
-     */
-    public function show(Film $film): \Inertia\Response
+    public function index(FilmIndexRequest $request)
     {
-        $user = auth()->user();
-        return Inertia::render('FilmPage', [
-            'item' => FilmResource::make($film),
-            'isWantedWatch' => $user && $user->wantToWatch()->where('film_id', $film->id)->exists(),
-            'isWatched' => $user && $user->watchedFilms()->where('film_id', $film->id)->exists(),
-        ]);
+        $films = Film::when($request->has('genres'), function (Builder $builder) use ($request) {
+            $genres = str($request->genres)->explode(',');
+
+            $builder->whereIn('id',
+                FilmGenre::whereIn('genre_id',
+                    Genre::whereIn('value', $genres)
+                        ->pluck('id'))
+                    ->pluck('film_id'));
+        })
+            ->when($request->has('statuses'), function (Builder $query) use ($request) {
+                $query->whereIn('status_id',
+                    FilmStatus::whereIn('value', str($request->statuses)->explode(','))
+                        ->pluck('id'));
+            })
+            ->when($request->has('type'), function (Builder $query) use ($request) {
+                $query->where('content_type_id',
+                    FilmType::where('value', str($request->type)->explode(','))
+                        ->pluck('id'));
+            })
+            ->when(($request->has('years')), function (Builder $query) use ($request) {
+                $years_array = str($request->years)->explode('-');
+                $query->where([['year', '>=', $years_array[0]], ['year', '<=', $years_array[1]]]);
+            })
+            ->when($request->get('rating') == 'desc',
+                function (Builder $query) {
+                    $query->orderBy('rating', 'desc');
+                },
+                function (Builder $query) {
+                    $query->orderBy('rating');
+                }
+            )
+            ->when($request->get('title') == 'desc',
+                function (Builder $query) {
+                    $query->orderBy('title', 'desc');
+                },
+                function (Builder $query) {
+                    $query->orderBy('title');
+                }
+            );
+
+        return FilmResource::collection(
+            $films->paginate(18)->onEachSide(1)
+        );
     }
 
-
-    /**
-     * Display the specified resource found by query.
-     * @param FilmSearchQueryRequest $request
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
-     */
-    public function search(FilmSearchQueryRequest $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function show(Film $film)
     {
-        $query = $request->input('query');
-        return FilmResource::collection(Film::where('title', 'like', "%{$query}%")
-            ->orWhere('title_orig', 'like', "%{$query}%")->limit(6)->get());
+        return ResponseService::success(
+            FilmResource::make($film)
+        );
+    }
+
+    public function suggestions(FilmSearchRequest $request)
+    {
+        return ResponseService::success(
+            FilmResource::collection(
+                Film::where('title', 'like', '%' . $request->input('query') . '%')
+                    ->limit(10)->get()
+            )
+        );
+    }
+
+    public function search(FilmSearchRequest $request)
+    {
+        return ResponseService::success(
+            FilmResource::collection(
+                Film::where('title', 'like', '%' . $request->input('query') . '%')
+                    ->paginate(18)
+            )
+        );
     }
 }
