@@ -27,12 +27,12 @@ class FilmsPageController extends Controller
                         ->pluck('film_id'));
             })
             ->when($request->has('statuses'), function (Builder $query) use ($request) {
-                $query->whereIn('status_id',
+                $query->whereIn('film_status_id',
                     Status::whereIn('name', $request->statuses)
                         ->pluck('id'));
             })
             ->when($request->has('type'), function (Builder $query) use ($request) {
-                $query->where('content_type_id',
+                $query->where('film_type_id',
                     ContentType::where('name', $request->type)
                         ->pluck('id'));
             })

@@ -38,7 +38,7 @@ class HomeController extends Controller
         if ($request->blocks->contains('ongoing')) {
             $entities['ongoing'] =
                 FilmResource::collection(
-                    Film::where('status_id',
+                    Film::where('film_status_id',
                         FilmStatus::where('name', 'Онгоинг')
                             ->value('id'))
                         ->limit(12)->get());
