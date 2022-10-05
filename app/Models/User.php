@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -44,22 +46,22 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    public function role(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function role(): HasOne
     {
         return $this->hasOne(Role::class, 'id', 'role_id');
     }
 
-    public function trackedFilm(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function filmsTracked(): HasMany
     {
-        return $this->hasMany(TrackedFilm::class);
+        return $this->hasMany(FilmTracked::class, 'user_id', 'id');
     }
 
-    public function wantToWatch(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function wantToWatch(): HasMany
     {
         return $this->hasMany(WantToWatchFilm::class);
     }
 
-    public function watchedFilms(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function watchedFilms(): HasMany
     {
         return $this->hasMany(WatchedFilm::class);
     }
