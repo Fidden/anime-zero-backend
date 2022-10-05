@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FilmIndexRequest;
-use App\Http\Requests\FilmSearchRequest;
+use App\Http\Requests\Film\FilmIndexRequest;
+use App\Http\Requests\Film\FilmSearchRequest;
 use App\Http\Resources\FilmResource;
 use App\Http\Services\ResponseService;
 use App\Models\Film;
