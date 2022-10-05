@@ -7,38 +7,10 @@
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
         "prod": "npm run production",
-        "production": "mix --production",
-        "eslint": "./node_modules/.bin/eslint resources/js/**/*.js"
+        "production": "mix --production"
     },
     "devDependencies": {
-        "@inertiajs/inertia": "^0.11.0",
-        "@inertiajs/inertia-vue3": "^0.6.0",
-        "@inertiajs/progress": "^0.2.7",
-        "@typescript-eslint/eslint-plugin": "^5.35.1",
-        "@typescript-eslint/parser": "^5.35.1",
-        "axios": "^0.25",
-        "axois": "^0.0.1-security",
-        "browser-sync": "^2.27.7",
-        "browser-sync-webpack-plugin": "^2.3.0",
-        "eslint": "^8.10.0",
-        "eslint-plugin-vue": "^8.5.0",
-        "eslint-webpack-plugin": "^3.1.1",
         "laravel-mix": "^6.0.43",
-        "laravel-mix-eslint": "^0.2.0",
-        "laravel-mix-webp-watched": "^1.0.4",
-        "lodash": "^4.17.19",
-        "postcss": "^8.1.14",
-        "process": "^0.11.10",
-        "vue": "^3.2.29",
-        "vue-cropper": "^1.0.2",
-        "vue-flickity": "^1.2.1",
-        "vue-loader": "^17.0.0",
-        "vuex": "^4.0.2",
-        "webpack-cli": "^4.9.2"
-    },
-    "dependencies": {
-        "@inertiajs/server": "^0.1.0",
-        "@vue/server-renderer": "^3.2.38",
-        "webpack-node-externals": "^3.0.0"
+        "lodash": "^4.17.19"
     }
 }
