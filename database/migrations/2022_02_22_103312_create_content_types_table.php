@@ -7,11 +7,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('content_types', function (Blueprint $table) {
@@ -24,15 +19,5 @@ return new class extends Migration
             ['name' => 'Фильм'],
             ['name' => 'Сериал']
         ]);
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('content_types');
     }
 };
