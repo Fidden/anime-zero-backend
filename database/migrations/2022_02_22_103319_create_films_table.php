@@ -1,11 +1,12 @@
 <?php
 
+use App\Models\FilmStatus;
+use App\Models\FilmType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up()
     {
         Schema::create('films', function (Blueprint $table) {
@@ -22,8 +23,10 @@ return new class extends Migration
             $table->float('rating')->default(0);
             $table->integer('minimal_age')->nullable();
             $table->integer('duration')->nullable();
-            $table->foreignId('status_id')->constrained('statuses');
-            $table->foreignId('content_type_id')->constrained('content_types');
+            $table->foreignIdFor(FilmStatus::class)
+                ->constrained();
+            $table->foreignIdFor(FilmType::class)
+                ->constrained();
             $table->timestamps();
         });
     }

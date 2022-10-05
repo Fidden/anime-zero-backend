@@ -23,14 +23,34 @@ class Film extends Model
         'poster',
         'rating',
         'minimal_age',
-        'status_id',
-        'content_type_id',
+        'film_status_id',
+        'film_type_id',
         'duration',
     ];
+
+    public function status(): HasOne
+    {
+        return $this->hasOne(FilmStatus::class, 'id', 'status_id');
+    }
 
     public function genres(): HasMany
     {
         return $this->hasMany(FilmGenre::class, 'film_id', 'id');
+    }
+
+    public function contentType(): HasOne
+    {
+        return $this->hasOne(FilmType::class, 'id', 'content_type_id');
+    }
+
+    public function directors(): HasMany
+    {
+        return $this->hasMany(FilmDirector::class, 'film_id', 'id');
+    }
+
+    public function countries(): HasMany
+    {
+        return $this->hasMany(FilmCountry::class, 'film_id', 'id');
     }
 
     public function recommended(): HasOne
