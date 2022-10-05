@@ -3,15 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmailVerifyRequest;
-
 use App\Http\Services\ResponseService;
 use App\Notifications\EmailVerificationNotification;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
-
-class EmailVerification extends Controller
+class EmailVerificationController extends Controller
 {
     public function verify(EmailVerifyRequest $request)
     {

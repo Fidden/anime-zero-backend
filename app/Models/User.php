@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -64,6 +66,26 @@ class User extends Authenticatable implements MustVerifyEmail
     public function watchedFilms(): HasMany
     {
         return $this->hasMany(WatchedFilm::class);
+    }
+
+    public function verifyCodes(): HasMany
+    {
+        return $this->hasMany(UserVerifyCode::class, 'user_id', 'id');
+    }
+
+    public function createVerifyCode()
+    {
+        $this->verifyCodes()->create([
+            'code' => Str::random(6),
+            'expires_at' => Carbon::now()->addMinutes(10),
+        ]);
+    }
+
+    public function getVerifyCode()
+    {
+        return $this->verifyCodes()
+            ->latest()
+            ->value('code');
     }
 
     public function setPasswordAttribute($value)
