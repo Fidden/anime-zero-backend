@@ -10,6 +10,6 @@ class FilmWantWatchResource extends JsonResource
 {
     public function toArray($request): array|Arrayable|JsonSerializable
     {
-        return parent::toArray($request);
+        return FilmResource::make($this->film);
     }
 }
