@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Film\FilmIndexRequest;
 use App\Http\Requests\Film\FilmSearchRequest;
 use App\Http\Resources\FilmResource;
-use App\Http\Services\ResponseService;
 use App\Models\Film;
 use App\Models\FilmGenre;
 use App\Models\FilmStatus;
 use App\Models\FilmType;
 use App\Models\Genre;
+use App\Services\ResponseService;
 use Illuminate\Database\Eloquent\Builder;
 
 class FilmController extends Controller

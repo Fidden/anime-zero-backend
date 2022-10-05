@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmailVerifyRequest;
-use App\Http\Services\ResponseService;
 use App\Notifications\EmailVerificationNotification;
+use App\Services\ResponseService;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 

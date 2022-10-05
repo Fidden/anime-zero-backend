@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BaseNameValueResource;
 use App\Models\FilmStatus;
-use App\Http\Services\ResponseService;
+use App\Services\ResponseService;
 
 class FilmStatusController extends Controller
 {

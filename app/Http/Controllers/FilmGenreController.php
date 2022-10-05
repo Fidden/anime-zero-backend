@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\GenreResource;
-use App\Http\Services\ResponseService;
 use App\Models\Genre;
+use App\Services\ResponseService;
 
 class FilmGenreController extends Controller
 {

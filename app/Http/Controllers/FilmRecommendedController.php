@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FilmRecommendedStoreRequest;
 use App\Http\Resources\FilmResource;
-use App\Http\Services\ResponseService;
 use App\Models\Film;
 use App\Models\FilmRecommended;
+use App\Services\ResponseService;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class FilmRecommendedController extends Controller

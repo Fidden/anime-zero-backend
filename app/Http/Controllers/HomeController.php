@@ -6,10 +6,10 @@ use App\Http\Requests\HomeIndexRequest;
 use App\Http\Resources\FilmPreviewResource;
 use App\Http\Resources\FilmRecommendedResource;
 use App\Http\Resources\FilmResource;
-use App\Http\Services\ResponseService;
 use App\Models\Film;
 use App\Models\FilmRecommended;
 use App\Models\FilmStatus;
+use App\Services\ResponseService;
 
 class HomeController extends Controller
 {

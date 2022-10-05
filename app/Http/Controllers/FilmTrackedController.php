@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FilmTracked\FilmTrackedStoreRequest;
 use App\Http\Resources\FilmTrackedResource;
 use App\Models\Film;
-use App\Http\Services\ResponseService;
+use App\Services\ResponseService;
 
 class FilmTrackedController extends Controller
 {

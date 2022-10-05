@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FilmWatchedStoreRequest;
 use App\Http\Resources\FilmWatchedResource;
 use App\Models\Film;
-use App\Http\Services\ResponseService;
+use App\Services\ResponseService;
 
 class FilmWatchedController extends Controller
 {

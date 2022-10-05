@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\FilmWantWatchResource;
 use App\Http\Requests\FilmWantWatchStoreRequest;
+use App\Http\Resources\FilmWantWatchResource;
 use App\Models\Film;
-use App\Http\Services\ResponseService;
+use App\Services\ResponseService;
 
 class FilmWantWatchController extends Controller
 {

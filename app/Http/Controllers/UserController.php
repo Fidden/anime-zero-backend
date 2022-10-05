@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\{User\UserLoginRequest, User\UserStoreRequest, User\UserUpdateRequest, UserAvatarUpdateRequest};
 use App\Http\Resources\UserResource;
-use App\Http\Services\ResponseService;
-use App\Http\Services\UserTokenService;
 use App\Models\User;
 use App\Notifications\EmailVerificationNotification;
+use App\Services\ResponseService;
+use App\Services\UserTokenService;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
