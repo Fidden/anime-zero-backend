@@ -1,43 +1,32 @@
-<h1 align="center">AnimeZero</h1>
-<p align="center">
-    Онлайн аниме кинотеатр
-</p>
+# AnimeZero
 
-![Screen Shot](https://imgur.com/Pyrpjcz.png)
+Online anime cinema website
 
-### Установка
+## Tech Stack
 
-1. Клонируй репозиторий
+- Laravel
+
+### Installation
+
+1. Clone repository
 
 ```sh
 git clone https://github.com/Fidden/anime-zero-recode.git
 ```
 
-2. Установи зависимости composer
+2. Install composer dependencies
 
 ```sh
 php composer.phar install
 ```
 
-3. Установи NPM пакеты
-
-```sh
-npm install
-```
-
-4. Собери приложение
-
-```sh
-npm run prod
-```
-
-5. Запусти сайт
+4. Start local server
 
 ```sh
 php artisan serve
 ```
 
-### Как добавлять контент
+### How to parse content ?
 
 ```sh
 php artisan parse
