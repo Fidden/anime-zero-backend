@@ -56,7 +56,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(FilmTracked::class, 'user_id', 'id');
     }
 
-    public function wantToWatch(): HasMany
+    public function filmsWantWatch(): HasMany
     {
         return $this->hasMany(WantToWatchFilm::class);
     }
