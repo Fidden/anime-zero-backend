@@ -2,12 +2,13 @@
 
 namespace App\Http\Services;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class UserTokenService
 {
-    public static function generate(Authenticatable $user = null): string
+    public static function generate(User $user = null): string
     {
         $user = $user ?? auth()->user();
 
