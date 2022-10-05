@@ -2,83 +2,107 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\{UserLoginRequest, UserStoreRequest, UserUpdateRequest};
+use App\Http\Requests\{User\UserLoginRequest, User\UserStoreRequest, User\UserUpdateRequest, UserAvatarUpdateRequest};
+use App\Http\Resources\UserResource;
+use App\Http\Services\ResponseService;
+use App\Http\Services\UserTokenService;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Inertia\Inertia;
+use App\Notifications\EmailVerificationNotification;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    /**
-     * @return \Inertia\Response
-     */
-    public function index(): \Inertia\Response
+    public function info()
     {
-        return Inertia::render('AccountPage', [
-            'films' => [],
-        ]);
+        return ResponseService::success(
+            UserResource::make(auth()->user())
+        );
     }
 
-    /**
-     * @param UserStoreRequest $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function store(UserStoreRequest $request): \Illuminate\Http\RedirectResponse
+    public function store(UserStoreRequest $request)
     {
         $user = User::create($request->validated());
         if ($user) {
-            event(new Registered($user));
-            auth()->login($user);
+            $user->notify(new EmailVerificationNotification($user));
 
-            return redirect()->back()->with('message', 'email-verify-send');
+            return ResponseService::success([
+                'token' => UserTokenService::generate($user),
+            ]);
         }
 
-        return redirect()->route('home')->with('notification', 'Упс! Что то пошло не так');
+        return ResponseService::error('Something went wrong.', 500);
     }
 
-    /**
-     * @param UserLoginRequest $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function login(UserLoginRequest $request): \Illuminate\Http\RedirectResponse
+    public function login(UserLoginRequest $request)
     {
-        //todo: fix this
-        if (auth()->attempt(['login' => $request->login, 'password' => $request->password])
-            || auth()->attempt(['email' => $request->login, 'password' => $request->password])) {
-            $request->session()->regenerate();
-            return redirect()->route('user.account');
+        if (auth()->attempt($request->validated())) {
+            if (!auth()->user()->hasVerifiedEmail()) {
+                return ResponseService::error('Please verify your email.', 401);
+            }
+
+            return ResponseService::success([
+                'token' => UserTokenService::generate(),
+            ]);
         }
 
-        return redirect()->back()->withErrors(['user' =>
-            ['Неправильное имя пользователя или пароль']]);
+        return ResponseService::error('Failed to login.', 401, [
+            'user' => [
+                'login' => 'Incorrect login or password.',
+            ],
+        ]);
     }
 
-    /**
-     * @param UserUpdateRequest $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function update(UserUpdateRequest $request): \Illuminate\Http\RedirectResponse
+    public function logout()
+    {
+        auth()->user()->forceFill([
+            'api_token' => null,
+        ])->save();
+
+        return response(null, 200);
+    }
+
+    public function avatar(UserAvatarUpdateRequest $request)
     {
         $user = auth()->user();
+        {
+            $image = $request->image;
+            $image = preg_replace('/data:image\/(.*?);base64,/', '', $image);
+            $image = str_replace(' ', '+', $image);
 
-        if (\Hash::make($request->password_old) != $user->password)
-            return redirect()->withErrors(['password' => 'Неверный старый пароль.']);
+            $file_name = "avatars/{$user->login}_{$user->id}.png";
+            Storage::disk('public')->put($file_name, base64_decode($image));
+            $user->avatar = Storage::url($file_name);
+        }
+        $user->save();
 
-        $user->update([
-            'login' => $request->login,
-            'email' => $request->email,
-            'password' => $request->password_new,
-        ]);
-
-        return redirect()->back();
+        return ResponseService::noContent();
     }
 
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function logout(): \Illuminate\Http\RedirectResponse
+    public function requestCode()
     {
-        auth()->logout();
-        return redirect()->route('home');
+        $user = auth()->user();
+        $user->notify(new EmailVerificationNotification($user));
+
+        return ResponseService::noContent();
+    }
+
+    public function update(UserUpdateRequest $request)
+    {
+        $user = auth()->user();
+        if ($user->getVerifyCode() !== $request->code) {
+            return ResponseService::error(
+                'Invalid verify code.',
+                422
+            );
+        }
+
+        // удаление использованного кода
+        $user->verifyCodes()
+            ->where('code', $request->code)
+            ->delete();
+
+        $user->update($request->validated());
+
+        return ResponseService::noContent();
     }
 }
