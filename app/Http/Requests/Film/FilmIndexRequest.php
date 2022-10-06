@@ -27,13 +27,20 @@ class FilmIndexRequest extends FormRequest
         ];
     }
 
+    private function transformToArray(string $key, string $separator = ',')
+    {
+        if ($this->has($key)) {
+            $this->replace([
+                $key => explode($separator, $this->get($key))
+            ]);
+        }
+    }
+
     protected function passedValidation()
     {
-        $this->replace([
-            'genres' => str($this->genres)->explode(','),
-            'statuses' => str($this->statuses)->explode(','),
-            'type' => str($this->type)->explode(','),
-            'years' => str($this->years)->explode('-'),
-        ]);
+        $this->transformToArray('genres');
+        $this->transformToArray('statuses');
+        $this->transformToArray('type');
+        $this->transformToArray('years', '-');
     }
 }
