@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -23,38 +24,38 @@ class Film extends Model
         'poster',
         'rating',
         'minimal_age',
-        'film_status_id',
-        'film_type_id',
+        'status_id',
+        'type_id',
         'duration',
     ];
 
-    public function status(): HasOne
+    public function status(): BelongsTo
     {
-        return $this->hasOne(FilmStatus::class, 'id', 'status_id');
+        return $this->belongsTo(Status::class);
     }
 
     public function genres(): HasMany
     {
-        return $this->hasMany(FilmGenre::class, 'film_id', 'id');
+        return $this->hasMany(FilmGenre::class);
     }
 
-    public function contentType(): HasOne
+    public function type(): BelongsTo
     {
-        return $this->hasOne(FilmType::class, 'id', 'content_type_id');
+        return $this->belongsTo(Type::class);
     }
 
     public function directors(): HasMany
     {
-        return $this->hasMany(FilmDirector::class, 'film_id', 'id');
+        return $this->hasMany(FilmDirector::class);
     }
 
     public function countries(): HasMany
     {
-        return $this->hasMany(FilmCountry::class, 'film_id', 'id');
+        return $this->hasMany(FilmCountry::class);
     }
 
     public function recommended(): HasOne
     {
-        return $this->hasOne(FilmRecommended::class, 'film_id', 'id');
+        return $this->hasOne(FilmRecommended::class);
     }
 }

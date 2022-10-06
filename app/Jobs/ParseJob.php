@@ -6,8 +6,8 @@ use App\Models\Country;
 use App\Models\Director;
 use App\Models\Film;
 use App\Models\FilmGenre;
-use App\Models\FilmStatus;
 use App\Models\Genre;
+use App\Models\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -22,11 +22,6 @@ class ParseJob implements ShouldQueue
     private string $kodik_token, $cdn_token;
     private int $type;
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
     public function __construct(int $type = 0)
     {
         $this->type = $type;
@@ -34,11 +29,6 @@ class ParseJob implements ShouldQueue
         $this->cdn_token = 'uKsTcuM4vCJBMVYb7ysJwnfyhmtBJ9p0';
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle(): void
     {
         $request = $this->type == 0 ?
@@ -67,8 +57,8 @@ class ParseJob implements ShouldQueue
                     'poster' => $this->getProperty($kodik_data['material_data'], 'poster_url'),
                     'rating' => $this->getRating($kodik_data),
                     'minimal_age' => $this->getProperty($kodik_data['material_data'], 'minimal_age'),
-                    'film_status_id' => $filmStatus->id,
-                    'film_type_id' => $this->type == 0 ? 2 : 1,
+                    'status_id' => $filmStatus->id,
+                    'type_id' => $this->type == 0 ? 2 : 1,
                 ]);
 
                 $this->storeCountries($film, $this->getProperty($kodik_data['material_data'], 'countries'));
@@ -124,13 +114,13 @@ class ParseJob implements ShouldQueue
         }
     }
 
-    public function storeStatus(array $status): ?FilmStatus
+    public function storeStatus(array $status): ?Status
     {
         if (!$status || !count($status))
             return null;
 
 
-        return FilmStatus::firstOrCreate([
+        return Status::firstOrCreate([
             'name' => $status[0],
             'value' => $status[1],
         ]);

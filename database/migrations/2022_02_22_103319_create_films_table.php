@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\FilmStatus;
-use App\Models\FilmType;
+use App\Models\Type;
+use App\Models\Status;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -23,9 +23,9 @@ return new class extends Migration {
             $table->float('rating')->default(0);
             $table->integer('minimal_age')->nullable();
             $table->integer('duration')->nullable();
-            $table->foreignIdFor(FilmStatus::class)
+            $table->foreignIdFor(Status::class)
                 ->constrained();
-            $table->foreignIdFor(FilmType::class)
+            $table->foreignIdFor(Type::class)
                 ->constrained();
             $table->timestamps();
         });

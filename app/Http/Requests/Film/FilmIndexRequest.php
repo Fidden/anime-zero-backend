@@ -6,7 +6,7 @@ use App\Rules\FilmGenre;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * @property string $genres
+ * @property array $genres
  * @property string $statuses
  * @property string $type
  * @property string $years
@@ -22,8 +22,18 @@ class FilmIndexRequest extends FormRequest
             'statuses' => 'string',
             'type' => 'string',
             'years' => 'string',
-            'rating' => 'string',
-            'title' => 'string',
+            'rating' => 'string|in:asc,desc',
+            'title' => 'string|in:asc,desc',
         ];
+    }
+
+    protected function passedValidation()
+    {
+        $this->replace([
+            'genres' => str($this->genres)->explode(','),
+            'statuses' => str($this->statuses)->explode(','),
+            'type' => str($this->type)->explode(','),
+            'years' => str($this->years)->explode('-'),
+        ]);
     }
 }

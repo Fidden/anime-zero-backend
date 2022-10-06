@@ -8,8 +8,9 @@ use App\Http\Resources\FilmRecommendedResource;
 use App\Http\Resources\FilmResource;
 use App\Models\Film;
 use App\Models\FilmRecommended;
-use App\Models\FilmStatus;
+use App\Models\Status;
 use App\Services\ResponseService;
+use Illuminate\Database\Eloquent\Builder;
 
 class HomeController extends Controller
 {
@@ -38,10 +39,12 @@ class HomeController extends Controller
         if ($request->blocks->contains('ongoing')) {
             $entities['ongoing'] =
                 FilmResource::collection(
-                    Film::where('film_status_id',
-                        FilmStatus::where('name', 'Онгоинг')
-                            ->value('id'))
-                        ->limit(12)->get());
+                    Film::whereHas('status', function (Builder $builder) {
+                        $builder->where('value', Status::ONGOING);
+                    })
+                        ->limit(12)
+                        ->get()
+                );
         }
 
         if ($request->blocks->contains('recommended')) {

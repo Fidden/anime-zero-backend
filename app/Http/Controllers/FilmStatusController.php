@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\BaseNameValueResource;
-use App\Models\FilmStatus;
+use App\Models\Status;
 use App\Services\ResponseService;
 
 class FilmStatusController extends Controller
@@ -12,7 +12,7 @@ class FilmStatusController extends Controller
     {
         return ResponseService::success(
             BaseNameValueResource::collection(
-                FilmStatus::all()
+                Status::all()
             )
         );
     }

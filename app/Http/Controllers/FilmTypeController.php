@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\BaseNameValueResource;
-use App\Models\FilmType;
+use App\Models\Type;
 use App\Services\ResponseService;
 
 class FilmTypeController extends Controller
@@ -12,7 +12,7 @@ class FilmTypeController extends Controller
     {
         return ResponseService::success(
             BaseNameValueResource::collection(
-                FilmType::all()
+                Type::all()
             )
         );
     }
