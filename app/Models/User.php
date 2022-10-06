@@ -60,12 +60,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function filmsWantWatch(): HasMany
     {
-        return $this->hasMany(WantToWatchFilm::class);
+        return $this->hasMany(FilmWantWatch::class);
     }
 
     public function filmsWatched(): HasMany
     {
-        return $this->hasMany(WatchedFilm::class);
+        return $this->hasMany(FilmWatched::class);
     }
 
     public function verifyCodes(): HasMany
@@ -86,6 +86,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->verifyCodes()
             ->latest()
             ->value('code');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role_id === 2;
     }
 
     public function setPasswordAttribute($value)
