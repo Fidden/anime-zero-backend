@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Country;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Resources\Json\JsonResource;
 use JsonSerializable;
@@ -23,7 +24,10 @@ class FilmResource extends JsonResource
             'minimal_age' => $this->minimal_age,
             'duration' => $this->duration,
             'genres' => FilmGenreResource::collection($this->genres),
-            'status' => StatusResource::make($this->status),
+            'status' => BaseNameValueResource::make($this->status),
+            'type' => BaseNameValueResource::make($this->type),
+            'directors' => DirectorResource::collection($this->directors),
+            'countries' => CountryResource::collection($this->countries),
         ];
     }
 }
