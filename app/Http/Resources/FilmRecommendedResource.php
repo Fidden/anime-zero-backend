@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use JsonSerializable;
 
@@ -18,7 +17,7 @@ class FilmRecommendedResource extends JsonResource
             'titleOrig' => $this->film->title_orig,
             'description' => $this->film->description,
             'year' => $this->film->year,
-            'poster' => $this->poster,
+            'poster' => $this->poster ?? $this->film->poster,
             'rating' => $this->film->rating,
             'minimalAge' => $this->film->minimal_age,
             'duration' => $this->film->duration,

@@ -6,8 +6,6 @@ use App\Http\Requests\Film\FilmIndexRequest;
 use App\Http\Requests\Film\FilmSearchRequest;
 use App\Http\Resources\FilmResource;
 use App\Models\Film;
-use App\Models\Type;
-use App\Models\Status;
 use App\Services\ResponseService;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -29,7 +27,7 @@ class FilmController extends Controller
             })
             ->when($request->has('type'), function (Builder $builder) use ($request) {
                 $builder->whereHas('type', function (Builder $query) use ($request) {
-                    $query->whereIn('value', $request->type);
+                    $query->where('value', $request->type);
                 });
             })
             ->when($request->has('years'), function (Builder $query) use ($request) {

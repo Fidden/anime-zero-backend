@@ -30,7 +30,7 @@ class FilmIndexRequest extends FormRequest
     private function transformToArray(string $key, string $separator = ',')
     {
         if ($this->has($key)) {
-            $this->replace([
+            $this->merge([
                 $key => explode($separator, $this->get($key))
             ]);
         }
@@ -40,7 +40,6 @@ class FilmIndexRequest extends FormRequest
     {
         $this->transformToArray('genres');
         $this->transformToArray('statuses');
-        $this->transformToArray('type');
         $this->transformToArray('years', '-');
     }
 }

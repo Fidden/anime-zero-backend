@@ -45,11 +45,7 @@ class UserController extends Controller
             ]);
         }
 
-        return ResponseService::error('Failed to login.', 401, [
-            'user' => [
-                'login' => 'Incorrect login or password.',
-            ],
-        ]);
+        return ResponseService::error('Неверный логин или пароль', 401);
     }
 
     public function logout()
