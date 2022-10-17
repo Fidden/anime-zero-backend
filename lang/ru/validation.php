@@ -161,6 +161,7 @@ return [
     'attributes' => [
         'login' => 'логин',
         'password' => 'пароль',
+        'password_repeat' => 'повтор пароля',
     ],
 
 ];
