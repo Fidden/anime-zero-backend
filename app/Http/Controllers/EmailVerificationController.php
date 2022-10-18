@@ -13,7 +13,11 @@ class EmailVerificationController extends Controller
     public function verify(EmailVerifyRequest $request)
     {
         $user = $request->user();
-        if ($user->hasVerifiedEmail() || $user->getVerifyCode() !== $request->code) {
+        if ($user->hasVerifiedEmail()) {
+            return ResponseService::error('Email already verified.', 200);
+        }
+
+        if ($user->getVerifyCode() !== $request->code) {
             return ResponseService::error(
                 'Invalid verify code.',
                 422
