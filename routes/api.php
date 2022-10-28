@@ -17,12 +17,14 @@ Route::prefix('/user')->group(function () {
     Route::post('/register', [UserController::class, 'store']);
     Route::post('/login', [UserController::class, 'login']);
 
-    Route::middleware(['auth:api', 'verified'])->group(function () {
-        Route::get('/logout', [UserController::class, 'logout']);
+    Route::middleware('auth:api')->group(function () {
         Route::get('/info', [UserController::class, 'info']);
-        Route::post('/avatar', [UserController::class, 'avatar']);
-        Route::post('/update', [UserController::class, 'update']);
-        Route::post('/request-code', [UserController::class, 'requestCode']);
+        Route::middleware('verified')->group(function() {
+            Route::get('/logout', [UserController::class, 'logout']);
+            Route::post('/avatar', [UserController::class, 'avatar']);
+            Route::post('/update', [UserController::class, 'update']);
+            Route::post('/request-code', [UserController::class, 'requestCode']);
+        });
     });
 });
 
@@ -54,18 +56,21 @@ Route::prefix('/film')->group(function () {
 
     Route::middleware(['auth:api', 'verified'])->group(function () {
         Route::prefix('/watched')->group(function () {
+            Route::get('/all', [FilmWatchedController::class, 'all']);
             Route::get('/', [FilmWatchedController::class, 'index']);
             Route::post('/', [FilmWatchedController::class, 'store']);
             Route::delete('/{film}', [FilmWatchedController::class, 'destroy']);
         });
 
         Route::prefix('/want-to-watch')->group(function () {
+            Route::get('/all', [FilmWantWatchController::class, 'all']);
             Route::get('/', [FilmWantWatchController::class, 'index']);
             Route::post('/', [FilmWantWatchController::class, 'store']);
             Route::delete('/{film}', [FilmWantWatchController::class, 'destroy']);
         });
 
         Route::prefix('/tracked')->group(function () {
+            Route::get('/all', [FilmTrackedController::class, 'all']);
             Route::get('/', [FilmTrackedController::class, 'index']);
             Route::post('/', [FilmTrackedController::class, 'store']);
             Route::delete('/{film}', [FilmTrackedController::class, 'destroy']);
@@ -83,7 +88,7 @@ Route::prefix('/email')->group(function () {
         ->middleware(['auth:api']);
 
     Route::post('/resend', [EmailVerificationController::class, 'resend'])
-        ->middleware(['auth:api', 'throttle:api,6,1']);
+        ->middleware(['auth:api']);
 });
 
 Route::get('/codes', function () {

@@ -14,7 +14,8 @@ class UserResource extends JsonResource
             'login' => $this->login,
             'email' => $this->email,
             'avatar' => $this->avatar,
-            'role' => RoleResource::make($this->role),
+            'role' => $this->role->name,
+            'verified' => $this->hasVerifiedEmail(),
         ];
     }
 }

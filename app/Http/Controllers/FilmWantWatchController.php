@@ -3,12 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FilmWantWatchStoreRequest;
+use App\Http\Resources\FilmResource;
 use App\Http\Resources\FilmWantWatchResource;
 use App\Models\Film;
 use App\Services\ResponseService;
 
 class FilmWantWatchController extends Controller
 {
+    public function all()
+    {
+        return ResponseService::success(
+            auth()
+                ->user()
+                ->filmsWantWatch()
+                ->pluck('film_id')
+        );
+    }
+
     public function index()
     {
         return FilmWantWatchResource::collection(

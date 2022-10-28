@@ -229,6 +229,9 @@ class ParseJob implements ShouldQueue
             return $item > 0;
         });
 
+        if (!$non_zero)
+            return 0;
+
         return number_format((float)(array_sum($non_zero) / count($non_zero)), 1);
     }
 }

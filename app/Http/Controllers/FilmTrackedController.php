@@ -10,6 +10,16 @@ use App\Services\ResponseService;
 
 class FilmTrackedController extends Controller
 {
+    public function all()
+    {
+        return ResponseService::success(
+            auth()
+                ->user()
+                ->filmsTracked()
+                ->pluck('film_id')
+        );
+    }
+
     public function index()
     {
         return FilmTrackedResource::collection(

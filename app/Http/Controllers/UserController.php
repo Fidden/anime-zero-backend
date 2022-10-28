@@ -37,7 +37,9 @@ class UserController extends Controller
     {
         if (auth()->attempt($request->validated())) {
             if (!auth()->user()->hasVerifiedEmail()) {
-                return ResponseService::error('Please verify your email.', 401);
+                return ResponseService::error('Please verify your email.', 403, [
+                    'token' => UserTokenService::generate(),
+                ]);
             }
 
             return ResponseService::success([

@@ -9,6 +9,16 @@ use App\Services\ResponseService;
 
 class FilmWatchedController extends Controller
 {
+    public function all()
+    {
+        return ResponseService::success(
+            auth()
+                ->user()
+                ->filmsWatched()
+                ->pluck('film_id')
+        );
+    }
+
     public function index()
     {
         return FilmWatchedResource::collection(
