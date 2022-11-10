@@ -12,9 +12,9 @@ class FilmRecommendedResource extends JsonResource
     {
         return [
             'id' => $this->film->id,
-            'playerLink' => $this->film->player_link,
+            'player_link' => $this->film->player_link,
             'title' => $this->film->title,
-            'titleOrig' => $this->film->title_orig,
+            'title_orig' => $this->film->title_orig,
             'description' => $this->film->description,
             'year' => $this->film->year,
             'poster' => $this->poster ?? $this->film->poster,
