@@ -8,6 +8,7 @@ use App\Http\Requests\Film\FilmSearchRequest;
 use App\Http\Resources\FilmResource;
 use App\Models\Film;
 use App\Services\ResponseService;
+use Illuminate\Database\Query\Builder;
 
 class FilmController extends Controller
 {
@@ -33,8 +34,9 @@ class FilmController extends Controller
     {
         return ResponseService::success(
             FilmResource::collection(
-                Film::where('title', 'like', '%' . $request->input('query') . '%')
-                    ->limit(10)->get()
+                Film::search($request->input('query'))
+                    ->query(fn(Builder $builder) => $builder->limit(10))
+                    ->get()
             )
         );
     }
@@ -43,7 +45,7 @@ class FilmController extends Controller
     {
         return ResponseService::success(
             FilmResource::collection(
-                Film::where('title', 'like', '%' . $request->input('query') . '%')
+                Film::search($request->input('query'))
                     ->paginate(18)
             )
         );

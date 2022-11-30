@@ -9,10 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Scout\Attributes\SearchUsingFullText;
+use Laravel\Scout\Attributes\SearchUsingPrefix;
+use Laravel\Scout\Searchable;
 
 class Film extends Model
 {
-    use HasFactory, Filterable;
+    use HasFactory, Filterable, Searchable;
 
     protected $fillable = [
         'kinopoisk_id',
@@ -34,6 +37,15 @@ class Film extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);
+    }
+
+    #[SearchUsingFullText(['title', 'title_orig'])]
+    public function toSearchableArray(): array
+    {
+        return [
+            'title' => $this->title,
+            'title_orig' => $this->title_orig,
+        ];
     }
 
     public function genres(): HasMany
